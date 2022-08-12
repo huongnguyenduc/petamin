@@ -1,0 +1,77 @@
+name: Petamin
+description: A new Flutter project.
+version: 1.0.0+1
+publish_to: none
+
+environment:
+  sdk: ">=2.17.0 <3.0.0"
+
+dependencies:
+  authentication_repository:
+    path: packages/authentication_repository
+  bloc: ^8.1.0
+  equatable: ^2.0.3
+  flow_builder: ^0.0.9
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^8.0.1
+  font_awesome_flutter: ^10.1.0
+  form_inputs:
+    path: packages/form_inputs
+  formz: ^0.4.0
+  google_fonts: ^3.0.1
+  meta: ^1.7.0
+
+dev_dependencies:
+  bloc_test: ^9.0.0
+  flutter_test:
+    sdk: flutter
+  mocktail: ^0.3.0
+  very_good_analysis: ^3.0.1
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+    - assets/logo/
+  fonts:
+    - family: ApercuPro
+      fonts:
+        - asset: assets/fonts/apercu_pro/ApercuPro-Thin.ttf
+          weight: 100
+        - asset: assets/fonts/apercu_pro/ApercuPro-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/apercu_pro/ApercuPro-Light.ttf
+          weight: 300
+        - asset: assets/fonts/apercu_pro/ApercuPro-Regular.ttf
+        - asset: assets/fonts/apercu_pro/ApercuPro-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/apercu_pro/ApercuPro-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/apercu_pro/ApercuPro-Black.ttf
+          weight: 900
+        - asset: assets/fonts/apercu_pro/ApercuPro-ThinItalic.ttf
+          weight: 100
+          style: italic
+        - asset: assets/fonts/apercu_pro/ApercuPro-ExtraLightItalic.ttf
+          weight: 200
+          style: italic
+        - asset: assets/fonts/apercu_pro/ApercuPro-LightItalic.ttf
+          weight: 300
+          style: italic
+        - asset: assets/fonts/apercu_pro/ApercuPro-Italic.ttf
+          style: italic
+        - asset: assets/fonts/apercu_pro/ApercuPro-MediumItalic.ttf
+          weight: 500
+          style: italic
+        - asset: assets/fonts/apercu_pro/ApercuPro-BoldItalic.ttf
+          weight: 700
+          style: italic
+        - asset: assets/fonts/apercu_pro/ApercuPro-BlackItalic.ttf
+          weight: 900
+          style: italic
+
+dependency_overrides:
+  bloc: ^8.1.0
+  bloc_test: ^9.0.3
+  flutter_bloc: ^8.0.1

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "940536959050",
+    "project_id": "petamin-firebase",
+    "storage_bucket": "petamin-firebase.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:940536959050:android:df9f5e4622a38d9de256b3",
+        "android_client_info": {
+          "package_name": "com.example.petamin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "940536959050-m4abmap4lt4feh2n5uss7piq6m14fq1e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbyoAI6Ym-cs8P2gqEMflpanpcTRXAlGI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "940536959050-m4abmap4lt4feh2n5uss7piq6m14fq1e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

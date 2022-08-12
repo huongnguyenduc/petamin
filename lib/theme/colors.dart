@@ -1,0 +1,20 @@
+import 'package:flutter/material.dart';
+
+// Define app-wide common colors.
+@immutable
+class AppColors {
+  final green = const Color(0xFF0E333C);
+  final white = const Color(0xFFFFFFFF);
+  final pink = const Color(0xFFF6B8A9);
+  final yellow = const Color(0xFFFBE186);
+  final purple = const Color(0xFFA0B3FF);
+  final grey = const Color(0xFFA9ACAD);
+  final lightPurple = const Color(0xFFE2ECFE);
+  final solidGrey = const Color(0xFF5A5A5A);
+  final lightBlack = const Color(0xFF5F5B5B);
+  final lightGreen = const Color(0xFF17424C);
+  final superLightGreen = const Color(0xFF5B7B81);
+  final red = const Color(0xFFEA544C);
+
+  const AppColors();
+}
