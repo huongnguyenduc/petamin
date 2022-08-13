@@ -79,15 +79,28 @@ class _EmailInput extends StatelessWidget {
       buildWhen: (previous, current) => previous.email != current.email,
       builder: (context, state) {
         return TextField(
-          key: const Key('loginForm_emailInput_textField'),
-          onChanged: (email) => context.read<LoginCubit>().emailChanged(email),
-          keyboardType: TextInputType.emailAddress,
-          decoration: InputDecoration(
-            labelText: 'Email',
-            helperText: '',
-            errorText: state.email.invalid ? 'Invalid email' : null,
-          ),
-        );
+            key: const Key('loginForm_emailInput_textField'),
+            onChanged: (email) =>
+                context.read<LoginCubit>().emailChanged(email),
+            keyboardType: TextInputType.emailAddress,
+            style: CustomTextTheme.label(context, AppTheme.colors.green),
+            decoration: InputDecoration(
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 22, vertical: 18),
+              focusedBorder: OutlineInputBorder(
+                  borderSide:
+                      BorderSide(color: AppTheme.colors.pink, width: 2.0),
+                  borderRadius: const BorderRadius.all(Radius.circular(16.0))),
+              enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                      color: AppTheme.colors.lightPurple, width: 2.0),
+                  borderRadius: const BorderRadius.all(Radius.circular(16.0))),
+              labelText: 'Email',
+              helperText: '',
+              errorText: state.email.invalid ? 'Invalid email' : null,
+              labelStyle:
+                  CustomTextTheme.label(context, AppTheme.colors.lightGreen),
+            ));
       },
     );
   }
@@ -104,10 +117,21 @@ class _PasswordInput extends StatelessWidget {
           onChanged: (password) =>
               context.read<LoginCubit>().passwordChanged(password),
           obscureText: true,
+          style: CustomTextTheme.label(context, AppTheme.colors.green),
           decoration: InputDecoration(
+            contentPadding: EdgeInsets.symmetric(horizontal: 22, vertical: 18),
+            focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: AppTheme.colors.pink, width: 2.0),
+                borderRadius: const BorderRadius.all(Radius.circular(16.0))),
+            enabledBorder: OutlineInputBorder(
+                borderSide:
+                    BorderSide(color: AppTheme.colors.lightPurple, width: 2.0),
+                borderRadius: const BorderRadius.all(Radius.circular(16.0))),
             labelText: 'Password',
             helperText: '',
             errorText: state.password.invalid ? 'Invalid password' : null,
+            labelStyle:
+                CustomTextTheme.label(context, AppTheme.colors.lightGreen),
           ),
         );
       },

@@ -1,3 +1,7 @@
+import 'package:Petamin/login/view/login_page.dart';
+import 'package:Petamin/theme/app_theme.dart';
+import 'package:Petamin/theme/text_styles.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:Petamin/sign_up/sign_up.dart';
@@ -20,20 +24,54 @@ class SignUpForm extends StatelessWidget {
             );
         }
       },
-      child: Align(
-        alignment: const Alignment(0, -1 / 3),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _EmailInput(),
-            const SizedBox(height: 8),
-            _PasswordInput(),
-            const SizedBox(height: 8),
-            _ConfirmPasswordInput(),
-            const SizedBox(height: 8),
-            _SignUpButton(),
-          ],
-        ),
+      child: DefaultTextStyle(
+        style: Theme.of(context).textTheme.bodyText2!,
+        child: LayoutBuilder(builder:
+            (BuildContext context, BoxConstraints viewportConstraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints:
+                  BoxConstraints(minHeight: viewportConstraints.maxHeight),
+              child: IntrinsicHeight(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Sign up',
+                              style: CustomTextTheme.heading1(
+                                  context, AppTheme.colors.green),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              'Sign up as pet owner',
+                              style: CustomTextTheme.body2(
+                                  context, AppTheme.colors.green),
+                            ),
+                            const SizedBox(height: 44),
+                            _EmailInput(),
+                            const SizedBox(height: 14),
+                            _PasswordInput(),
+                            const SizedBox(height: 14),
+                            _ConfirmPasswordInput(),
+                            const SizedBox(height: 16),
+                            _SignUpButton(),
+                            const SizedBox(height: 16),
+                            // _GoogleLoginButton(),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(height: 20, child: _SignInButton()),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }),
       ),
     );
   }
@@ -50,9 +88,19 @@ class _EmailInput extends StatelessWidget {
           onChanged: (email) => context.read<SignUpCubit>().emailChanged(email),
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
-            labelText: 'email',
+            contentPadding: EdgeInsets.symmetric(horizontal: 22, vertical: 18),
+            focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: AppTheme.colors.pink, width: 2.0),
+                borderRadius: const BorderRadius.all(Radius.circular(16.0))),
+            enabledBorder: OutlineInputBorder(
+                borderSide:
+                    BorderSide(color: AppTheme.colors.lightPurple, width: 2.0),
+                borderRadius: const BorderRadius.all(Radius.circular(16.0))),
+            labelText: 'Email',
             helperText: '',
             errorText: state.email.invalid ? 'invalid email' : null,
+            labelStyle:
+                CustomTextTheme.label(context, AppTheme.colors.lightGreen),
           ),
         );
       },
@@ -72,9 +120,19 @@ class _PasswordInput extends StatelessWidget {
               context.read<SignUpCubit>().passwordChanged(password),
           obscureText: true,
           decoration: InputDecoration(
-            labelText: 'password',
+            contentPadding: EdgeInsets.symmetric(horizontal: 22, vertical: 18),
+            focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: AppTheme.colors.pink, width: 2.0),
+                borderRadius: const BorderRadius.all(Radius.circular(16.0))),
+            enabledBorder: OutlineInputBorder(
+                borderSide:
+                    BorderSide(color: AppTheme.colors.lightPurple, width: 2.0),
+                borderRadius: const BorderRadius.all(Radius.circular(16.0))),
+            labelText: 'Password',
             helperText: '',
-            errorText: state.password.invalid ? 'invalid password' : null,
+            errorText: state.password.invalid ? 'Invalid password' : null,
+            labelStyle:
+                CustomTextTheme.label(context, AppTheme.colors.lightGreen),
           ),
         );
       },
@@ -97,11 +155,21 @@ class _ConfirmPasswordInput extends StatelessWidget {
               .confirmedPasswordChanged(confirmPassword),
           obscureText: true,
           decoration: InputDecoration(
-            labelText: 'confirm password',
+            contentPadding: EdgeInsets.symmetric(horizontal: 22, vertical: 18),
+            focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: AppTheme.colors.pink, width: 2.0),
+                borderRadius: const BorderRadius.all(Radius.circular(16.0))),
+            enabledBorder: OutlineInputBorder(
+                borderSide:
+                    BorderSide(color: AppTheme.colors.lightPurple, width: 2.0),
+                borderRadius: const BorderRadius.all(Radius.circular(16.0))),
+            labelText: 'Confirm password',
             helperText: '',
             errorText: state.confirmedPassword.invalid
-                ? 'passwords do not match'
+                ? 'Passwords do not match'
                 : null,
+            labelStyle:
+                CustomTextTheme.label(context, AppTheme.colors.lightGreen),
           ),
         );
       },
@@ -121,16 +189,44 @@ class _SignUpButton extends StatelessWidget {
                 key: const Key('signUpForm_continue_raisedButton'),
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  primary: Colors.orangeAccent,
+                  padding: EdgeInsets.symmetric(vertical: 15),
+                  minimumSize: const Size.fromHeight(40),
+                  primary: AppTheme.colors.green,
+                  onSurface: AppTheme.colors.pink,
                 ),
                 onPressed: state.status.isValidated
                     ? () => context.read<SignUpCubit>().signUpFormSubmitted()
                     : null,
-                child: const Text('SIGN UP'),
+                child: Text(
+                  'Let me in',
+                  style: CustomTextTheme.label(context, AppTheme.colors.green),
+                ),
               );
       },
     );
+  }
+}
+
+class _SignInButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return RichText(
+        key: const Key('loginForm_createAccount_flatButton'),
+        text: TextSpan(
+          text: "Already have an account? ",
+          style: CustomTextTheme.label(context, Colors.grey),
+          children: [
+            TextSpan(
+              text: "Sign in",
+              style: CustomTextTheme.label(context, theme.primaryColor),
+              recognizer: new TapGestureRecognizer()
+                ..onTap =
+                    () => Navigator.of(context).push<void>(LoginPage.route()),
+            )
+          ],
+        ));
   }
 }

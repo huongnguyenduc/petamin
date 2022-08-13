@@ -216,7 +216,6 @@ class AuthenticationRepository {
   Future<void> logInWithGoogle() async {
     try {
       late final firebase_auth.AuthCredential credential;
-      print("start");
       if (isWeb) {
         final googleProvider = firebase_auth.GoogleAuthProvider();
         final userCredential = await _firebaseAuth.signInWithPopup(
@@ -224,17 +223,13 @@ class AuthenticationRepository {
         );
         credential = userCredential.credential!;
       } else {
-        print("1");
         final googleUser = await _googleSignIn.signIn();
-        print(2);
         final googleAuth = await googleUser!.authentication;
-        print(3);
         credential = firebase_auth.GoogleAuthProvider.credential(
           accessToken: googleAuth.accessToken,
           idToken: googleAuth.idToken,
         );
       }
-      print("end");
       await _firebaseAuth.signInWithCredential(credential);
     } on FirebaseAuthException catch (e) {
       throw LogInWithGoogleFailure.fromCode(e.code);

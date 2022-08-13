@@ -7,6 +7,10 @@ import 'package:Petamin/login/login.dart';
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
+  static Route<void> route() {
+    return MaterialPageRoute<void>(builder: (_) => const LoginPage());
+  }
+
   static Page<void> page() => const MaterialPage<void>(child: LoginPage());
 
   @override
@@ -16,11 +20,16 @@ class LoginPage extends StatelessWidget {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(72),
         child: AppBar(
-          title: Center(
-            child: Image.asset(
-              'assets/logo/petamin_logo_small.png',
-              height: 40,
-            ),
+          centerTitle: true,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(
+                'assets/logo/petamin_logo_small.png',
+                height: 40,
+              )
+            ],
           ),
         ),
       ),
