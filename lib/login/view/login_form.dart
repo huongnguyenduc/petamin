@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:Petamin/theme/app_theme.dart';
 import 'package:Petamin/theme/text_styles.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:Petamin/login/login.dart';
@@ -26,29 +27,46 @@ class LoginForm extends StatelessWidget {
             );
         }
       },
-      child: Align(
-        alignment: const Alignment(0, -1 / 3),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Sign in',
-                style: CustomTextTheme.heading1(context, AppTheme.colors.green),
+      child: DefaultTextStyle(
+        style: Theme.of(context).textTheme.bodyText2!,
+        child: LayoutBuilder(builder:
+            (BuildContext context, BoxConstraints viewportConstraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints:
+                  BoxConstraints(minHeight: viewportConstraints.maxHeight),
+              child: IntrinsicHeight(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Sign in',
+                              style: CustomTextTheme.heading1(
+                                  context, AppTheme.colors.green),
+                            ),
+                            const SizedBox(height: 28),
+                            _EmailInput(),
+                            const SizedBox(height: 14),
+                            _PasswordInput(),
+                            const SizedBox(height: 82),
+                            _LoginButton(),
+                            const SizedBox(height: 16),
+                            _GoogleLoginButton(),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(height: 20, child: _SignUpButton()),
+                  ],
+                ),
               ),
-              const SizedBox(height: 16),
-              _EmailInput(),
-              const SizedBox(height: 8),
-              _PasswordInput(),
-              const SizedBox(height: 8),
-              _LoginButton(),
-              const SizedBox(height: 8),
-              _GoogleLoginButton(),
-              const SizedBox(height: 4),
-              _SignUpButton(),
-            ],
-          ),
-        ),
+            ),
+          );
+        }),
       ),
     );
   }
@@ -65,9 +83,9 @@ class _EmailInput extends StatelessWidget {
           onChanged: (email) => context.read<LoginCubit>().emailChanged(email),
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
-            labelText: 'email',
+            labelText: 'Email',
             helperText: '',
-            errorText: state.email.invalid ? 'invalid email' : null,
+            errorText: state.email.invalid ? 'Invalid email' : null,
           ),
         );
       },
@@ -87,9 +105,9 @@ class _PasswordInput extends StatelessWidget {
               context.read<LoginCubit>().passwordChanged(password),
           obscureText: true,
           decoration: InputDecoration(
-            labelText: 'password',
+            labelText: 'Password',
             helperText: '',
-            errorText: state.password.invalid ? 'invalid password' : null,
+            errorText: state.password.invalid ? 'Invalid password' : null,
           ),
         );
       },
@@ -109,13 +127,13 @@ class _LoginButton extends StatelessWidget {
             : ElevatedButton(
                 key: const Key('loginForm_continue_raisedButton'),
                 style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: EdgeInsets.symmetric(vertical: 15),
-                  minimumSize: const Size.fromHeight(40),
-                  primary: AppTheme.colors.pink,
-                ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    minimumSize: const Size.fromHeight(40),
+                    primary: AppTheme.colors.pink,
+                    onSurface: AppTheme.colors.pink),
                 onPressed: state.status.isValidated
                     ? () => context.read<LoginCubit>().logInWithCredentials()
                     : null,
@@ -136,7 +154,7 @@ class _GoogleLoginButton extends StatelessWidget {
       key: const Key('loginForm_googleLogin_raisedButton'),
       label: Text(
         'Sign in with Google',
-        style: CustomTextTheme.label(context, AppTheme.colors.white),
+        style: CustomTextTheme.label(context, Colors.white),
       ),
       style: ElevatedButton.styleFrom(
         shape: RoundedRectangleBorder(
@@ -156,13 +174,20 @@ class _SignUpButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return TextButton(
-      key: const Key('loginForm_createAccount_flatButton'),
-      onPressed: () => Navigator.of(context).push<void>(SignUpPage.route()),
-      child: Text(
-        'CREATE ACCOUNT',
-        style: TextStyle(color: theme.primaryColor),
-      ),
-    );
+    return RichText(
+        key: const Key('loginForm_createAccount_flatButton'),
+        text: TextSpan(
+          text: "Don't have account yet? ",
+          style: CustomTextTheme.label(context, Colors.grey),
+          children: [
+            TextSpan(
+              text: "Sign up",
+              style: CustomTextTheme.label(context, theme.primaryColor),
+              recognizer: new TapGestureRecognizer()
+                ..onTap =
+                    () => Navigator.of(context).push<void>(SignUpPage.route()),
+            )
+          ],
+        ));
   }
 }
