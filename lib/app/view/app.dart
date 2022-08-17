@@ -1,3 +1,4 @@
+import 'package:Petamin/routes/routes.dart';
 import 'package:Petamin/theme/app_theme.dart';
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:flow_builder/flow_builder.dart';
@@ -38,6 +39,7 @@ class AppView extends StatelessWidget {
         state: context.select((AppBloc bloc) => bloc.state.status),
         onGeneratePages: onGenerateAppViewPages,
       ),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
