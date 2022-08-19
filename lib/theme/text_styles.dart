@@ -41,7 +41,7 @@ class CustomTextTheme {
     return Theme.of(context).textTheme.labelMedium!.copyWith(
         color: textColor ?? AppTheme.colors.green,
         fontSize: 16,
-        fontWeight: FontWeight.w500);
+        fontWeight: FontWeight.w700);
   }
 
   static TextStyle body1(BuildContext context, {Color? textColor}) {
