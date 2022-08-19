@@ -45,8 +45,7 @@ class LoginForm extends StatelessWidget {
                           children: [
                             Text(
                               'Sign in',
-                              style: CustomTextTheme.heading1(
-                                  context, AppTheme.colors.green),
+                              style: CustomTextTheme.heading1(context),
                             ),
                             const SizedBox(height: 28),
                             _EmailInput(),
@@ -83,7 +82,7 @@ class _EmailInput extends StatelessWidget {
             onChanged: (email) =>
                 context.read<LoginCubit>().emailChanged(email),
             keyboardType: TextInputType.emailAddress,
-            style: CustomTextTheme.label(context, AppTheme.colors.green),
+            style: CustomTextTheme.label(context),
             decoration: InputDecoration(
               contentPadding:
                   EdgeInsets.symmetric(horizontal: 22, vertical: 18),
@@ -98,8 +97,7 @@ class _EmailInput extends StatelessWidget {
               labelText: 'Email',
               helperText: '',
               errorText: state.email.invalid ? 'Invalid email' : null,
-              labelStyle:
-                  CustomTextTheme.label(context, AppTheme.colors.lightGreen),
+              labelStyle: CustomTextTheme.label(context),
             ));
       },
     );
@@ -117,7 +115,7 @@ class _PasswordInput extends StatelessWidget {
           onChanged: (password) =>
               context.read<LoginCubit>().passwordChanged(password),
           obscureText: true,
-          style: CustomTextTheme.label(context, AppTheme.colors.green),
+          style: CustomTextTheme.label(context),
           decoration: InputDecoration(
             contentPadding: EdgeInsets.symmetric(horizontal: 22, vertical: 18),
             focusedBorder: OutlineInputBorder(
@@ -130,8 +128,8 @@ class _PasswordInput extends StatelessWidget {
             labelText: 'Password',
             helperText: '',
             errorText: state.password.invalid ? 'Invalid password' : null,
-            labelStyle:
-                CustomTextTheme.label(context, AppTheme.colors.lightGreen),
+            labelStyle: CustomTextTheme.label(context,
+                textColor: AppTheme.colors.lightGreen),
           ),
         );
       },
@@ -161,9 +159,7 @@ class _LoginButton extends StatelessWidget {
                 onPressed: state.status.isValidated
                     ? () => context.read<LoginCubit>().logInWithCredentials()
                     : null,
-                child: Text('Let me in',
-                    style:
-                        CustomTextTheme.label(context, AppTheme.colors.green)),
+                child: Text('Let me in', style: CustomTextTheme.label(context)),
               );
       },
     );
@@ -178,7 +174,7 @@ class _GoogleLoginButton extends StatelessWidget {
       key: const Key('loginForm_googleLogin_raisedButton'),
       label: Text(
         'Sign in with Google',
-        style: CustomTextTheme.label(context, Colors.white),
+        style: CustomTextTheme.label(context, textColor: Colors.white),
       ),
       style: ElevatedButton.styleFrom(
         shape: RoundedRectangleBorder(
@@ -202,11 +198,11 @@ class _SignUpButton extends StatelessWidget {
         key: const Key('loginForm_createAccount_flatButton'),
         text: TextSpan(
           text: "Don't have account yet? ",
-          style: CustomTextTheme.label(context, Colors.grey),
+          style: CustomTextTheme.label(context, textColor: Colors.grey),
           children: [
             TextSpan(
               text: "Sign up",
-              style: CustomTextTheme.label(context, theme.primaryColor),
+              style: CustomTextTheme.label(context),
               recognizer: new TapGestureRecognizer()
                 ..onTap =
                     () => Navigator.of(context).push<void>(SignUpPage.route()),

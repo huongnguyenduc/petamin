@@ -42,14 +42,12 @@ class SignUpForm extends StatelessWidget {
                           children: [
                             Text(
                               'Sign up',
-                              style: CustomTextTheme.heading1(
-                                  context, AppTheme.colors.green),
+                              style: CustomTextTheme.heading1(context),
                             ),
                             const SizedBox(height: 6),
                             Text(
                               'Sign up as pet owner',
-                              style: CustomTextTheme.body2(
-                                  context, AppTheme.colors.green),
+                              style: CustomTextTheme.body2(context),
                             ),
                             const SizedBox(height: 44),
                             _EmailInput(),
@@ -99,8 +97,8 @@ class _EmailInput extends StatelessWidget {
             labelText: 'Email',
             helperText: '',
             errorText: state.email.invalid ? 'invalid email' : null,
-            labelStyle:
-                CustomTextTheme.label(context, AppTheme.colors.lightGreen),
+            labelStyle: CustomTextTheme.label(context,
+                textColor: AppTheme.colors.lightGreen),
           ),
         );
       },
@@ -131,8 +129,8 @@ class _PasswordInput extends StatelessWidget {
             labelText: 'Password',
             helperText: '',
             errorText: state.password.invalid ? 'Invalid password' : null,
-            labelStyle:
-                CustomTextTheme.label(context, AppTheme.colors.lightGreen),
+            labelStyle: CustomTextTheme.label(context,
+                textColor: AppTheme.colors.lightGreen),
           ),
         );
       },
@@ -168,8 +166,8 @@ class _ConfirmPasswordInput extends StatelessWidget {
             errorText: state.confirmedPassword.invalid
                 ? 'Passwords do not match'
                 : null,
-            labelStyle:
-                CustomTextTheme.label(context, AppTheme.colors.lightGreen),
+            labelStyle: CustomTextTheme.label(context,
+                textColor: AppTheme.colors.lightGreen),
           ),
         );
       },
@@ -201,7 +199,7 @@ class _SignUpButton extends StatelessWidget {
                     : null,
                 child: Text(
                   'Let me in',
-                  style: CustomTextTheme.label(context, AppTheme.colors.green),
+                  style: CustomTextTheme.label(context),
                 ),
               );
       },
@@ -217,11 +215,11 @@ class _SignInButton extends StatelessWidget {
         key: const Key('loginForm_createAccount_flatButton'),
         text: TextSpan(
           text: "Already have an account? ",
-          style: CustomTextTheme.label(context, Colors.grey),
+          style: CustomTextTheme.label(context, textColor: Colors.grey),
           children: [
             TextSpan(
               text: "Sign in",
-              style: CustomTextTheme.label(context, theme.primaryColor),
+              style: CustomTextTheme.label(context),
               recognizer: new TapGestureRecognizer()
                 ..onTap =
                     () => Navigator.of(context).push<void>(LoginPage.route()),
