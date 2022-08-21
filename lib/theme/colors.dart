@@ -13,6 +13,7 @@ class AppColors {
   final solidGrey = const Color(0xFF5A5A5A);
   final lightBlack = const Color(0xFF5F5B5B);
   final lightGreen = const Color(0xFF17424C);
+  final lightGrey = const Color(0xFFDEDEDE);
   final superLightGreen = const Color(0xFF5B7B81);
   final red = const Color(0xFFEA544C);
   final mediumGrey = const Color(0xFFF4F3F4);
