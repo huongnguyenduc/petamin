@@ -17,4 +17,8 @@ class PetAddCubit extends Cubit<PetAddState> {
       emit(state.copyWith(currentStep: state.currentStep - 1));
     }
   }
+
+  void selectSpecies(Species species) {
+    emit(state.copyWith(species: species));
+  }
 }

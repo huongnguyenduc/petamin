@@ -195,10 +195,15 @@ class UserInfo extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              user.name!,
-              style: CustomTextTheme.label(context),
-            ),
+            user.name == null
+                ? Text(
+                    "unknown",
+                    style: CustomTextTheme.label(context),
+                  )
+                : Text(
+                    user.name!,
+                    style: CustomTextTheme.label(context),
+                  ),
             SizedBox(
               height: 8,
             ),

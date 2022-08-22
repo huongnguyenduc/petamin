@@ -16,18 +16,20 @@ class CustomTextTheme {
         fontWeight: FontWeight.w500);
   }
 
-  static TextStyle heading3(BuildContext context, {Color? textColor}) {
-    return Theme.of(context)
-        .textTheme
-        .headline3!
-        .copyWith(color: textColor ?? AppTheme.colors.green, fontSize: 24);
+  static TextStyle heading3(BuildContext context,
+      {Color? textColor, FontWeight? fontWeight}) {
+    return Theme.of(context).textTheme.headline3!.copyWith(
+        color: textColor ?? AppTheme.colors.green,
+        fontSize: 24,
+        fontWeight: fontWeight ?? FontWeight.w600);
   }
 
-  static TextStyle heading4(BuildContext context, {Color? textColor}) {
-    return Theme.of(context)
-        .textTheme
-        .headline4!
-        .copyWith(color: textColor ?? AppTheme.colors.green, fontSize: 20);
+  static TextStyle heading4(BuildContext context,
+      {Color? textColor, FontWeight? fontWeight}) {
+    return Theme.of(context).textTheme.headline4!.copyWith(
+        color: textColor ?? AppTheme.colors.green,
+        fontSize: 20,
+        fontWeight: fontWeight ?? FontWeight.w600);
   }
 
   static TextStyle subtitle(BuildContext context, {Color? textColor}) {
