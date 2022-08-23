@@ -21,4 +21,12 @@ class PetAddCubit extends Cubit<PetAddState> {
   void selectSpecies(Species species) {
     emit(state.copyWith(species: species));
   }
+
+  void selectGender(Gender gender) {
+    emit(state.copyWith(gender: gender));
+  }
+
+  void selectNeuter(Neutered neutered) {
+    emit(state.copyWith(neutered: neutered));
+  }
 }

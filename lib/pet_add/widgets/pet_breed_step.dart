@@ -57,7 +57,7 @@ class PetBreed extends StatelessWidget {
                       minimumSize: const Size.fromHeight(40),
                       primary: AppTheme.colors.pink,
                       onSurface: AppTheme.colors.pink),
-                  onPressed: () => context.read<PetAddCubit>().previousStep(),
+                  onPressed: () => context.read<PetAddCubit>().nextStep(),
                   child: Text('Next to Gender',
                       style: CustomTextTheme.label(context)),
                 )

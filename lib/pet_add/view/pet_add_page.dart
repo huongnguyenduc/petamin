@@ -117,6 +117,10 @@ Widget _renderPetAddStep(int currentStep) {
       return PetBreed(
         key: Key("breed_petAdd"),
       );
+    case 4:
+      return PetGender(key: Key("gender_petAdd"));
+    case 5:
+      return PetNeuter(key: Key("neuter_petAdd"));
     default:
       return PetName(
         key: Key("name_petAdd"),
