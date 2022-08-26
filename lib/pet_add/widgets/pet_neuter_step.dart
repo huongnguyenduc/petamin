@@ -66,7 +66,7 @@ class PetNeuter extends StatelessWidget {
                             context
                                 .read<PetAddCubit>()
                                 .selectNeuter(Neutered.unknown);
-                            context.read<PetAddCubit>().previousStep();
+                            context.read<PetAddCubit>().nextStep();
                           },
                           child: Text(
                             "I don't know",
@@ -87,7 +87,7 @@ class PetNeuter extends StatelessWidget {
                       minimumSize: const Size.fromHeight(40),
                       primary: AppTheme.colors.pink,
                       onSurface: AppTheme.colors.pink),
-                  onPressed: () => context.read<PetAddCubit>().previousStep(),
+                  onPressed: () => context.read<PetAddCubit>().nextStep(),
                   child: Text('Next to Age',
                       style: CustomTextTheme.label(context)),
                 )

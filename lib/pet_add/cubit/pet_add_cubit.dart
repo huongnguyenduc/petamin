@@ -29,4 +29,12 @@ class PetAddCubit extends Cubit<PetAddState> {
   void selectNeuter(Neutered neutered) {
     emit(state.copyWith(neutered: neutered));
   }
+
+  void selectYear(int year) {
+    emit(state.copyWith(year: year));
+  }
+
+  void selectMonth(int month) {
+    emit(state.copyWith(month: month));
+  }
 }
