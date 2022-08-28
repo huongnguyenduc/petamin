@@ -58,7 +58,7 @@ class PetAge extends StatelessWidget {
                                 onPageChanged: (index, reason) => context
                                     .read<PetAddCubit>()
                                     .selectYear(index),
-                                end: 20,
+                                end: 30,
                                 height: 72.0,
                               );
                             },
@@ -87,7 +87,7 @@ class PetAge extends StatelessWidget {
                                 onPageChanged: (index, reason) => context
                                     .read<PetAddCubit>()
                                     .selectMonth(index),
-                                end: 20,
+                                end: 11,
                                 height: 72.0,
                               );
                             },
@@ -107,7 +107,7 @@ class PetAge extends StatelessWidget {
                       minimumSize: const Size.fromHeight(40),
                       primary: AppTheme.colors.pink,
                       onSurface: AppTheme.colors.pink),
-                  onPressed: () => context.read<PetAddCubit>().previousStep(),
+                  onPressed: () => context.read<PetAddCubit>().nextStep(),
                   child: Text('Next to Image',
                       style: CustomTextTheme.label(context)),
                 )

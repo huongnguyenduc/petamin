@@ -38,6 +38,8 @@ class PetName extends StatelessWidget {
                   alignment: const Alignment(0, -1 / 1.5),
                   child: TextField(
                     key: const Key('addPetForm_nameInput_textField'),
+                    onChanged: (name) =>
+                        context.read<PetAddCubit>().nameChanged(name),
                     style: CustomTextTheme.heading2(context),
                     decoration: InputDecoration(
                         focusedBorder: InputBorder.none,

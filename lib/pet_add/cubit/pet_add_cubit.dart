@@ -18,6 +18,14 @@ class PetAddCubit extends Cubit<PetAddState> {
     }
   }
 
+  void nameChanged(String name) {
+    emit(state.copyWith(name: name));
+  }
+
+  void breedChanged(String breed) {
+    emit(state.copyWith(breed: breed));
+  }
+
   void selectSpecies(Species species) {
     emit(state.copyWith(species: species));
   }
@@ -36,5 +44,17 @@ class PetAddCubit extends Cubit<PetAddState> {
 
   void selectMonth(int month) {
     emit(state.copyWith(month: month));
+  }
+
+  void descriptionChanged(String description) {
+    emit(state.copyWith(description: description));
+  }
+
+  void selectIntegralWeight(int integralWeight) {
+    emit(state.copyWith(integralWeight: integralWeight));
+  }
+
+  void selectFractionalWeight(int fractionalWeight) {
+    emit(state.copyWith(fractionalWeight: fractionalWeight));
   }
 }
