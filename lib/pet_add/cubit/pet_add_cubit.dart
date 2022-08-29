@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:image_picker/image_picker.dart';
 
 part 'pet_add_state.dart';
 
@@ -56,5 +59,13 @@ class PetAddCubit extends Cubit<PetAddState> {
 
   void selectFractionalWeight(int fractionalWeight) {
     emit(state.copyWith(fractionalWeight: fractionalWeight));
+  }
+
+  void selectPetImage(ImageSource imageSource) async {
+    XFile? pickedFile = await ImagePicker().pickImage(source: imageSource);
+    if (pickedFile != null) {
+      emit(state.copyWith(
+          imageFile: File(pickedFile.path), imageName: pickedFile.name));
+    }
   }
 }

@@ -138,7 +138,7 @@ class NumberSelectSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final numberRange = Iterable<int>.generate(end).toList();
+    final numberRange = Iterable<int>.generate(end + 1).toList();
     return Stack(
       children: [
         Center(

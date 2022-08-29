@@ -18,7 +18,9 @@ class PetAddState extends Equatable {
       this.month = 0,
       this.description = "",
       this.integralWeight = 0,
-      this.fractionalWeight = 0});
+      this.fractionalWeight = 0,
+      this.imageFile,
+      this.imageName = ""});
 
   final String name;
   final String breed;
@@ -31,6 +33,8 @@ class PetAddState extends Equatable {
   final String description;
   final int integralWeight;
   final int fractionalWeight;
+  final File? imageFile;
+  final String imageName;
 
   @override
   List<Object> get props => [
@@ -44,22 +48,24 @@ class PetAddState extends Equatable {
         month,
         description,
         integralWeight,
-        fractionalWeight
+        fractionalWeight,
+        imageName
       ];
 
-  PetAddState copyWith({
-    String? name,
-    String? breed,
-    int? currentStep,
-    Species? species,
-    Gender? gender,
-    Neutered? neutered,
-    int? year,
-    int? month,
-    String? description,
-    int? integralWeight,
-    int? fractionalWeight,
-  }) {
+  PetAddState copyWith(
+      {String? name,
+      String? breed,
+      int? currentStep,
+      Species? species,
+      Gender? gender,
+      Neutered? neutered,
+      int? year,
+      int? month,
+      String? description,
+      int? integralWeight,
+      int? fractionalWeight,
+      File? imageFile,
+      String? imageName}) {
     return PetAddState(
         name: name ?? this.name,
         breed: breed ?? this.breed,
@@ -71,6 +77,8 @@ class PetAddState extends Equatable {
         month: month ?? this.month,
         description: description ?? this.description,
         integralWeight: integralWeight ?? this.integralWeight,
-        fractionalWeight: fractionalWeight ?? this.fractionalWeight);
+        fractionalWeight: fractionalWeight ?? this.fractionalWeight,
+        imageFile: imageFile ?? this.imageFile,
+        imageName: imageName ?? this.imageName);
   }
 }

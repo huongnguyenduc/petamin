@@ -3,6 +3,7 @@ import 'package:Petamin/theme/theme.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 
 class PetImage extends StatelessWidget {
   const PetImage({
@@ -53,17 +54,40 @@ class PetImage extends StatelessWidget {
                             Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Container(
-                                  height: 130.0,
-                                  width: 130.0,
-                                  decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: AppTheme.colors.lightPink),
-                                  child: Icon(
-                                    Icons.camera_alt,
-                                    color: AppTheme.colors.pink,
-                                    size: 28.0,
-                                  ),
+                                BlocBuilder<PetAddCubit, PetAddState>(
+                                  buildWhen: (previous, current) =>
+                                      previous.imageName != current.imageName,
+                                  builder: (context, state) {
+                                    if (state.imageFile == null)
+                                      return GestureDetector(
+                                        onTap: () => context
+                                            .read<PetAddCubit>()
+                                            .selectPetImage(
+                                                ImageSource.gallery),
+                                        child: Container(
+                                          height: 130.0,
+                                          width: 130.0,
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: AppTheme.colors.lightPink),
+                                          child: Icon(
+                                            Icons.camera_alt,
+                                            color: AppTheme.colors.pink,
+                                            size: 28.0,
+                                          ),
+                                        ),
+                                      );
+                                    return Container(
+                                      height: 130.0,
+                                      width: 130.0,
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          image: DecorationImage(
+                                              image:
+                                                  FileImage(state.imageFile!),
+                                              fit: BoxFit.cover)),
+                                    );
+                                  },
                                 ),
                                 SizedBox(
                                   height: 16.0,
