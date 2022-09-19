@@ -21,7 +21,7 @@ class CustomTextTheme {
     return Theme.of(context).textTheme.headline3!.copyWith(
         color: textColor ?? AppTheme.colors.green,
         fontSize: 24,
-        fontWeight: fontWeight ?? FontWeight.w600);
+        fontWeight: fontWeight ?? FontWeight.w500);
   }
 
   static TextStyle heading4(BuildContext context,
@@ -53,29 +53,19 @@ class CustomTextTheme {
         .copyWith(color: textColor ?? AppTheme.colors.green, fontSize: 20);
   }
 
-  static TextStyle body2(BuildContext context, {Color? textColor}) {
-    return Theme.of(context)
-        .textTheme
-        .bodyText2!
-        .copyWith(color: textColor ?? AppTheme.colors.green, fontSize: 16);
+  static TextStyle body2(BuildContext context,
+      {Color? textColor, FontWeight? fontWeight}) {
+    return Theme.of(context).textTheme.bodyText2!.copyWith(
+        color: textColor ?? AppTheme.colors.green,
+        fontSize: 16,
+        fontWeight: fontWeight ?? FontWeight.normal);
   }
 
   static TextStyle caption(BuildContext context,
-      {Color? textColor, FontWeight? fontWeight}) {
+      {Color? textColor, FontWeight? fontWeight, double? fontSize}) {
     return Theme.of(context).textTheme.caption!.copyWith(
         color: textColor ?? AppTheme.colors.green,
-        fontSize: 13,
+        fontSize: fontSize ?? 13,
         fontWeight: fontWeight ?? FontWeight.normal);
   }
 }
-
-// textTheme: TextTheme(
-      //     headline1: TextStyle(fontSize: 40, fontWeight: FontWeight.w500),
-      //     headline2: TextStyle(fontSize: 32, fontWeight: FontWeight.w500),
-      //     headline3: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
-      //     headline4: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-      //     subtitle1: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-      //     labelMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-      //     bodyText1: TextStyle(fontSize: 20),
-      //     bodyText2: TextStyle(fontSize: 16),
-      //     caption: TextStyle(fontSize: 13))
