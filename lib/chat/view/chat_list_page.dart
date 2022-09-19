@@ -156,14 +156,17 @@ class ChatCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _listChat[0].name,
-                      style: CustomTextTheme.heading4(context),
+                      chat.name,
+                      style: CustomTextTheme.heading4(
+                        context,
+                        textColor: AppTheme.colors.black,
+                      ),
                     ),
                     SizedBox(
                       height: 5.0,
                     ),
                     Text(
-                      _listChat[0].text,
+                      chat.text,
                       style: CustomTextTheme.label(context,
                           textColor: AppTheme.colors.solidGrey),
                     ),
@@ -171,12 +174,10 @@ class ChatCard extends StatelessWidget {
                 ),
               ),
             ),
-            Opacity(
-              opacity: 0.5,
-              child: Text(
-                _listChat[0].time,
-                style: CustomTextTheme.caption(context),
-              ),
+            Text(
+              chat.time,
+              style: CustomTextTheme.caption(context,
+                  textColor: AppTheme.colors.grey),
             ),
           ],
         ),

@@ -1,11 +1,27 @@
+import 'package:Petamin/chat/cubit/chat_detail_cubit.dart';
 import 'package:Petamin/chat/view/chat_input_field.dart';
 import 'package:Petamin/theme/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'chat_model.dart';
+// import 'chat_model.dart';
 
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => ChatDetailCubit(),
+      child: ChatDetailPage(),
+    );
+  }
+}
+
+class ChatDetailPage extends StatelessWidget {
+  const ChatDetailPage({
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,36 +35,72 @@ class ChatPage extends StatelessWidget {
             centerTitle: true,
             elevation: 0,
             actions: [IconButton(onPressed: () {}, icon: Icon(Icons.call))],
+            title: Text(
+              "Peter Thornton",
+              style: CustomTextTheme.heading4(context,
+                  textColor: AppTheme.colors.white),
+            ),
           ),
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20.0),
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(18.0),
-                      topRight: Radius.circular(18.0))),
-              child: ListView.builder(
-                  itemCount: demoChatMessage.length,
-                  itemBuilder: (context, index) {
-                    switch (demoChatMessage[index].messageType) {
-                      case ChatMessageType.text:
-                        return TextMessage(chatMessage: demoChatMessage[index]);
-                      case ChatMessageType.image:
-                        return ImageMessage(
-                            chatMessage: demoChatMessage[index]);
-                      default:
-                        return Container();
-                    }
-                  }),
+      body: Container(
+        padding: EdgeInsets.symmetric(horizontal: 20.0),
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(18.0),
+                topRight: Radius.circular(18.0))),
+        child: Column(
+          children: [
+            Expanded(
+              child: BlocBuilder<ChatDetailCubit, ChatDetailState>(
+                buildWhen: (previous, current) =>
+                    previous.messages != current.messages,
+                builder: (context, state) {
+                  return ListView.builder(
+                      itemCount: state.messages.length,
+                      itemBuilder: (context, index) {
+                        switch (state.messages[index].messageType) {
+                          case ChatMessageType.text:
+                            return TextMessage(
+                                chatMessage: state.messages[index]);
+                          case ChatMessageType.image:
+                            return ImageMessage(
+                                chatMessage: state.messages[index]);
+                          default:
+                            return Container();
+                        }
+                      });
+                },
+              ),
             ),
-          ),
-          ChatInputField(),
-        ],
+            SizedBox(
+              height: 8.0,
+            ),
+            Row(
+              children: [
+                Expanded(child: ChatInputField()),
+                SizedBox(
+                  width: 20.0,
+                ),
+                Container(
+                  height: 44.0,
+                  width: 44.0,
+                  decoration: BoxDecoration(
+                      color: AppTheme.colors.superLightPurple,
+                      borderRadius: BorderRadius.circular(10.0)),
+                  child: Icon(
+                    Icons.add,
+                    color: AppTheme.colors.pink,
+                  ),
+                )
+              ],
+            ),
+            SizedBox(
+              height: 28.0,
+            )
+          ],
+        ),
       ),
     );
   }

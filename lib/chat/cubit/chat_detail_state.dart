@@ -1,3 +1,24 @@
+part of 'chat_detail_cubit.dart';
+
+class ChatDetailState extends Equatable {
+  const ChatDetailState(
+      {this.messages = demoChatMessage, this.chatMessage = ""});
+  final List<ChatMessage> messages;
+  final String chatMessage;
+  @override
+  List<Object> get props => [messages, chatMessage];
+
+  ChatDetailState copyWith({
+    List<ChatMessage>? messages,
+    String? chatMessage,
+  }) {
+    return ChatDetailState(
+      messages: messages ?? this.messages,
+      chatMessage: chatMessage ?? this.chatMessage,
+    );
+  }
+}
+
 enum ChatMessageType { text, image, transfer }
 
 enum MessageStatus { not_sent, not_view, viewed }
@@ -9,7 +30,7 @@ class ChatMessage {
   final bool isSender;
   final String time;
 
-  ChatMessage({
+  const ChatMessage({
     this.data = '',
     required this.messageType,
     required this.messageStatus,
@@ -18,7 +39,7 @@ class ChatMessage {
   });
 }
 
-List demoChatMessage = [
+const List<ChatMessage> demoChatMessage = <ChatMessage>[
   ChatMessage(
     data: "Hey man!\nI am comming...10 min",
     messageType: ChatMessageType.text,
