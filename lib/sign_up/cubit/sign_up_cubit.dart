@@ -1,9 +1,11 @@
+import 'package:Petamin/shared/network/cache_helper.dart';
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 part 'sign_up_state.dart';
 
 class SignUpCubit extends Cubit<SignUpState> {
@@ -65,10 +67,13 @@ class SignUpCubit extends Cubit<SignUpState> {
     if (!state.status.isValidated) return;
     emit(state.copyWith(status: FormzStatus.submissionInProgress));
     try {
-      await _authenticationRepository.signUp(
+        UserCredential user = await _authenticationRepository.signUp(
         email: state.email.value,
         password: state.password.value,
       );
+      CacheHelper.saveData(key: 'uId', value: user.user!.uid);
+      debugPrint('email: ${user.user!.email}');
+      debugPrint('uId: ${user.user!.uid}');
       emit(state.copyWith(status: FormzStatus.submissionSuccess));
     } on SignUpWithEmailAndPasswordFailure catch (e) {
       emit(
