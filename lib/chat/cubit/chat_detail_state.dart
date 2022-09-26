@@ -19,6 +19,32 @@ class ChatDetailState extends Equatable {
   }
 }
 
+class LoadingFireVideoCallState extends ChatDetailState {}
+class SuccessFireVideoCallState extends ChatDetailState {
+  final CallModel callModel;
+
+  SuccessFireVideoCallState({required this.callModel});
+}
+class ErrorFireVideoCallState extends ChatDetailState {
+  final String message;
+  ErrorFireVideoCallState(this.message);
+}
+
+class ErrorPostCallToFirestoreState extends ChatDetailState {
+  final String message;
+  ErrorPostCallToFirestoreState(this.message);
+}
+
+class ErrorUpdateUserBusyStatus extends ChatDetailState {
+  final String message;
+  ErrorUpdateUserBusyStatus(this.message);
+}
+
+class ErrorSendNotification extends ChatDetailState {
+  final String message;
+  ErrorSendNotification(this.message);
+}
+
 enum ChatMessageType { text, image, transfer }
 
 enum MessageStatus { not_sent, not_view, viewed }

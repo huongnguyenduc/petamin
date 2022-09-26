@@ -24,7 +24,8 @@ class CallModel {
       this.receiverName,
       this.receiverAvatar,
       this.status,
-      this.createAt,this.current});
+      this.createAt,
+      this.current});
 
   CallModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -54,6 +55,7 @@ class CallModel {
     createAt = 1;
     current = true;
   }
+  
   Map<String, dynamic> toMap() {
     return {
       'id': id,

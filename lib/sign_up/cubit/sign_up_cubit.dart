@@ -1,3 +1,5 @@
+import 'package:Petamin/data/api/auth_api.dart';
+import 'package:Petamin/data/models/user_model.dart';
 import 'package:Petamin/shared/network/cache_helper.dart';
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:bloc/bloc.dart';
@@ -12,7 +14,7 @@ class SignUpCubit extends Cubit<SignUpState> {
   SignUpCubit(this._authenticationRepository) : super(const SignUpState());
 
   final AuthenticationRepository _authenticationRepository;
-
+  final _authApi = AuthApi();
   void emailChanged(String value) {
     final email = Email.dirty(value);
     emit(
@@ -63,17 +65,32 @@ class SignUpCubit extends Cubit<SignUpState> {
     );
   }
 
+  void createUser(
+      {required String name, required String email, required String uId}) {
+    UserModel user = UserModel.resister(
+        name: name,
+        id: uId,
+        email: email,
+        avatar: 'https://i.pravatar.cc/300',
+        busy: false);
+    _authApi.createUser(user: user).then((value) {}).catchError((onError) {});
+  }
+
   Future<void> signUpFormSubmitted() async {
     if (!state.status.isValidated) return;
     emit(state.copyWith(status: FormzStatus.submissionInProgress));
     try {
-        UserCredential user = await _authenticationRepository.signUp(
+      _authenticationRepository
+          .signUp(
         email: state.email.value,
         password: state.password.value,
-      );
-      CacheHelper.saveData(key: 'uId', value: user.user!.uid);
-      debugPrint('email: ${user.user!.email}');
-      debugPrint('uId: ${user.user!.uid}');
+      ).then((value) {
+        createUser(
+            name: state.email.value,
+            email: state.email.value,
+            uId: value.user!.uid);
+      });
+
       emit(state.copyWith(status: FormzStatus.submissionSuccess));
     } on SignUpWithEmailAndPasswordFailure catch (e) {
       emit(

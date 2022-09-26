@@ -89,13 +89,13 @@ class FirebaseNotifications{
 
 
   static AndroidNotificationDetails callChannel = const AndroidNotificationDetails(
-      'com.agora.videocall.youtube', 'call_channel',
+      'com.agora.videocall.petamin', 'call_channel',
       autoCancel: false,
       ongoing: true,
       importance: Importance.max,
       priority: Priority.max);
   static AndroidNotificationDetails normalChannel = const AndroidNotificationDetails(
-      'com.agora.videocall.youtube', 'normal_channel',
+      'com.agora.videocall.petamin', 'normal_channel',
       autoCancel: true,
       ongoing: false,
       importance: Importance.low,
@@ -111,7 +111,7 @@ class FirebaseNotifications{
      var platform = NotificationDetails(
          android: callChannel,iOS: ios);
      await NotificationHandler.flutterLocalNotificationPlugin
-         .show(notificationId, '📞Ringing...', '${CallModel.fromJson(bodyJson).callerName} is calling you', platform,payload: body);
+         .show(notificationId, 'Ringing...', '${CallModel.fromJson(bodyJson).callerName} is calling you', platform,payload: body);
      await Future.delayed(const Duration(seconds: callDurationInSec), () {
        NotificationHandler.flutterLocalNotificationPlugin.cancel(notificationId).then((value) {
          showMissedCallNotification(senderName: bodyJson['sender']['full_name']);
@@ -134,7 +134,7 @@ class FirebaseNotifications{
     var platform = NotificationDetails(
         android: normalChannel,iOS: ios);
     await NotificationHandler.flutterLocalNotificationPlugin
-        .show(notificationId, '📞Missed Call', 'You have missed call from $senderName', platform,payload: 'missedCall');
+        .show(notificationId, 'Missed Call', 'You have missed call from $senderName', platform,payload: 'missedCall');
 
   }
 

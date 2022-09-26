@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:Petamin/homeRoot/cubit/home_root_cubit.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -80,29 +81,29 @@ class CallCubit extends Cubit<CallState> {
       debugPrint("Error while playing sound.");
     }
     if(isCaller){
-      startCountdownCallTimer();
+      //startCountdownCallTimer();
     }
   }
 
   int current = 0;
-  late CountdownTimer countDownTimer;
-  void startCountdownCallTimer() {
-    countDownTimer = CountdownTimer(
-      const Duration(seconds: callDurationInSec),
-      const Duration(seconds: 1),
-    );
-    var sub = countDownTimer.listen(null);
-    sub.onData((duration) {
-      current = callDurationInSec - duration.elapsed.inSeconds;
-      debugPrint("DownCount: $current");
-    });
+  //late CountdownTimer countDownTimer;
+  // void startCountdownCallTimer() {
+  //   countDownTimer = CountdownTimer(
+  //     const Duration(seconds: callDurationInSec),
+  //     const Duration(seconds: 1),
+  //   );
+  //   var sub = countDownTimer.listen(null);
+  //   sub.onData((duration) {
+  //     current = callDurationInSec - duration.elapsed.inSeconds;
+  //     debugPrint("DownCount: $current");
+  //   });
 
-    sub.onDone(() {
-      debugPrint("CallTimeDone");
-      sub.cancel();
-      emit(DownCountCallTimerFinishState());
-    });
-  }
+  //   sub.onDone(() {
+  //     debugPrint("CallTimeDone");
+  //     sub.cancel();
+  //     emit(DownCountCallTimerFinishState());
+  //   });
+  // }
 
   bool muted = false;
   Widget muteIcon = const Icon(Icons.keyboard_voice_rounded,color: Colors.black,);
@@ -160,7 +161,7 @@ class CallCubit extends Cubit<CallState> {
 
   StreamSubscription? callStatusStreamSubscription;
   void listenToCallStatus({required CallModel callModel,required BuildContext context,required bool isReceiver}){
-   var _homeCubit = HomeCubit.get(context);
+   var _homeCubit = HomeRootCubit.get(context);
    callStatusStreamSubscription = _callApi.listenToCallStatus(callId: callModel.id);
    callStatusStreamSubscription!.onData((data) {
       if(data.exists){
@@ -191,6 +192,7 @@ class CallCubit extends Cubit<CallState> {
         if(status == CallStatus.end.name){
           _homeCubit.currentCallStatus = CallStatus.end;
           debugPrint('endStatus');
+          remoteUid = null;
           callStatusStreamSubscription!.cancel();
           emit(CallEndState());
         }

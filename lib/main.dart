@@ -23,13 +23,18 @@ Future<void> main() async {
   FirebaseMessaging.onBackgroundMessage(_backgroundHandler);
   runApp(App(authenticationRepository: authenticationRepository));
 }
+
 Future<void> _backgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   await CacheHelper.init();
-  if (message.data['type'] == 'call'){
+  if (message.data['type'] == 'call') {
     Map<String, dynamic> bodyMap = jsonDecode(message.data['body']);
-    await CacheHelper.saveData(key: 'terminateIncomingCallData',value: jsonEncode(bodyMap));
+    await CacheHelper.saveData(
+        key: 'terminateIncomingCallData', value: jsonEncode(bodyMap));
   }
-  FirebaseNotifications.showNotification(title: message.data['title'],body: message.data['body'],type: message.data['type']);
-
+  debugPrint('gettttttttttttttt noooooooooooooooooo');
+  FirebaseNotifications.showNotification(
+      title: message.data['title'],
+      body: message.data['body'],
+      type: message.data['type']);
 }

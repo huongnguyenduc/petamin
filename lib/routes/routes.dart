@@ -1,6 +1,6 @@
+import 'package:Petamin/homeRoot/view/homeroot.dart';
 import 'package:flutter/widgets.dart';
 import 'package:Petamin/app/app.dart';
-import 'package:Petamin/home/home.dart';
 import 'package:Petamin/login/login.dart';
 
 List<Page<dynamic>> onGenerateAppViewPages(
@@ -9,7 +9,7 @@ List<Page<dynamic>> onGenerateAppViewPages(
 ) {
   switch (state) {
     case AppStatus.authenticated:
-      return [HomePage.page()];
+      return [HomeRootScreen.page()];
     case AppStatus.unauthenticated:
       return [LoginPage.page()];
   }

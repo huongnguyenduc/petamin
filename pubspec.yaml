@@ -49,6 +49,7 @@ flutter:
     - assets/logo/
     - assets/icons/
     - assets/images/
+    - assets/sounds/
   fonts:
     - family: ApercuPro
       fonts:

@@ -1,3 +1,6 @@
+import 'package:Petamin/call/cubit/call_cubit.dart';
+import 'package:Petamin/home/cubit/home_cubit.dart';
+import 'package:Petamin/homeRoot/cubit/home_root_cubit.dart';
 import 'package:Petamin/routes/routes.dart';
 import 'package:Petamin/theme/app_theme.dart';
 import 'package:authentication_repository/authentication_repository.dart';
@@ -16,15 +19,25 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+     //final user = context.select((AppBloc bloc) => bloc.state.user);
     return RepositoryProvider.value(
       value: _authenticationRepository,
-      child: BlocProvider(
-        create: (_) => AppBloc(
-          authenticationRepository: _authenticationRepository,
-        ),
-        child: const AppView(),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider( 
+           create: (_) => AppBloc( authenticationRepository: _authenticationRepository,)
+          ),
+          BlocProvider(
+          create: (_) => HomeRootCubit()..initFcm(context),
+          ),
+          BlocProvider(
+          create: (_) => HomeCubit(),
+          ),
+          BlocProvider(create: (_) => CallCubit()),
+        ],
+         child: const AppView(),
       ),
-    );
+      );
   }
 }
 
