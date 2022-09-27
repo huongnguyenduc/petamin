@@ -1,4 +1,5 @@
 import 'package:Petamin/app/bloc/app_bloc.dart';
+import 'package:Petamin/profile-info/profile-info.dart';
 import 'package:Petamin/profile/widgets/widgets.dart';
 import 'package:Petamin/theme/app_theme.dart';
 import 'package:Petamin/theme/text_styles.dart';
@@ -43,7 +44,12 @@ class ProfilePage extends StatelessWidget {
                 SizedBox(
                   height: 16,
                 ),
-                ProfileItem(title: "Edit Profile"),
+                ProfileItem(
+                  title: "Edit Profile",
+                  onTap: () => Navigator.of(context, rootNavigator: true).push(
+                      new MaterialPageRoute(
+                          builder: (context) => new ProfileInfoPage())),
+                ),
                 SizedBox(
                   height: 8,
                 ),
