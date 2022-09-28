@@ -15,7 +15,7 @@ const testScreen = '/testScreen';
 //Agora
 const agoraAppId = '192a26c66db7459284748c71ad2d3570'; //replace with your agora app id
 const agoraTestChannelName = 'testt'; //replace with your agora channel name
-const agoraTestToken = '007eJxTYNimwdv2YNLaS/+N9m+2nfjd9zQv+6mnS7sMKv9vnb9Y+YiRAoOhpVGikVmymVlKkrmJqaWRhYm5iUWyuWFiilGKsam5wSsFw+TMIqPkp3+bWBgZIBDEZ2UoSS0uKWFgAAAQXSL5'; //replace with your agora token
+const agoraTestToken = '007eJxTYOjwfR3y2L70wVWLtv02WctD8vzYN9r9thCQK8xyZnHbZ6jAYGhplGhklmxmlpJkbmJqaWRhYm5ikWxumJhilGJsam6QecI4+YWkafKOgw4MjFAI4rMwlKQWlzAwAADWtB6s'; //replace with your agora token
 
 //EndPoints -- this is for generating call token programmatically for each call
 const cloudFunctionBaseUrl = '/'; //replace with your clouded api base url
