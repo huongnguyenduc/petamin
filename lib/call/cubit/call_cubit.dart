@@ -25,23 +25,27 @@ class CallCubit extends Cubit<CallState> {
 
   static CallCubit get(context) => BlocProvider.of(context);
 
-
   //Agora video room
 
   int? remoteUid;
   RtcEngine? engine;
 
-
-  Future<void> initAgoraAndJoinChannel({required String channelToken,required String channelName,required bool isCaller}) async {
+  Future<void> initAgoraAndJoinChannel(
+      {required String channelToken,
+      required String channelName,
+      required bool isCaller}) async {
     //create the engine
     engine = await RtcEngine.create(agoraAppId);
     await engine!.enableVideo();
+    VideoEncoderConfiguration configuration = VideoEncoderConfiguration();
+    configuration.dimensions = VideoDimensions(width: 1920, height: 1080);
+    await engine!.setVideoEncoderConfiguration(configuration);
     engine!.setEventHandler(
       RtcEngineEventHandler(
-        joinChannelSuccess: (String channel, int uid, int elapsed) {
+        joinChannelSuccess: (channel,  uid, elapsed) {
           debugPrint("local user $uid joined");
         },
-        userJoined: (int uid, int elapsed) {
+        userJoined: (uid, elapsed) {
           debugPrint("remote user $uid joined");
           remoteUid = uid;
           emit(AgoraRemoteUserJoinedEvent());
@@ -51,16 +55,19 @@ class CallCubit extends Cubit<CallState> {
           remoteUid = null;
           emit(AgoraUserLeftEvent());
         },
-
+        leaveChannel: (stats) {
+          debugPrint("Leave: $stats");
+          remoteUid = null;
+        }
       ),
     );
 
     //join channel
     await engine!.joinChannel(agoraTestToken, agoraTestChannelName, null, 0);
-    if(isCaller){
+    if (isCaller) {
       emit(AgoraInitForSenderSuccessState());
       playContactingRing(isCaller: true);
-    }else{
+    } else {
       emit(AgoraInitForReceiverSuccessState());
     }
 
@@ -73,14 +80,16 @@ class CallCubit extends Cubit<CallState> {
   Future<void> playContactingRing({required bool isCaller}) async {
     String audioAsset = "assets/sounds/ringlong.mp3";
     ByteData bytes = await rootBundle.load(audioAsset);
-    Uint8List  soundBytes = bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes);
+    Uint8List soundBytes =
+        bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes);
     int result = await assetsAudioPlayer.playBytes(soundBytes);
-    if(result == 1){ //play success
+    if (result == 1) {
+      //play success
       debugPrint("Sound playing successful.");
-    }else{
+    } else {
       debugPrint("Error while playing sound.");
     }
-    if(isCaller){
+    if (isCaller) {
       //startCountdownCallTimer();
     }
   }
@@ -106,13 +115,22 @@ class CallCubit extends Cubit<CallState> {
   // }
 
   bool muted = false;
-  Widget muteIcon = const Icon(Icons.keyboard_voice_rounded,color: Colors.black,);
+  Widget muteIcon = const Icon(
+    Icons.keyboard_voice_rounded,
+    color: Colors.black,
+  );
 
   Future<void> toggleMuted() async {
     muted = !muted;
     muteIcon = muted
-        ? const Icon(Icons.mic_off_rounded,color: Colors.black,)
-        : const Icon(Icons.keyboard_voice_rounded,color: Colors.black,);
+        ? const Icon(
+            Icons.mic_off_rounded,
+            color: Colors.black,
+          )
+        : const Icon(
+            Icons.keyboard_voice_rounded,
+            color: Colors.black,
+          );
     await engine!.muteLocalAudioStream(muted);
     emit(AgoraToggleMutedState());
   }
@@ -124,72 +142,91 @@ class CallCubit extends Cubit<CallState> {
 
   //Update Call Status
   final _callApi = CallApi();
-  void updateCallStatusToUnAnswered({required String callId}){
+  void updateCallStatusToUnAnswered({required String callId}) {
     emit(LoadingUnAnsweredVideoChatState());
-    _callApi.updateCallStatus(callId: callId, status: CallStatus.unAnswer.name).then((value) {
+    _callApi
+        .updateCallStatus(callId: callId, status: CallStatus.unAnswer.name)
+        .then((value) {
       emit(SuccessUnAnsweredVideoChatState());
-    }).catchError((onError){
+    }).catchError((onError) {
       emit(ErrorUnAnsweredVideoChatState(onError.toString()));
     });
   }
-  Future<void> updateCallStatusToCancel({required String callId})async {
-    await _callApi.updateCallStatus(callId: callId, status: CallStatus.cancel.name);
+
+  Future<void> updateCallStatusToCancel({required String callId}) async {
+    await _callApi.updateCallStatus(
+        callId: callId, status: CallStatus.cancel.name);
   }
-  Future<void> updateCallStatusToReject({required String callId})async {
-    await _callApi.updateCallStatus(callId: callId, status: CallStatus.reject.name);
+
+  Future<void> updateCallStatusToReject({required String callId}) async {
+    await _callApi.updateCallStatus(
+        callId: callId, status: CallStatus.reject.name);
   }
-  Future<void> updateCallStatusToAccept({required CallModel callModel})async {
-   await _callApi.updateCallStatus(callId: callModel.id, status: CallStatus.accept.name);
-   initAgoraAndJoinChannel(channelToken: agoraTestChannelName, channelName: agoraTestToken, isCaller: false);
+
+  Future<void> updateCallStatusToAccept({required CallModel callModel}) async {
+    await _callApi.updateCallStatus(
+        callId: callModel.id, status: CallStatus.accept.name);
+    initAgoraAndJoinChannel(
+        channelToken: agoraTestChannelName,
+        channelName: agoraTestToken,
+        isCaller: false);
   }
-  Future<void> updateCallStatusToEnd({required String callId})async {
-    await _callApi.updateCallStatus(callId: callId, status: CallStatus.end.name);
+
+  Future<void> updateCallStatusToEnd({required String callId}) async {
+    await _callApi.updateCallStatus(
+        callId: callId, status: CallStatus.end.name);
   }
 
   Future<void> endCurrentCall({required String callId}) async {
     await _callApi.endCurrentCall(callId: callId);
   }
-  Future<void> updateUserBusyStatusFirestore({required CallModel callModel}) async{
-    await _callApi.updateUserBusyStatusFirestore(callModel: callModel, busy: false);
+
+  Future<void> updateUserBusyStatusFirestore(
+      {required CallModel callModel}) async {
+    await _callApi.updateUserBusyStatusFirestore(
+        callModel: callModel, busy: false);
   }
 
-  Future<void> performEndCall({required CallModel callModel}) async{
+  Future<void> performEndCall({required CallModel callModel}) async {
     await endCurrentCall(callId: callModel.id);
     await updateUserBusyStatusFirestore(callModel: callModel);
-
   }
 
   StreamSubscription? callStatusStreamSubscription;
-  void listenToCallStatus({required CallModel callModel,required BuildContext context,required bool isReceiver}){
-   var _homeCubit = HomeRootCubit.get(context);
-   callStatusStreamSubscription = _callApi.listenToCallStatus(callId: callModel.id);
-   callStatusStreamSubscription!.onData((data) {
-      if(data.exists){
+  void listenToCallStatus(
+      {required CallModel callModel,
+      required BuildContext context,
+      required bool isReceiver}) {
+    var _homeCubit = HomeRootCubit.get(context);
+    callStatusStreamSubscription =
+        _callApi.listenToCallStatus(callId: callModel.id);
+    callStatusStreamSubscription!.onData((data) {
+      if (data.exists) {
         String status = data.data()!['status'];
-        if(status == CallStatus.accept.name) {
+        if (status == CallStatus.accept.name) {
           _homeCubit.currentCallStatus = CallStatus.accept;
           debugPrint('acceptStatus');
           emit(CallAcceptState());
         }
-        if(status == CallStatus.reject.name) {
+        if (status == CallStatus.reject.name) {
           _homeCubit.currentCallStatus = CallStatus.reject;
           debugPrint('rejectStatus');
           callStatusStreamSubscription!.cancel();
           emit(CallRejectState());
         }
-        if(status == CallStatus.unAnswer.name) {
+        if (status == CallStatus.unAnswer.name) {
           _homeCubit.currentCallStatus = CallStatus.unAnswer;
           debugPrint('unAnswerStatusHere');
           callStatusStreamSubscription!.cancel();
           emit(CallNoAnswerState());
         }
-        if(status == CallStatus.cancel.name) {
+        if (status == CallStatus.cancel.name) {
           _homeCubit.currentCallStatus = CallStatus.cancel;
           debugPrint('cancelStatus');
           callStatusStreamSubscription!.cancel();
           emit(CallCancelState());
         }
-        if(status == CallStatus.end.name){
+        if (status == CallStatus.end.name) {
           _homeCubit.currentCallStatus = CallStatus.end;
           debugPrint('endStatus');
           remoteUid = null;
@@ -200,4 +237,3 @@ class CallCubit extends Cubit<CallState> {
     });
   }
 }
-
