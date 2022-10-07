@@ -1,3 +1,4 @@
+import 'package:Petamin/pet-info/pet-info.dart';
 import 'package:Petamin/theme/theme.dart';
 import 'package:flutter/material.dart';
 
@@ -33,19 +34,11 @@ class PetDetailPage extends StatelessWidget {
                   ],
                 ),
                 bottom: PreferredSize(
-                  preferredSize: Size.fromHeight(0),
+                  preferredSize: Size.fromHeight(20.0),
                   child: Container(
-                    child: Center(
-                        child: Container(
-                      width: 60.0,
-                      height: 2.0,
-                      decoration: BoxDecoration(
-                          color: AppTheme.colors.solidGrey,
-                          borderRadius: BorderRadius.circular(2.0)),
-                    )),
                     width: double.maxFinite,
                     padding: EdgeInsets.only(
-                      top: 5.0,
+                      top: 25.0,
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -63,7 +56,7 @@ class PetDetailPage extends StatelessWidget {
                 onStretchTrigger: () async => {await 0},
                 flexibleSpace: FlexibleSpaceBar(
                   background: Image.network(
-                    "https://images.pexels.com/photos/2173872/pexels-photo-2173872.jpeg",
+                    "https://images.pexels.com/photos/2173872/pexels-photo-2173872.jpeg?auto=compress&cs=tinysrgb&w=750&h=750&dpr=1",
                     width: double.maxFinite,
                     fit: BoxFit.cover,
                   ),
@@ -72,7 +65,7 @@ class PetDetailPage extends StatelessWidget {
               ),
               SliverToBoxAdapter(
                   child: Container(
-                padding: EdgeInsets.only(top: 30.0, left: 30.0, right: 30.0),
+                padding: EdgeInsets.only(left: 30.0, right: 30.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -86,7 +79,12 @@ class PetDetailPage extends StatelessWidget {
                             textColor: AppTheme.colors.solidGrey,
                           ),
                         ),
-                        Icon(Icons.edit)
+                        GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(new MaterialPageRoute(
+                                  builder: (context) => PetInfoPage()));
+                            },
+                            child: Icon(Icons.edit))
                       ],
                     ),
                     SizedBox(
@@ -141,30 +139,34 @@ class PetDetailPage extends StatelessWidget {
                           ),
                         ],
                       ),
-                    )
+                    ),
+                    // SizedBox(
+                    //   height: 10.0,
+                    // )
                   ],
                 ),
               )),
-              SliverAppBar(
-                pinned: true,
-                backgroundColor: Colors.white,
-                toolbarHeight: 0.0,
-                elevation: 0,
-                expandedHeight: 0.0,
-                collapsedHeight: 0.0,
-                titleSpacing: 0,
-                automaticallyImplyLeading: false,
-                bottom: PreferredSize(
-                  preferredSize: Size.fromHeight(48),
-                  child: MediaQuery.removePadding(
-                    context: context,
-                    removeTop: true,
+              MediaQuery.removePadding(
+                context: context,
+                removeTop: true,
+                child: SliverAppBar(
+                  pinned: true,
+                  backgroundColor: Colors.white,
+                  toolbarHeight: 0.0,
+                  elevation: 0,
+                  expandedHeight: 0.0,
+                  collapsedHeight: 0.0,
+                  titleSpacing: 0,
+                  automaticallyImplyLeading: false,
+                  bottom: PreferredSize(
+                    preferredSize: Size.fromHeight(48),
                     child: TabBar(
                       indicatorColor: AppTheme.colors.green,
                       indicator: UnderlineTabIndicator(
-                          borderSide: BorderSide(
-                              color: AppTheme.colors.green, width: 1),
-                          insets: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 50.0)),
+                        borderSide: BorderSide(
+                            color: AppTheme.colors.green, width: 2.0),
+                        // insets: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 50.0)
+                      ),
                       labelColor: Colors.black,
                       unselectedLabelColor: AppTheme.colors.grey,
                       tabs: [
@@ -187,6 +189,7 @@ class PetDetailPage extends StatelessWidget {
               SliverFillRemaining(
                   child: TabBarView(children: [
                 GridView.builder(
+                  physics: NeverScrollableScrollPhysics(),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisSpacing: 4.0,
                     mainAxisSpacing: 4.0,
@@ -218,39 +221,40 @@ class PetDetailPage extends StatelessWidget {
 
 final List<PetPhotoItem> _items = [
   PetPhotoItem(
-      "https://images.pexels.com/photos/7752793/pexels-photo-7752793.jpeg",
+      "https://images.pexels.com/photos/7752793/pexels-photo-7752793.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
       "Stephan Seeber"),
   PetPhotoItem(
-      "https://images.pexels.com/photos/1107807/pexels-photo-1107807.jpeg",
+      "https://images.pexels.com/photos/1107807/pexels-photo-1107807.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
       "Liam Gant"),
   PetPhotoItem(
-      "https://images.pexels.com/photos/2361952/pexels-photo-2361952.jpeg",
+      "https://images.pexels.com/photos/2361952/pexels-photo-2361952.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
       "Liam Ganttt"),
   PetPhotoItem(
-      "https://images.pexels.com/photos/667228/pexels-photo-667228.jpeg",
+      "https://images.pexels.com/photos/667228/pexels-photo-667228.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
       "Liam Gantt"),
   PetPhotoItem(
-      "https://images.pexels.com/photos/179222/pexels-photo-179222.jpeg",
-      "Liam Gant"),
-  PetPhotoItem("https://images.pexels.com/photos/51439/pexels-photo-51439.jpeg",
+      "https://images.pexels.com/photos/179222/pexels-photo-179222.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
       "Liam Gant"),
   PetPhotoItem(
-      "https://images.pexels.com/photos/3652805/pexels-photo-3652805.jpeg",
+      "https://images.pexels.com/photos/51439/pexels-photo-51439.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
       "Liam Gant"),
   PetPhotoItem(
-      "https://images.pexels.com/photos/160839/cat-animal-love-pet-160839.jpeg",
+      "https://images.pexels.com/photos/3652805/pexels-photo-3652805.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
       "Liam Gant"),
   PetPhotoItem(
-      "https://images.pexels.com/photos/4790612/pexels-photo-4790612.jpeg",
+      "https://images.pexels.com/photos/160839/cat-animal-love-pet-160839.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
       "Liam Gant"),
   PetPhotoItem(
-      "https://images.pexels.com/photos/8519611/pexels-photo-8519611.jpeg?auto=compress&cs=tinysrgb&w=1600",
+      "https://images.pexels.com/photos/4790612/pexels-photo-4790612.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
       "Liam Gant"),
   PetPhotoItem(
-      "https://images.pexels.com/photos/1107807/pexels-photo-1107807.jpeg?auto=compress&cs=tinysrgb&w=1600",
+      "https://images.pexels.com/photos/8519611/pexels-photo-8519611.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
       "Liam Gant"),
   PetPhotoItem(
-      "https://images.pexels.com/photos/7319488/pexels-photo-7319488.jpeg?auto=compress&cs=tinysrgb&w=1600",
+      "https://images.pexels.com/photos/1107807/pexels-photo-1107807.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
+      "Liam Gant"),
+  PetPhotoItem(
+      "https://images.pexels.com/photos/7319488/pexels-photo-7319488.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
       "Liam Gant"),
 ];
 
