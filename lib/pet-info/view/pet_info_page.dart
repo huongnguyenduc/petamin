@@ -3,6 +3,7 @@ import 'package:Petamin/pet_add/widgets/pet_species_step.dart';
 import 'package:Petamin/profile/widgets/widgets.dart';
 import 'package:Petamin/theme/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PetInfoPage extends StatelessWidget {
@@ -405,15 +406,21 @@ class PetInfoView extends StatelessWidget {
                 ),
                 BlocBuilder<PetAddCubit, PetAddState>(
                   buildWhen: (previous, current) =>
-                      previous.fractionalWeight != current.fractionalWeight,
+                      previous.weight != current.weight,
                   builder: (context, state) {
                     return TextFormField(
                       key: const Key('profileForm_nameInput_textField'),
-                      onChanged: (description) => context
-                          .read<PetAddCubit>()
-                          .descriptionChanged(description),
+                      onChanged: ((weight) {
+                        final textFieldData = weight.isEmpty ? "0" : weight;
+                        double _pointsUsing = double.parse(textFieldData);
+                        context.read<PetAddCubit>().weightChanged(_pointsUsing);
+                      }),
                       style: CustomTextTheme.body2(context),
-                      initialValue: state.description,
+                      initialValue: state.weight.toString(),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                      ],
                       decoration: InputDecoration(
                         fillColor: AppTheme.colors.white,
                         filled: true,
@@ -430,7 +437,7 @@ class PetInfoView extends StatelessWidget {
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(16.0))),
                         helperText: '',
-                        labelText: 'Bio',
+                        labelText: 'Weight (Kg)',
                         labelStyle: CustomTextTheme.body2(context,
                             textColor: AppTheme.colors.lightGreen),
                       ),

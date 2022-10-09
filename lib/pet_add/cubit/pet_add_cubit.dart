@@ -68,4 +68,8 @@ class PetAddCubit extends Cubit<PetAddState> {
           imageFile: File(pickedFile.path), imageName: pickedFile.name));
     }
   }
+
+  void weightChanged(double weight) {
+    emit(state.copyWith(weight: weight));
+  }
 }
