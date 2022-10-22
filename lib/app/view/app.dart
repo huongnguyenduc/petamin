@@ -1,6 +1,7 @@
+import 'package:Petamin/app/bloc/app_bloc.dart';
 import 'package:Petamin/routes/routes.dart';
 import 'package:Petamin/theme/app_theme.dart';
-import 'package:authentication_repository/authentication_repository.dart';
+import 'package:petamin_repository/petamin_repository.dart';
 import 'package:flow_builder/flow_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,19 +10,23 @@ import 'package:Petamin/app/app.dart';
 class App extends StatelessWidget {
   const App({
     super.key,
-    required AuthenticationRepository authenticationRepository,
-  }) : _authenticationRepository = authenticationRepository;
-
-  final AuthenticationRepository _authenticationRepository;
+    required PetaminRepository petaminRepository,
+  }) : _petaminRepository = petaminRepository;
+  final PetaminRepository _petaminRepository;
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider.value(
-      value: _authenticationRepository,
-      child: BlocProvider(
-        create: (_) => AppBloc(
-          authenticationRepository: _authenticationRepository,
-        ),
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider(create: (_) => _petaminRepository),
+      ],
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+              create: (_) => AppSessionBloc(
+                    petaminRepository: _petaminRepository,
+                  ))
+        ],
         child: const AppView(),
       ),
     );
@@ -35,8 +40,9 @@ class AppView extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: AppTheme.define(),
-      home: FlowBuilder<AppStatus>(
-        state: context.select((AppBloc bloc) => bloc.state.status),
+      home: FlowBuilder<SessionStatus>(
+        state:
+            context.select((AppSessionBloc bloc) => bloc.state.sessionStatus),
         onGeneratePages: onGenerateAppViewPages,
       ),
       debugShowCheckedModeBanner: false,

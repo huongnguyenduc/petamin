@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:Petamin/theme/app_theme.dart';
 import 'package:Petamin/theme/text_styles.dart';
 import 'package:flutter/gestures.dart';
@@ -53,8 +51,6 @@ class LoginForm extends StatelessWidget {
                             _PasswordInput(),
                             const SizedBox(height: 82),
                             _LoginButton(),
-                            const SizedBox(height: 16),
-                            _GoogleLoginButton(),
                           ],
                         ),
                       ),
@@ -157,35 +153,13 @@ class _LoginButton extends StatelessWidget {
                     primary: AppTheme.colors.pink,
                     onSurface: AppTheme.colors.pink),
                 onPressed: state.status.isValidated
-                    ? () => context.read<LoginCubit>().logInWithCredentials()
+                    ? () {
+                        context.read<LoginCubit>().logInWithCredentials();
+                      }
                     : null,
                 child: Text('Let me in', style: CustomTextTheme.label(context)),
               );
       },
-    );
-  }
-}
-
-class _GoogleLoginButton extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return ElevatedButton.icon(
-      key: const Key('loginForm_googleLogin_raisedButton'),
-      label: Text(
-        'Sign in with Google',
-        style: CustomTextTheme.label(context, textColor: Colors.white),
-      ),
-      style: ElevatedButton.styleFrom(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        padding: EdgeInsets.symmetric(vertical: 15),
-        minimumSize: const Size.fromHeight(40),
-        primary: AppTheme.colors.green,
-      ),
-      icon: const Icon(FontAwesomeIcons.google, color: Colors.white),
-      onPressed: () => context.read<LoginCubit>().logInWithGoogle(),
     );
   }
 }

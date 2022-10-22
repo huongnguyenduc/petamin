@@ -1,24 +1,25 @@
 part of 'app_bloc.dart';
 
-enum AppStatus {
+enum SessionStatus {
   authenticated,
   unauthenticated,
 }
 
-class AppState extends Equatable {
-  const AppState._({
-    required this.status,
-    this.user = User.empty,
+class AppSessionState extends Equatable {
+  const AppSessionState._({
+    required this.sessionStatus,
+    this.session = Session.empty,
   });
 
-  const AppState.authenticated(User user)
-      : this._(status: AppStatus.authenticated, user: user);
+  const AppSessionState.authenticatedSession(Session session)
+      : this._(session: session, sessionStatus: SessionStatus.authenticated);
 
-  const AppState.unauthenticated() : this._(status: AppStatus.unauthenticated);
+  const AppSessionState.unauthenticatedSession()
+      : this._(sessionStatus: SessionStatus.unauthenticated);
 
-  final AppStatus status;
-  final User user;
+  final SessionStatus sessionStatus;
+  final Session session;
 
   @override
-  List<Object> get props => [status, user];
+  List<Object> get props => [sessionStatus, session];
 }

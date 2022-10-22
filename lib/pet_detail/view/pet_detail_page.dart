@@ -198,11 +198,19 @@ class PetDetailPage extends StatelessWidget {
                   itemCount: _items.length,
                   itemBuilder: (context, index) {
                     // Item rendering
-                    return Container(
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: NetworkImage(_items[index].image),
+                    return GestureDetector(
+                      onTap: () async {
+                        await showDialog(
+                            context: context,
+                            builder: (_) =>
+                                ImageDialog(image: _items[index].image));
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            fit: BoxFit.cover,
+                            image: NetworkImage(_items[index].image),
+                          ),
                         ),
                       ),
                     );
@@ -221,40 +229,40 @@ class PetDetailPage extends StatelessWidget {
 
 final List<PetPhotoItem> _items = [
   PetPhotoItem(
-      "https://images.pexels.com/photos/7752793/pexels-photo-7752793.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
+      "https://images.pexels.com/photos/7752793/pexels-photo-7752793.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1",
       "Stephan Seeber"),
   PetPhotoItem(
-      "https://images.pexels.com/photos/1107807/pexels-photo-1107807.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
+      "https://images.pexels.com/photos/1107807/pexels-photo-1107807.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1",
       "Liam Gant"),
   PetPhotoItem(
-      "https://images.pexels.com/photos/2361952/pexels-photo-2361952.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
+      "https://images.pexels.com/photos/2361952/pexels-photo-2361952.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1",
       "Liam Ganttt"),
   PetPhotoItem(
-      "https://images.pexels.com/photos/667228/pexels-photo-667228.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
+      "https://images.pexels.com/photos/667228/pexels-photo-667228.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1",
       "Liam Gantt"),
   PetPhotoItem(
-      "https://images.pexels.com/photos/179222/pexels-photo-179222.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
+      "https://images.pexels.com/photos/179222/pexels-photo-179222.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1",
       "Liam Gant"),
   PetPhotoItem(
-      "https://images.pexels.com/photos/51439/pexels-photo-51439.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
+      "https://images.pexels.com/photos/51439/pexels-photo-51439.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1",
       "Liam Gant"),
   PetPhotoItem(
-      "https://images.pexels.com/photos/3652805/pexels-photo-3652805.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
+      "https://images.pexels.com/photos/3652805/pexels-photo-3652805.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1",
       "Liam Gant"),
   PetPhotoItem(
-      "https://images.pexels.com/photos/160839/cat-animal-love-pet-160839.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
+      "https://images.pexels.com/photos/160839/cat-animal-love-pet-160839.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1",
       "Liam Gant"),
   PetPhotoItem(
-      "https://images.pexels.com/photos/4790612/pexels-photo-4790612.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
+      "https://images.pexels.com/photos/4790612/pexels-photo-4790612.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1",
       "Liam Gant"),
   PetPhotoItem(
-      "https://images.pexels.com/photos/8519611/pexels-photo-8519611.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
+      "https://images.pexels.com/photos/8519611/pexels-photo-8519611.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1",
       "Liam Gant"),
   PetPhotoItem(
-      "https://images.pexels.com/photos/1107807/pexels-photo-1107807.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
+      "https://images.pexels.com/photos/1107807/pexels-photo-1107807.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1",
       "Liam Gant"),
   PetPhotoItem(
-      "https://images.pexels.com/photos/7319488/pexels-photo-7319488.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
+      "https://images.pexels.com/photos/7319488/pexels-photo-7319488.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1",
       "Liam Gant"),
 ];
 
@@ -302,6 +310,77 @@ class PetProperty extends StatelessWidget {
             )
           ],
         ),
+      ),
+    );
+  }
+}
+
+class ImageDialog extends StatelessWidget {
+  const ImageDialog({
+    required this.image,
+    Key? key,
+  }) : super(key: key);
+  final String image;
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(8.0),
+                    topRight: Radius.circular(8.0)),
+                color: AppTheme.colors.black),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 15,
+                  backgroundImage: NetworkImage(
+                      "https://images.pexels.com/photos/2173872/pexels-photo-2173872.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=1"),
+                ),
+                SizedBox(
+                  width: 8.0,
+                ),
+                Text(
+                  "Tyler",
+                  style: CustomTextTheme.caption(context,
+                      textColor: AppTheme.colors.white),
+                )
+              ],
+            ),
+          ),
+          Container(
+            width: double.infinity,
+            height: 400,
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: NetworkImage(image), fit: BoxFit.cover)),
+          ),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(8.0),
+                    bottomRight: Radius.circular(8.0)),
+                color: AppTheme.colors.black),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.delete_outline_rounded,
+                  color: AppTheme.colors.white,
+                  size: 24,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
