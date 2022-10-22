@@ -10,18 +10,14 @@ class LandingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.select((AppBloc bloc) => bloc.state.user);
+    final user = context.select((AppSessionBloc bloc) => bloc.state.session);
     final textTheme = Theme.of(context).textTheme;
     return Align(
       alignment: const Alignment(0, -1 / 3),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Avatar(photo: user.photo),
-          const SizedBox(height: 4),
-          Text(user.email ?? '', style: textTheme.headline6),
-          const SizedBox(height: 4),
-          Text(user.name ?? '', style: textTheme.headline5),
+          Text(user.accessToken ?? '', style: textTheme.headline5),
         ],
       ),
     );

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:authentication_repository/authentication_repository.dart';
+import 'package:petamin_repository/petamin_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
@@ -9,39 +9,40 @@ import 'package:very_good_analysis/very_good_analysis.dart';
 part 'app_event.dart';
 part 'app_state.dart';
 
-class AppBloc extends Bloc<AppEvent, AppState> {
-  AppBloc({required AuthenticationRepository authenticationRepository})
-      : _authenticationRepository = authenticationRepository,
-        super(
-          authenticationRepository.currentUser.isNotEmpty
-              ? AppState.authenticated(authenticationRepository.currentUser)
-              : const AppState.unauthenticated(),
-        ) {
-    on<AppUserChanged>(_onUserChanged);
-    on<AppLogoutRequested>(_onLogoutRequested);
-    _userSubscription = _authenticationRepository.user.listen(
-      (user) => add(AppUserChanged(user)),
+class AppSessionBloc extends Bloc<AppSessionEvent, AppSessionState> {
+  AppSessionBloc({required PetaminRepository petaminRepository})
+      : _petaminRepository = petaminRepository,
+        super(petaminRepository.availableSession != Session.empty
+            ? AppSessionState.authenticatedSession(
+                petaminRepository.availableSession)
+            : const AppSessionState.unauthenticatedSession()) {
+    on<AppSessionChanged>(_onSessionChanged);
+    on<AppLogoutSessionRequested>(_onLogoutSessionRequested);
+    _sessionSubscription = _petaminRepository.session.listen(
+      (session) => add(AppSessionChanged(session)),
     );
   }
 
-  final AuthenticationRepository _authenticationRepository;
-  late final StreamSubscription<User> _userSubscription;
+  final PetaminRepository _petaminRepository;
+  late final StreamSubscription<Session> _sessionSubscription;
 
-  void _onUserChanged(AppUserChanged event, Emitter<AppState> emit) {
+  void _onSessionChanged(
+      AppSessionChanged event, Emitter<AppSessionState> emit) {
     emit(
-      event.user.isNotEmpty
-          ? AppState.authenticated(event.user)
-          : const AppState.unauthenticated(),
+      event.session.isNotEmpty
+          ? AppSessionState.authenticatedSession(event.session)
+          : const AppSessionState.unauthenticatedSession(),
     );
   }
 
-  void _onLogoutRequested(AppLogoutRequested event, Emitter<AppState> emit) {
-    unawaited(_authenticationRepository.logOut());
+  void _onLogoutSessionRequested(
+      AppLogoutSessionRequested event, Emitter<AppSessionState> emit) {
+    unawaited(_petaminRepository.logOut());
   }
 
   @override
   Future<void> close() {
-    _userSubscription.cancel();
+    _sessionSubscription.cancel();
     return super.close();
   }
 }

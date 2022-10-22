@@ -9,3 +9,8 @@ environment:
 dev_dependencies:
   test: ^1.17.11
   very_good_analysis: ^3.0.1
+  build_runner: ^2.3.2
+  json_serializable: ^6.5.3
+dependencies:
+  flutter_secure_storage: ^6.0.0
+  json_annotation: ^4.7.0

@@ -1,4 +1,3 @@
-import 'package:Petamin/app/view/app.dart';
 import 'package:Petamin/pet_add/pet_add.dart';
 import 'package:Petamin/theme/theme.dart';
 import 'package:flutter/material.dart';
