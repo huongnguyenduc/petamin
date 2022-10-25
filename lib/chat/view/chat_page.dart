@@ -25,9 +25,12 @@ class ChatPage extends StatelessWidget {
 }
 
 class ChatDetailPage extends StatelessWidget {
-  const ChatDetailPage({
+  ChatDetailPage({
     Key? key,
   }) : super(key: key);
+
+  ScrollController _scrollController = new ScrollController();
+
   
   @override
   Widget build(BuildContext context) {
@@ -101,10 +104,12 @@ class ChatDetailPage extends StatelessWidget {
                 Expanded(
                   child: BlocBuilder<ChatDetailCubit, ChatDetailState>(
                     buildWhen: (previous, current) =>
-                        previous.messages != current.messages,
+                    previous.messages != current.messages,
                     builder: (context, state) {
                       return ListView.builder(
                           itemCount: state.messages.length,
+                          shrinkWrap: true,
+                          controller: _scrollController,
                           itemBuilder: (context, index) {
                             switch (state.messages[index].messageType) {
                               case ChatMessageType.text:
@@ -125,7 +130,8 @@ class ChatDetailPage extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    Expanded(child: ChatInputField()),
+                    Expanded(
+                        child: ChatInputField(scrollController: _scrollController)),
                     SizedBox(
                       width: 20.0,
                     ),

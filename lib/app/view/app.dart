@@ -3,6 +3,7 @@ import 'package:Petamin/home/cubit/home_cubit.dart';
 import 'package:Petamin/homeRoot/cubit/home_root_cubit.dart';
 import 'package:Petamin/app/bloc/app_bloc.dart';
 import 'package:Petamin/profile-info/cubit/profile_info_cubit.dart';
+import 'package:Petamin/home/bloc/socket_bloc.dart';
 import 'package:Petamin/routes/routes.dart';
 import 'package:Petamin/theme/app_theme.dart';
 import 'package:petamin_repository/petamin_repository.dart';
