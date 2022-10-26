@@ -1,19 +1,18 @@
 import 'package:Petamin/data/api/auth_api.dart';
 import 'package:Petamin/data/models/user_model.dart';
 import 'package:Petamin/shared/network/cache_helper.dart';
-import 'package:authentication_repository/authentication_repository.dart';
+import 'package:petamin_repository/petamin_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 part 'sign_up_state.dart';
 
 class SignUpCubit extends Cubit<SignUpState> {
-  SignUpCubit(this._authenticationRepository) : super(const SignUpState());
+  SignUpCubit(this._petaminRepository) : super(const SignUpState());
 
-  final AuthenticationRepository _authenticationRepository;
+  final PetaminRepository _petaminRepository;
   final _authApi = AuthApi();
   void emailChanged(String value) {
     final email = Email.dirty(value);
@@ -80,19 +79,13 @@ class SignUpCubit extends Cubit<SignUpState> {
     if (!state.status.isValidated) return;
     emit(state.copyWith(status: FormzStatus.submissionInProgress));
     try {
-      _authenticationRepository
-          .signUp(
+      await _petaminRepository.signUp(
         email: state.email.value,
         password: state.password.value,
-      ).then((value) {
-        createUser(
-            name: state.email.value,
-            email: state.email.value,
-            uId: value.user!.uid);
-      });
-
+        name: state.email.value.split('@')[0],
+      );
       emit(state.copyWith(status: FormzStatus.submissionSuccess));
-    } on SignUpWithEmailAndPasswordFailure catch (e) {
+    } on SignUpFailure catch (e) {
       emit(
         state.copyWith(
           errorMessage: e.message,

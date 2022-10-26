@@ -20,6 +20,7 @@ class PetAddState extends Equatable {
       this.integralWeight = 0,
       this.fractionalWeight = 0,
       this.imageFile,
+      this.weight = 0,
       this.imageName = ""});
 
   final String name;
@@ -33,6 +34,7 @@ class PetAddState extends Equatable {
   final String description;
   final int integralWeight;
   final int fractionalWeight;
+  final double weight;
   final File? imageFile;
   final String imageName;
 
@@ -65,6 +67,7 @@ class PetAddState extends Equatable {
       int? integralWeight,
       int? fractionalWeight,
       File? imageFile,
+      double? weight,
       String? imageName}) {
     return PetAddState(
         name: name ?? this.name,
@@ -79,6 +82,7 @@ class PetAddState extends Equatable {
         integralWeight: integralWeight ?? this.integralWeight,
         fractionalWeight: fractionalWeight ?? this.fractionalWeight,
         imageFile: imageFile ?? this.imageFile,
+        weight: weight ?? this.weight,
         imageName: imageName ?? this.imageName);
   }
 }

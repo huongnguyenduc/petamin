@@ -1,14 +1,30 @@
 import 'package:Petamin/app/bloc/app_bloc.dart';
+import 'package:Petamin/profile-info/profile-info.dart';
 import 'package:Petamin/profile/widgets/widgets.dart';
 import 'package:Petamin/theme/app_theme.dart';
 import 'package:Petamin/theme/text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:petamin_repository/petamin_repository.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   static Page<void> page() => const MaterialPage<void>(child: ProfilePage());
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => ProfileInfoCubit(context.read<PetaminRepository>()),
+      child: ProfileView(),
+    );
+  }
+}
+
+class ProfileView extends StatelessWidget {
+  const ProfileView({
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +59,12 @@ class ProfilePage extends StatelessWidget {
                 SizedBox(
                   height: 16,
                 ),
-                ProfileItem(title: "Edit Profile"),
+                ProfileItem(
+                  title: "Edit Profile",
+                  onTap: () => Navigator.of(context, rootNavigator: true).push(
+                      new MaterialPageRoute(
+                          builder: (context) => new ProfileInfoPage())),
+                ),
                 SizedBox(
                   height: 8,
                 ),
@@ -69,8 +90,14 @@ class ProfilePage extends StatelessWidget {
                 ),
                 ProfileItem(
                   title: "Logout",
-                  onTap: () =>
-                      context.read<AppBloc>().add(AppLogoutRequested()),
+                  onTap: () {
+                    context
+                        .read<AppSessionBloc>()
+                        .add(AppLogoutSessionRequested());
+                    context
+                        .read<AppSessionBloc>()
+                        .add(AppLogoutSessionRequested());
+                  },
                 )
               ],
             ),
@@ -182,12 +209,12 @@ class UserInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.select((AppBloc bloc) => bloc.state.user);
+    final user = context.select((ProfileInfoCubit bloc) => bloc.state);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SquaredAvatar(
-          photo: user.photo,
+          photo: user.avatarUrl,
         ),
         SizedBox(
           width: 20,
@@ -201,14 +228,14 @@ class UserInfo extends StatelessWidget {
                     style: CustomTextTheme.label(context),
                   )
                 : Text(
-                    user.name!,
+                    user.name,
                     style: CustomTextTheme.label(context),
                   ),
             SizedBox(
               height: 8,
             ),
             Text(
-              'Gia Lai, Vietnam',
+              user.address ?? "unknown",
               style: CustomTextTheme.caption(context,
                   textColor: AppTheme.colors.grey),
             ),
@@ -216,7 +243,7 @@ class UserInfo extends StatelessWidget {
               height: 8,
             ),
             Text(
-              'A Pet lover',
+              user.bio ?? "unknown",
               style: CustomTextTheme.caption(context),
             )
           ],

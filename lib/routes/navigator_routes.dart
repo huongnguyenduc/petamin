@@ -5,9 +5,7 @@ import 'package:Petamin/landing/landing.dart';
 import 'package:Petamin/pet_list/pet.dart';
 import 'package:Petamin/profile/view/profile_page.dart';
 import 'package:flutter/widgets.dart';
-import 'package:Petamin/app/app.dart';
 import 'package:Petamin/home/home.dart';
-import 'package:Petamin/login/login.dart';
 
 List<Page<dynamic>> onGenerateAppViewWindows(
   HomeState state,

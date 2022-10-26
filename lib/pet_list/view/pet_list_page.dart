@@ -1,4 +1,5 @@
 import 'package:Petamin/pet_add/view/pet_add_page.dart';
+import 'package:Petamin/pet_detail/pet_detail.dart';
 import 'package:Petamin/pet_list/widgets/pet_avatar.dart';
 import 'package:Petamin/theme/theme.dart';
 import 'package:flutter/material.dart';
@@ -63,7 +64,11 @@ class PetItem extends StatelessWidget {
             decoration: BoxDecoration(
                 color: Colors.white, borderRadius: BorderRadius.circular(5.0)),
             child: InkWell(
-                onTap: () => {},
+                onTap: () => {
+                      Navigator.of(context, rootNavigator: true).push(
+                          MaterialPageRoute(
+                              builder: (context) => const PetDetailPage()))
+                    },
                 borderRadius: BorderRadius.circular(10.0),
                 splashColor: AppTheme.colors.pink,
                 child: Container(
