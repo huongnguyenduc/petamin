@@ -1,10 +1,8 @@
 import 'package:Petamin/data/api/auth_api.dart';
 import 'package:Petamin/data/models/user_model.dart';
-import 'package:Petamin/shared/network/cache_helper.dart';
 import 'package:petamin_repository/petamin_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
 part 'sign_up_state.dart';

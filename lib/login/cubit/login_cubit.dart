@@ -1,4 +1,5 @@
 import 'package:petamin_repository/petamin_repository.dart';
+import 'package:Petamin/shared/network/cache_helper.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +40,8 @@ class LoginCubit extends Cubit<LoginState> {
         email: state.email.value,
         password: state.password.value,
       );
-      // CacheHelper.saveData(key: 'uId', value: user.user!.uid);
+      //get profile
+      CacheHelper.saveData(key: 'uId', value: 'da283s4wjweYjuqf3PmlkFvBYss1');
       emit(state.copyWith(status: FormzStatus.submissionSuccess));
     } on LoginFailure catch (e) {
       emit(

@@ -50,8 +50,7 @@ class _HomeRootScreenState extends State<HomeRootScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.select((AppBloc bloc) => bloc.state.user);
-    return BlocProvider( create: (_) => HomeRootCubit()..updateFcmToken(uId: user.id)..listenToInComingCalls(),
+    return BlocProvider( create: (_) => HomeRootCubit()..updateFcmToken(uId: CacheHelper.getString(key: 'uId'))..listenToInComingCalls(),
     child: Scaffold(
         body: BlocConsumer<HomeRootCubit, HomeRootState>(
             listener: (context, state) {
@@ -67,7 +66,7 @@ class _HomeRootScreenState extends State<HomeRootScreen> {
                 )));
       }
     }, builder: (context, state) {
-      var homeRootCubit = HomeRootCubit.get(context);
+      //var homeRootCubit = HomeRootCubit.get(context);
       return ModalProgressHUD(
         inAsyncCall: false,
         child: HomePage(),
