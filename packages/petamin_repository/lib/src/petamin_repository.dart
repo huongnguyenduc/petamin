@@ -123,8 +123,11 @@ class PetaminRepository {
           await _petaminApiClient.login(email: email, password: password);
       final user = await _petaminApiClient.getUserProfile(
           accessToken: loginResponse.accessToken);
+      // final yourPet = await getPet(accessToken: loginResponse.accessToken);
+      // debugPrint('Pettttt ${yourPet.toString()}');
       final session = Session(
         accessToken: loginResponse.accessToken,
+        userId: user.email ?? 'empty',
       );
       await _cache.write(
           key: sessionCacheKey, value: jsonEncode(session.toJson()));
@@ -145,8 +148,10 @@ class PetaminRepository {
           email: email, password: password, name: name);
       final user = await _petaminApiClient.getUserProfile(
           accessToken: signUpResponse.accessToken);
+
       final session = Session(
         accessToken: signUpResponse.accessToken,
+        userId: user.email ?? 'empty',
       );
       _cache.write(key: sessionCacheKey, value: jsonEncode(session.toJson()));
       _sessionController
@@ -221,5 +226,52 @@ class PetaminRepository {
 
   Future<void> dispose() async {
     await _sessionController.close();
+  }
+
+  Future<List<Pet>> getPets() async {
+    try {
+      final session = await currentSession;
+      final petList =
+          await _petaminApiClient.getPets(accessToken: session.accessToken);
+      var list = List<Pet>.empty(growable: true);
+      for (var element in petList) {
+        list.add(Pet(
+            id: element.id,
+            name: element.name,
+            year: element.year,
+            month: element.month,
+            breed: element.breed,
+            gender: element.gender,
+            isNeuter: element.isNeuter,
+            avatarUrl: element.avatarUrl,
+            weight: element.weight,
+            description: element.description));
+      }
+      return list;
+    } catch (_) {
+      throw const CallApiFailure();
+    }
+  }
+
+  Future<Pet> getPetDetail({required String id}) async {
+    try {
+      final session = await currentSession;
+      final petDetail = await _petaminApiClient.getPetDetail(
+          id: id, accessToken: session.accessToken);
+      return Pet(
+        id: petDetail.id,
+        name: petDetail.name,
+        avatarUrl: petDetail.avatarUrl,
+        month: petDetail.month,
+        year: petDetail.year,
+        breed: petDetail.breed,
+        isNeuter: petDetail.isNeuter,
+        gender: petDetail.gender,
+        description: petDetail.description,
+        weight: petDetail.weight,
+      );
+    } catch (_) {
+      throw const CallApiFailure();
+    }
   }
 }

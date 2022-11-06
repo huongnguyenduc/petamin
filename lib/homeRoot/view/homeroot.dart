@@ -23,7 +23,6 @@ class _HomeRootScreenState extends State<HomeRootScreen> {
   @override
   void initState() {
     super.initState();
-    debugPrint('UserIdIs: ${CacheHelper.getString(key: 'uId')}');
     Future.delayed(const Duration(milliseconds: 1000), () {
       checkInComingTerminatedCall();
     });
@@ -35,10 +34,6 @@ class _HomeRootScreenState extends State<HomeRootScreen> {
       Map<String, dynamic> callMap =
           jsonDecode(CacheHelper.getString(key: 'terminateIncomingCallData'));
       await CacheHelper.removeData(key: 'terminateIncomingCallData');
-      // Navigator.pushNamed(context, callScreen, arguments: [
-      //   true,
-      //   CallModel.fromJson(callMap),
-      // ]);
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => CallScreen(
                 isReceiver: true,
@@ -50,28 +45,30 @@ class _HomeRootScreenState extends State<HomeRootScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider( create: (_) => HomeRootCubit()..updateFcmToken(uId: CacheHelper.getString(key: 'uId'))..listenToInComingCalls(),
-    child: Scaffold(
-        body: BlocConsumer<HomeRootCubit, HomeRootState>(
-            listener: (context, state) {
-      //Receiver Call States
-      if (state is SuccessInComingCallState) {
-        // Navigator.pushNamed(context, callScreen,
-        //     arguments: [true, state.callModel]);
-        debugPrint('ccccccccccccc');
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => CallScreen(
-                  isReceiver: true,
-                  callModel: state.callModel,
-                )));
-      }
-    }, builder: (context, state) {
-      //var homeRootCubit = HomeRootCubit.get(context);
-      return ModalProgressHUD(
-        inAsyncCall: false,
-        child: HomePage(),
-      );
-    })),
+    final user = context.select((AppSessionBloc bloc) => bloc.state.session);
+    debugPrint('UserIdIs: ${user.userId}');
+    return BlocProvider(
+      create: (_) => HomeRootCubit()
+        ..updateFcmToken(uId: user.userId)
+        ..listenToInComingCalls(uId: user.userId),
+      child: Scaffold(
+          body: BlocConsumer<HomeRootCubit, HomeRootState>(
+              listener: (context, state) {
+        //Receiver Call States
+        if (state is SuccessInComingCallState) {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => CallScreen(
+                    isReceiver: true,
+                    callModel: state.callModel,
+                  )));
+        }
+      }, builder: (context, state) {
+        //var homeRootCubit = HomeRootCubit.get(context);
+        return ModalProgressHUD(
+          inAsyncCall: false,
+          child: HomePage(),
+        );
+      })),
     );
   }
 }

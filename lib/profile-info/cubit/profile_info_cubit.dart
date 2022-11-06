@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:petamin_repository/petamin_repository.dart';
 
 part 'profile_info_state.dart';
@@ -40,19 +41,24 @@ class ProfileInfoCubit extends Cubit<ProfileInfoState> {
   }
 
   // Update Profile
-  Future<void> updateProfile() async {
+  Future<void> updateProfile({
+    String? address,
+    String? phoneNumber,
+    String? bio,
+    String? dayOfBirth,
+    String? name,
+  }) async {
     emit(state.copyWith(submitStatus: ProfileStatus.loading));
 
     try {
       await _petaminRepository.updateUserProfile(
-        name: state.name,
-        description: state.bio,
-        address: state.address,
-        birthday: state.dayOfBirth,
-        phone: state.phoneNumber,
+        name: name,
+        description: bio,
+        address: address,
+        birthday: DateFormat("dd/MM/yyyy").parse(dayOfBirth!).toString() ,
+        phone: phoneNumber,
         avatar: state.avatar,
       );
-
       emit(state.copyWith(submitStatus: ProfileStatus.success));
     } on Exception {
       emit(state.copyWith(submitStatus: ProfileStatus.failure));
@@ -67,7 +73,8 @@ class ProfileInfoCubit extends Cubit<ProfileInfoState> {
   }
 
   void updateName(String name) {
-    emit(state.copyWith(name: name));
+      emit(state.copyWith(name: name));
+   // emit(state.copyWith(name: name));
   }
 
   void updatePhoneNumber(String phoneNumber) {

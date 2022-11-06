@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 
 part 'pet_add_state.dart';
@@ -71,5 +72,9 @@ class PetAddCubit extends Cubit<PetAddState> {
 
   void weightChanged(double weight) {
     emit(state.copyWith(weight: weight));
+  }
+
+  Future<void> addNewPet() async {
+   debugPrint(state.props.toString());
   }
 }

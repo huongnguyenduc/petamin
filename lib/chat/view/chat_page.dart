@@ -31,7 +31,7 @@ class ChatDetailPage extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    // final user = context.select((AppBloc bloc) => bloc.state.user);
+    final user = context.select((AppSessionBloc bloc) => bloc.state.session);
     return BlocListener<ChatDetailCubit, ChatDetailState>(
         listener: (context, state) {
           //FireCall States
@@ -68,7 +68,7 @@ class ChatDetailPage extends StatelessWidget {
                         ChatDetailCubit.get(context).fireVideoCall(
                       callModel: CallModel(                          
                           id: 'call_${UniqueKey().hashCode.toString()}',
-                          callerId: 'pUXYqDvX0cS3q8iHwUB0CpW592W2',
+                          callerId: user.userId,
                           callerAvatar: 'ưe',
                           callerName: 'Huy',
                           receiverId: 'da283s4wjweYjuqf3PmlkFvBYss1',

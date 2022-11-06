@@ -11,17 +11,19 @@ extension ProfileStatusX on ProfileStatus {
 
 class ProfileInfoState extends Equatable {
   const ProfileInfoState(
-      {this.name = "John Doe",
-      this.phoneNumber = "0123456789",
+      {this.name = "",
+      this.phoneNumber = "",
       this.status = ProfileStatus.initial,
       this.submitStatus = ProfileStatus.initial,
-      this.address = "Ho CHi Minh, Viet Nam",
-      this.email = "name@example.com",
+      this.address = "",
+      this.email = "",
       this.dayOfBirth = '2022-10-20 20:18:04Z',
       this.id = "",
-      this.avatarUrl = "",
+      this.avatarUrl =
+          "https://petamin.s3.ap-southeast-1.amazonaws.com/30420dbc5fa9c8930aa7fba27cc6e765.png",
       this.avatar,
-      this.bio = "I am a developer"});
+      this.bio = "",
+      });
 
   final String name;
   final String bio;
@@ -34,7 +36,6 @@ class ProfileInfoState extends Equatable {
   final String id;
   final String avatarUrl;
   final File? avatar;
-
   @override
   List<Object?> get props => [
         name,
@@ -51,11 +52,17 @@ class ProfileInfoState extends Equatable {
 
   ProfileInfoState copyWith({
     String? name,
+    String? editName,
     String? phoneNumber,
+    String? editPhoneNumber,
     String? address,
+    String? editAddress,
     String? email,
+    String? editEmail,
     String? dayOfBirth,
+    String? editDayOfBirth,
     String? bio,
+    String? editBio,
     ProfileStatus? status,
     String? id,
     String? userId,

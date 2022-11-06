@@ -34,7 +34,7 @@ class HomeRootCubit extends Cubit<HomeRootState> {
       UserFcmTokenModel tokenModel = UserFcmTokenModel(token: token!, uId: uId);
       FirebaseFirestore.instance
           .collection(tokensCollection)
-          .doc(CacheHelper.getString(key: 'uId'))
+          .doc(uId)
           .set(tokenModel.toMap())
           .then((value) {
         debugPrint('User Fcm Token Updated $token');
@@ -45,9 +45,9 @@ class HomeRootCubit extends Cubit<HomeRootState> {
   }
 
   CallStatus? currentCallStatus;
-  void listenToInComingCalls() {
+  void listenToInComingCalls({required String uId}) {
     debugPrint('Imm losing');
-    _callApi.listenToInComingCall().onData((data) {
+    _callApi.listenToInComingCall(uId: uId).onData((data) {
       if (data.size != 0) {
         for (var element in data.docs) {
           if (element.data()['current'] == true) {

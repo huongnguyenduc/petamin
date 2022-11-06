@@ -1,8 +1,14 @@
 import 'package:Petamin/pet_add/view/pet_add_page.dart';
 import 'package:Petamin/pet_detail/pet_detail.dart';
+import 'package:Petamin/pet_list/cubit/pet_list_state.dart';
 import 'package:Petamin/pet_list/widgets/pet_avatar.dart';
+import 'package:Petamin/shared/shared_widgets.dart';
 import 'package:Petamin/theme/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:petamin_repository/petamin_repository.dart';
+
+import '../cubit/pet_list_cubit.dart';
 
 class PetListPage extends StatelessWidget {
   const PetListPage({super.key});
@@ -11,48 +17,68 @@ class PetListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          elevation: 0,
-          backgroundColor: AppTheme.colors.mediumGrey,
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                "My pet",
-                style: CustomTextTheme.subtitle(context,
-                    textColor: AppTheme.colors.green),
+    return BlocProvider(
+        create: (_) =>
+            PetListCubit(context.read<PetaminRepository>())..getPets(),
+        child: Scaffold(
+            appBar: AppBar(
+              centerTitle: true,
+              elevation: 0,
+              backgroundColor: AppTheme.colors.mediumGrey,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "My pet",
+                    style: CustomTextTheme.subtitle(context,
+                        textColor: AppTheme.colors.green),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-        backgroundColor: AppTheme.colors.mediumGrey,
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: GridView.count(
-            crossAxisCount: 2,
-            mainAxisSpacing: 30.0,
-            crossAxisSpacing: 35.0,
-            childAspectRatio: 3 / 4,
-            children: [
-              PetItem(
-                name: "Tyler",
-                photo:
-                    "https://images.unsplash.com/photo-1592194996308-7b43878e84a6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
-              ),
-              AddPetItem()
-            ],
-          ),
-        ));
+            ),
+            backgroundColor: AppTheme.colors.mediumGrey,
+            body: BlocBuilder<PetListCubit, PetListState>(
+                buildWhen: (previous, current) =>
+                    previous.status != current.status,
+                builder: (context, state) {
+                  if (state.status.isLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (state.status.isFailure) {
+                    showToast(msg: "Can't load list pet!");
+                  }
+                  return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        gridDelegate:
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                                maxCrossAxisExtent: 200,
+                                childAspectRatio: 3 / 4,
+                                crossAxisSpacing: 35.0,
+                                mainAxisSpacing: 30.0),
+                        itemCount: state.pets.length + 1,
+                        itemBuilder: (context, index) {
+                          if (index == 0) return AddPetItem();
+                          final pet = state.pets[index - 1];
+                          return PetItem(
+                            id: pet.id ?? '',
+                            name: pet.name ?? '',
+                            photo: pet.avatarUrl ??
+                                "https://images.unsplash.com/photo-1592194996308-7b43878e84a6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
+                          );
+                        },
+                      ));
+                })));
   }
 }
 
 class PetItem extends StatelessWidget {
-  const PetItem({Key? key, required this.name, required this.photo})
+  const PetItem(
+      {Key? key, required this.id, required this.name, required this.photo})
       : super(key: key);
-
+  final String id;
   final String name;
   final String photo;
 
@@ -65,9 +91,11 @@ class PetItem extends StatelessWidget {
                 color: Colors.white, borderRadius: BorderRadius.circular(5.0)),
             child: InkWell(
                 onTap: () => {
-                      Navigator.of(context, rootNavigator: true).push(
-                          MaterialPageRoute(
-                              builder: (context) => const PetDetailPage()))
+                      Navigator.of(context, rootNavigator: true)
+                          .push(MaterialPageRoute(
+                              builder: (context) => PetDetailPage(
+                                    id: id,
+                                  )))
                     },
                 borderRadius: BorderRadius.circular(10.0),
                 splashColor: AppTheme.colors.pink,

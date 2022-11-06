@@ -11,10 +11,10 @@ import '../models/call_model.dart';
 
 class CallApi {
   StreamSubscription<QuerySnapshot<Map<String, dynamic>>>
-      listenToInComingCall() {
+      listenToInComingCall({required String uId}) {
     return FirebaseFirestore.instance
         .collection(callsCollection)
-        .where('receiverId', isEqualTo: CacheHelper.getString(key: 'uId'))
+        .where('receiverId', isEqualTo: uId)
         .snapshots()
         .listen((event) {});
   }

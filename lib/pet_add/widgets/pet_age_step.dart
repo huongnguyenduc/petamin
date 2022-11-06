@@ -161,7 +161,7 @@ class NumberSelectSlider extends StatelessWidget {
           items: numberRange
               .map((index) => Center(
                     child: Text(
-                      numberRange[index].toString(),
+                      numberRange[index].toString(),   
                       style: CustomTextTheme.heading2(context,
                           textColor: index == initialPage
                               ? AppTheme.colors.green

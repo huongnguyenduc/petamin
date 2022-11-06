@@ -2,6 +2,7 @@ import 'package:Petamin/call/cubit/call_cubit.dart';
 import 'package:Petamin/home/cubit/home_cubit.dart';
 import 'package:Petamin/homeRoot/cubit/home_root_cubit.dart';
 import 'package:Petamin/app/bloc/app_bloc.dart';
+import 'package:Petamin/profile-info/cubit/profile_info_cubit.dart';
 import 'package:Petamin/routes/routes.dart';
 import 'package:Petamin/theme/app_theme.dart';
 import 'package:petamin_repository/petamin_repository.dart';
@@ -19,15 +20,15 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-     //final user = context.select((AppBloc bloc) => bloc.state.user);
+    //final user = context.select((AppBloc bloc) => bloc.state.user);
     // return RepositoryProvider.value(
     //   value: _authenticationRepository,
     //   child: MultiBlocProvider(
     //     providers: [
-    //       BlocProvider( 
+    //       BlocProvider(
     //        create: (_) => AppBloc( authenticationRepository: _authenticationRepository,)
     //       ),
-          
+
     //     ],
     //      child: const AppView(),
     return MultiRepositoryProvider(
@@ -41,16 +42,21 @@ class App extends StatelessWidget {
                     petaminRepository: _petaminRepository,
                   )),
           BlocProvider(
-          create: (_) => HomeRootCubit()..initFcm(context),
+            create: (context) =>
+                ProfileInfoCubit(context.read<PetaminRepository>())
+                  ..getProfile(),
           ),
           BlocProvider(
-          create: (_) => HomeCubit(),
+            create: (_) => HomeRootCubit()..initFcm(context),
+          ),
+          BlocProvider(
+            create: (_) => HomeCubit(),
           ),
           BlocProvider(create: (_) => CallCubit()),
         ],
         child: const AppView(),
       ),
-      );
+    );
   }
 }
 

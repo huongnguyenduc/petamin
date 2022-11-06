@@ -8,7 +8,8 @@ import 'package:formz/formz.dart';
 part 'login_state.dart';
 
 class LoginCubit extends Cubit<LoginState> {
-  LoginCubit(this._petaminRepository) : super(const LoginState());
+  LoginCubit(this._petaminRepository) : 
+  super(const LoginState());
 
   final PetaminRepository _petaminRepository;
 

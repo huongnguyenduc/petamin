@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'network_helper.dart';
-
+import 'package:http_parser/http_parser.dart';
 enum RequestType { get, put, post, delete, patch }
 
 class NetworkService {
@@ -72,6 +73,7 @@ class NetworkService {
               e.key,
               e.value!.readAsBytesSync(),
               filename: e.value!.path.split('/').last,
+              contentType: MediaType('image', 'jpeg'),
             ),
           ),
         );

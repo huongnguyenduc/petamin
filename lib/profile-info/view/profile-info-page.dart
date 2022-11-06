@@ -20,11 +20,21 @@ class ProfileInfoPage extends StatelessWidget {
   }
 }
 
-class ProfileInfoView extends StatelessWidget {
+class ProfileInfoView extends StatefulWidget {
   const ProfileInfoView({
     Key? key,
   }) : super(key: key);
 
+  @override
+  State<ProfileInfoView> createState() => _ProfileInfoViewState();
+}
+
+class _ProfileInfoViewState extends State<ProfileInfoView> {
+  TextEditingController nameController = TextEditingController();
+  TextEditingController bioController = TextEditingController();
+  TextEditingController dayOfBirthController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,16 +92,12 @@ class ProfileInfoView extends StatelessWidget {
                 SizedBox(
                   height: 32.0,
                 ),
-                BlocBuilder<ProfileInfoCubit, ProfileInfoState>(
-                  buildWhen: (previous, current) =>
-                      previous.status != current.status,
-                  builder: (context, state) {
-                    return TextFormField(
-                      key: UniqueKey(),
-                      onChanged: (name) =>
-                          context.read<ProfileInfoCubit>().updateName(name),
+                BlocListener<ProfileInfoCubit, ProfileInfoState>(
+                  listener: (context, state) =>
+                      nameController.text = state.name,
+                  child: TextFormField(
+                      controller: nameController,
                       style: CustomTextTheme.body2(context),
-                      initialValue: state.name.toString(),
                       decoration: InputDecoration(
                         fillColor: AppTheme.colors.white,
                         filled: true,
@@ -112,20 +118,18 @@ class ProfileInfoView extends StatelessWidget {
                         labelStyle: CustomTextTheme.body2(context,
                             textColor: AppTheme.colors.lightGreen),
                       ),
-                    );
-                  },
+                    ),
                 ),
                 SizedBox(
                   height: 8.0,
                 ),
-                BlocBuilder<ProfileInfoCubit, ProfileInfoState>(
-                  buildWhen: (previous, current) => previous.bio != current.bio,
-                  builder: (context, state) {
-                    return TextFormField(
-                      onChanged: (bio) =>
-                          context.read<ProfileInfoCubit>().updateBio(bio),
+                BlocListener<ProfileInfoCubit, ProfileInfoState>(
+                  listener: (context, state) =>
+                      bioController.text = state.bio,
+                  child: 
+                   TextFormField(
+                      controller: bioController,
                       style: CustomTextTheme.body2(context),
-                      initialValue: state.bio,
                       decoration: InputDecoration(
                         fillColor: AppTheme.colors.white,
                         filled: true,
@@ -146,34 +150,31 @@ class ProfileInfoView extends StatelessWidget {
                         labelStyle: CustomTextTheme.body2(context,
                             textColor: AppTheme.colors.lightGreen),
                       ),
-                    );
-                  },
+                    ),
                 ),
                 SizedBox(
                   height: 8.0,
                 ),
-                BlocBuilder<ProfileInfoCubit, ProfileInfoState>(
-                  buildWhen: (previous, current) =>
-                      previous.status != current.status,
-                  builder: (context, state) {
-                    print("date of birth: ${state.dayOfBirth}");
-                    return TextFormField(
-                      key: UniqueKey(),
+                BlocListener<ProfileInfoCubit, ProfileInfoState>(
+                  listener: (context, state) =>
+                      dayOfBirthController.text = DateFormat("dd/MM/yyyy").format(DateTime.parse(state.dayOfBirth)),
+                  child:
+                   TextFormField(
+                      controller: dayOfBirthController,
                       style: CustomTextTheme.body2(context),
                       readOnly: true,
-                      initialValue: DateFormat("dd/MM/yyyy")
-                          .format(DateTime.parse(state.dayOfBirth)),
                       onTap: () async {
                         final DateTime? picked = await showDatePicker(
                           context: context,
-                          initialDate: DateTime.now(),
+                          initialDate: DateFormat("dd/MM/yyyy").parse(dayOfBirthController.text),
                           firstDate: DateTime(1969),
                           lastDate: DateTime(2025),
                         );
-                        if (picked != null && picked != state.dayOfBirth)
-                          context
-                              .read<ProfileInfoCubit>()
-                              .updateDayOfBirth(picked.toString());
+                        if (picked != null && picked != dayOfBirthController.text)
+                        dayOfBirthController.text = DateFormat("dd/MM/yyyy").format(picked);
+                          // context
+                          //     .read<ProfileInfoCubit>()
+                          //     .updateDayOfBirth(picked.toString());
                       },
                       decoration: InputDecoration(
                         suffixIcon: Icon(
@@ -199,23 +200,18 @@ class ProfileInfoView extends StatelessWidget {
                         labelStyle: CustomTextTheme.body2(context,
                             textColor: AppTheme.colors.lightGreen),
                       ),
-                    );
-                  },
+                    ),
                 ),
                 SizedBox(
                   height: 8.0,
                 ),
-                BlocBuilder<ProfileInfoCubit, ProfileInfoState>(
-                  buildWhen: (previous, current) =>
-                      previous.status != current.status,
-                  builder: (context, state) {
-                    return TextFormField(
+                BlocListener<ProfileInfoCubit, ProfileInfoState>(
+                  listener: (context, state) =>
+                      addressController.text = state.address,
+                  child: TextFormField(
+                    controller: addressController,
                       key: UniqueKey(),
-                      onChanged: (address) => context
-                          .read<ProfileInfoCubit>()
-                          .updateAddress(address),
                       style: CustomTextTheme.body2(context),
-                      initialValue: state.address,
                       decoration: InputDecoration(
                         fillColor: AppTheme.colors.white,
                         filled: true,
@@ -236,23 +232,18 @@ class ProfileInfoView extends StatelessWidget {
                         labelStyle: CustomTextTheme.body2(context,
                             textColor: AppTheme.colors.lightGreen),
                       ),
-                    );
-                  },
+                    ),
                 ),
                 SizedBox(
                   height: 8.0,
                 ),
-                BlocBuilder<ProfileInfoCubit, ProfileInfoState>(
-                  buildWhen: (previous, current) =>
-                      previous.status != current.status,
-                  builder: (context, state) {
-                    return TextFormField(
-                      key: UniqueKey(),
-                      onChanged: (phone) => context
-                          .read<ProfileInfoCubit>()
-                          .updatePhoneNumber(phone),
+                BlocListener<ProfileInfoCubit, ProfileInfoState>(
+                  listener: (context, state) =>
+                      phoneController.text = state.phoneNumber,
+                  child:
+                  TextFormField(    
+                     controller: phoneController,
                       style: CustomTextTheme.body2(context),
-                      initialValue: state.phoneNumber,
                       decoration: InputDecoration(
                         fillColor: AppTheme.colors.white,
                         filled: true,
@@ -273,8 +264,7 @@ class ProfileInfoView extends StatelessWidget {
                         labelStyle: CustomTextTheme.body2(context,
                             textColor: AppTheme.colors.lightGreen),
                       ),
-                    );
-                  },
+                    ),
                 ),
                 SizedBox(
                   height: 8.0,
@@ -332,7 +322,13 @@ class ProfileInfoView extends StatelessWidget {
                         primary: AppTheme.colors.pink,
                         onSurface: AppTheme.colors.pink),
                     onPressed: () => {
-                      context.read<ProfileInfoCubit>().updateProfile(),
+                      context.read<ProfileInfoCubit>().updateProfile(
+                        name: nameController.text,
+                        bio: bioController.text,
+                        address: addressController.text,
+                        phoneNumber: phoneController.text,
+                        dayOfBirth: dayOfBirthController.text,
+                      ),
                     },
                     icon: state.submitStatus.isLoading
                         ? Container(

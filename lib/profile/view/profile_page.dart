@@ -15,7 +15,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ProfileInfoCubit(context.read<PetaminRepository>()),
+      create: (context) => ProfileInfoCubit(context.read<PetaminRepository>())..getProfile(),
       child: ProfileView(),
     );
   }
@@ -210,7 +210,8 @@ class UserInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = context.select((ProfileInfoCubit bloc) => bloc.state);
-    return Row(
+    return
+     Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SquaredAvatar(
@@ -221,14 +222,8 @@ class UserInfo extends StatelessWidget {
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            user.name == null
-                ? Text(
-                    "unknown",
-                    style: CustomTextTheme.label(context),
-                  )
-                : Text(
-                    user.name,
+          children: [ Text(
+                    user.name ?? "unknown",
                     style: CustomTextTheme.label(context),
                   ),
             SizedBox(

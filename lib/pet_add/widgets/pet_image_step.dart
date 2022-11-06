@@ -190,7 +190,7 @@ class PetImage extends StatelessWidget {
                             primary: AppTheme.colors.pink,
                             onSurface: AppTheme.colors.pink),
                         onPressed: () =>
-                            context.read<PetAddCubit>().previousStep(),
+                            context.read<PetAddCubit>().addNewPet(),
                         child:
                             Text('Done', style: CustomTextTheme.label(context)),
                       )

@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "940536959050-dtqp40icqcg3bv097q51i2pnv4umjvsd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.petamin",
+            "certificate_hash": "5a0534ca0f49cb2d8c7b0c29121f7a9e54e54648"
+          }
+        },
+        {
           "client_id": "940536959050-m4abmap4lt4feh2n5uss7piq6m14fq1e.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,6 +37,13 @@
             {
               "client_id": "940536959050-m4abmap4lt4feh2n5uss7piq6m14fq1e.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "940536959050-gt76rsfgemgl7ehija1u34g5pdmd26rg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.petamin"
+              }
             }
           ]
         }

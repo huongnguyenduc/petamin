@@ -17,7 +17,7 @@ class LandingPage extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Text(user.accessToken ?? '', style: textTheme.headline5),
+          Text(user.userId ?? '', style: textTheme.headline5),
         ],
       ),
     );
