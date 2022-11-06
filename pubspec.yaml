@@ -25,13 +25,16 @@ dependencies:
   carousel_slider: ^4.1.1
   image_picker: ^0.8.5+3
   intl: ^0.17.0
-
+  flutter_speed_dial: ^6.2.0
+  dropdown_search: ^5.0.3
+  dio: ^4.0.6
 dev_dependencies:
   bloc_test: ^9.1.0
   flutter_test:
     sdk: flutter
   mocktail: ^0.3.0
   very_good_analysis: ^3.0.1
+
 
 flutter:
   uses-material-design: true

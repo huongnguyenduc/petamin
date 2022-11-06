@@ -3,3 +3,5 @@ library form_inputs;
 export './src/confirmed_password.dart';
 export './src/email.dart';
 export './src/password.dart';
+export './src/price.dart';
+export './src/name.dart';
