@@ -1,6 +1,9 @@
 import 'package:Petamin/pet-info/pet-info.dart';
+import 'package:Petamin/pet_post/pet_post.dart';
 import 'package:Petamin/theme/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class PetDetailPage extends StatelessWidget {
   const PetDetailPage({super.key});
@@ -11,6 +14,46 @@ class PetDetailPage extends StatelessWidget {
       length: 2,
       child: Scaffold(
           backgroundColor: AppTheme.colors.white,
+          floatingActionButton: SpeedDial(
+            animatedIcon: AnimatedIcons.menu_close,
+            animatedIconTheme: IconThemeData(size: 22.0),
+            backgroundColor: AppTheme.colors.green,
+            visible: true,
+            curve: Curves.bounceIn,
+            overlayOpacity: 0.4,
+            children: [
+              SpeedDialChild(
+                  child: SvgPicture.asset(
+                    'assets/icons/send.svg',
+                    width: 16.0,
+                    height: 16.0,
+                  ),
+                  backgroundColor: AppTheme.colors.green,
+                  label: 'Transfer',
+                  labelStyle: TextStyle(fontSize: 18.0),
+                  onTap: () => Navigator.of(context, rootNavigator: true)
+                      .push(MaterialPageRoute(
+                      builder: (context) => const PetTransfer()))),
+              SpeedDialChild(
+                  child: SvgPicture.asset(
+                    'assets/icons/home_heart.svg',
+                    width: 24.0,
+                    height: 24.0,
+                  ),
+                  backgroundColor: AppTheme.colors.green,
+                  label: 'Post Adopt',
+                  labelStyle: TextStyle(fontSize: 18.0),
+                  onTap: () => Navigator.of(context, rootNavigator: true)
+                      .push(MaterialPageRoute(
+                      builder: (context) => const PetCreatePost()))),
+              SpeedDialChild(
+                  child: Icon(Icons.delete, color: AppTheme.colors.white,),
+                  backgroundColor: AppTheme.colors.green,
+                  label: 'Delete',
+                  labelStyle: TextStyle(fontSize: 18.0),
+                  onTap: () => print('Delete')),
+            ],
+          ),
           body: CustomScrollView(
             physics: AlwaysScrollableScrollPhysics(),
             slivers: [
@@ -20,16 +63,19 @@ class PetDetailPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    Container(
-                        width: 35.0,
-                        height: 35.0,
-                        decoration: BoxDecoration(
-                            color: AppTheme.colors.white,
-                            borderRadius: BorderRadius.circular(8.0)),
-                        child: Icon(
-                          Icons.arrow_back_outlined,
-                          color: AppTheme.colors.green,
-                        )),
+                    GestureDetector(
+                      onTap: () => Navigator.of(context).pop(),
+                      child: Container(
+                          width: 35.0,
+                          height: 35.0,
+                          decoration: BoxDecoration(
+                              color: AppTheme.colors.green.withOpacity(0.4),
+                              borderRadius: BorderRadius.circular(8.0)),
+                          child: Icon(
+                            Icons.arrow_back_outlined,
+                            color: AppTheme.colors.yellow,
+                          )),
+                    ),
                     // Your widgets here
                   ],
                 ),
