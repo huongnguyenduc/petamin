@@ -1,5 +1,6 @@
-import 'package:Petamin/chat/view/chat_page.dart';
+import 'package:Petamin/chat/chat.dart';
 import 'package:Petamin/theme/theme.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -12,31 +13,48 @@ class Chat {
   Chat(this.name, this.text, this.time, this.messageCount);
 }
 
-final _listChat = [
-  Chat('Peter Thornton', 'Can I adopt ur cutie pe...', 'Just now', '2'),
-  Chat('B.A. Baracus', 'You are the best!', '23m ago', '21'),
-  Chat('Peter Thornton', 'Can I adopt ur cutie pe...', 'Just now', '78'),
-  Chat('Peter Thornton', 'Can I adopt ur cutie pe...', 'Just now', '25'),
-  Chat('Kha', 'Can I adopt ur cutie pe...', 'Just now', '99+'),
-  Chat('Huong', 'Can I adopt ur cutie pe...', 'Just now', '12'),
-  Chat('Huy', 'Can I adopt ur cutie pe...', 'Just now', '98'),
-  Chat('Khang', 'Can I adopt ur cutie pe...', 'Just now', '65'),
-  Chat('Peter Thornton', 'Can I adopt ur cutie pe...', 'Just now', '9'),
-];
-
-class ChatListPage extends StatelessWidget {
+class ChatListPage extends StatefulWidget {
   const ChatListPage({super.key});
 
   static Page<void> page() => const MaterialPage<void>(child: ChatListPage());
 
   @override
+  State<ChatListPage> createState() => _ChatListPageState();
+}
+
+class _ChatListPageState extends State<ChatListPage> {
+  var _listChat = [];
+
+  @override
+  initState() {
+    super.initState();
+    _getConversation();
+  }
+
+  _getConversation() {
+    Dio()
+        .get(
+      "http://192.168.3.158:3000/users/conversations",
+      options: Options(
+        headers: {
+          "Authorization":
+              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imh1eUBjb2RlbGlnaHQuY28iLCJ1c2VySWQiOiIwYmQ5NThlNi05YjU5LTQzMDgtODI4MC0zM2RkY2JhYzRhZjEiLCJpYXQiOjE2Njc3MjA5NTcsImV4cCI6MTY2ODMyNTc1N30.N1aqAOa-rxXVLVgLMDQuKzKksD5kP1jViYZw5C1EJxw",
+        },
+      ),
+    )
+        .then((response) {
+      print(response.data);
+      setState(() {
+        _listChat = response.data;
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: [
-          IconButton(
-              onPressed: () {}, icon: SvgPicture.asset('assets/icons/bell.svg'))
-        ],
+        actions: [IconButton(onPressed: () {}, icon: SvgPicture.asset('assets/icons/bell.svg'))],
         backgroundColor: AppTheme.colors.white,
         elevation: 0,
       ),
@@ -54,10 +72,8 @@ class ChatListPage extends StatelessWidget {
                 itemCount: _listChat.length,
                 itemBuilder: (context, index) {
                   return ChatCard(
-                      chat: _listChat[index],
-                      onTap: () => Navigator.of(context, rootNavigator: true)
-                          .push(MaterialPageRoute(
-                              builder: (context) => const ChatPage())));
+                    chat: _listChat[index],
+                  );
                 }),
           )
         ],
@@ -77,9 +93,7 @@ class SearchBar extends StatelessWidget {
       padding: const EdgeInsets.all(15.0),
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 20.0),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(25.0),
-            color: AppTheme.colors.superLightPurple),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(25.0), color: AppTheme.colors.superLightPurple),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -93,8 +107,7 @@ class SearchBar extends StatelessWidget {
             ),
             Text(
               "Search",
-              style: CustomTextTheme.label(context,
-                  textColor: AppTheme.colors.grey),
+              style: CustomTextTheme.label(context, textColor: AppTheme.colors.grey),
             ),
           ],
         ),
@@ -107,16 +120,16 @@ class ChatCard extends StatelessWidget {
   const ChatCard({
     Key? key,
     required this.chat,
-    required this.onTap,
   }) : super(key: key);
 
-  final Chat chat;
-  final VoidCallback onTap;
+  final chat;
 
   @override
   Widget build(BuildContext context) {
+    print("caht ${chat["id"]}");
     return InkWell(
-      onTap: onTap,
+      onTap: () => Navigator.of(context, rootNavigator: true)
+          .push(MaterialPageRoute(builder: (context) => ChatPage(conversationId: chat["id"]))),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 30.0),
         child: Row(
@@ -134,15 +147,12 @@ class ChatCard extends StatelessWidget {
                   child: Container(
                     width: 24.0,
                     height: 24.0,
-                    decoration: BoxDecoration(
-                        color: AppTheme.colors.pink,
-                        borderRadius: BorderRadius.circular(12.0)),
+                    decoration: BoxDecoration(color: AppTheme.colors.pink, borderRadius: BorderRadius.circular(12.0)),
                     child: Center(
                       child: Text(
-                        chat.messageCount,
+                        "1",
                         style: CustomTextTheme.caption(context,
-                            textColor: AppTheme.colors.white,
-                            fontWeight: FontWeight.bold),
+                            textColor: AppTheme.colors.white, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -156,7 +166,7 @@ class ChatCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      chat.name,
+                      chat["users"][1]["chat_profile.dart"]["name"],
                       style: CustomTextTheme.heading4(
                         context,
                         textColor: AppTheme.colors.black,
@@ -166,18 +176,16 @@ class ChatCard extends StatelessWidget {
                       height: 5.0,
                     ),
                     Text(
-                      chat.text,
-                      style: CustomTextTheme.label(context,
-                          textColor: AppTheme.colors.solidGrey),
+                      chat["users"][1]["chat_profile.dart"]["name"],
+                      style: CustomTextTheme.label(context, textColor: AppTheme.colors.solidGrey),
                     ),
                   ],
                 ),
               ),
             ),
             Text(
-              chat.time,
-              style: CustomTextTheme.caption(context,
-                  textColor: AppTheme.colors.grey),
+              chat["users"][1]["chat_profile.dart"]["name"],
+              style: CustomTextTheme.caption(context, textColor: AppTheme.colors.grey),
             ),
           ],
         ),

@@ -1,4 +1,4 @@
-import 'package:Petamin/chat/cubit/chat_detail_cubit.dart';
+import 'package:Petamin/chat/chat.dart';
 import 'package:Petamin/theme/app_theme.dart';
 import 'package:Petamin/theme/text_styles.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +8,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 class ChatInputField extends StatelessWidget {
   ChatInputField({
     Key? key,
+    required this.scrollController,
   }) : super(key: key);
 
+  final ScrollController scrollController;
   final TextEditingController _textMessageController = TextEditingController();
 
   @override
@@ -31,17 +33,22 @@ class ChatInputField extends StatelessWidget {
               decoration: InputDecoration(
                   hintText: "Type a message",
                   border: InputBorder.none,
-                  hintStyle: CustomTextTheme.caption(context,
-                      textColor: AppTheme.colors.grey,
-                      fontWeight: FontWeight.w700)),
+                  hintStyle:
+                      CustomTextTheme.caption(context, textColor: AppTheme.colors.grey, fontWeight: FontWeight.w700)),
             ),
           ),
           SizedBox(
             width: 8.0,
           ),
           GestureDetector(
-            onTap: () => {
+            onTap: () async => {
               context.read<ChatDetailCubit>().sendMessage(),
+              // Scroll to bottom ListView by controller
+              await scrollController.animateTo(
+                scrollController.position.maxScrollExtent + 75.0,
+                curve: Curves.easeOut,
+                duration: const Duration(milliseconds: 300),
+              ),
               _textMessageController.clear()
             },
             child: SvgPicture.asset(
