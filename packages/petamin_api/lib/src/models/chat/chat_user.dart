@@ -4,17 +4,17 @@ import '../models.dart';
 
 part 'chat_user.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull: false)
 class ChatUser {
   ChatUser({
-    required this.id,
-    required this.email,
-    required this.profile,
+    this.id = "",
+    this.email = "",
+    this.profile,
   });
 
-  String id;
-  String email;
-  ChatProfile profile;
+  String? id;
+  String? email;
+  ChatProfile? profile;
 
   factory ChatUser.fromJson(Map<String, dynamic> json) => _$ChatUserFromJson(json);
 

@@ -17,8 +17,10 @@ class ChatPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get session from app bloc
+    final session = context.read<AppSessionBloc>().state.session;
     return BlocProvider(
-      create: (_) => ChatDetailCubit(conversationId)..initSocket(),
+      create: (_) => ChatDetailCubit(conversationId, session.accessToken)..initSocket(),
       child: ChatDetailPage(),
     );
   }

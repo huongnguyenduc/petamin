@@ -4,26 +4,22 @@ import 'chat.dart';
 
 part 'chat_conversation.g.dart';
 
-@JsonSerializable()
+// Parse List of ChatConversation from JSON to Dart
+List<ChatConversation> chatConversationFromJson(List<dynamic> conversations) =>
+    List<ChatConversation>.from(conversations.map((x) => ChatConversation.fromJson(x)));
+
+@JsonSerializable(includeIfNull: false)
 class ChatConversation {
   ChatConversation({
-    required this.id,
-    this.title,
-    this.description,
-    this.background,
-    this.emoji,
-    required this.lastMessageId,
-    required this.users,
+    this.id = "",
+    this.lastMessageId = "",
+    this.users = const [],
     this.lastMessage,
   });
 
-  String id;
-  String? title;
-  String? description;
-  String? background;
-  String? emoji;
-  String lastMessageId;
-  List<ChatUser> users;
+  String? id;
+  String? lastMessageId;
+  List<ChatUser>? users;
   ChatLastMessage? lastMessage;
 
   factory ChatConversation.fromJson(Map<String, dynamic> json) => _$ChatConversationFromJson(json);

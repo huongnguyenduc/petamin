@@ -5,8 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:petamin_api/petamin_api.dart';
 import 'package:petamin_api/src/networking/network_service.dart';
-import 'package:petamin_api/src/networking/network_wrapper.dart';
 import 'package:petamin_api/src/static/static_values.dart';
+
 import 'networking/network_enums.dart';
 import 'networking/network_helper.dart';
 
@@ -18,10 +18,7 @@ class PetaminApiClient {
   /// Get [User] profile `/profile`.
   Future<User> getUserProfile({required String accessToken}) async {
     final response = await NetworkService.sendRequest(
-        requestType: RequestType.get,
-        baseUrl: _baseUrl,
-        endPoint: '/profile',
-        accessToken: accessToken);
+        requestType: RequestType.get, baseUrl: _baseUrl, endPoint: '/profile', accessToken: accessToken);
     debugPrint('Response ${response?.statusCode} ${response?.body}');
     return await NetworkHelper.filterResponse(
         response: response,
@@ -35,10 +32,7 @@ class PetaminApiClient {
 
   Future<bool> checkToken({required String accessToken}) async {
     final response = await NetworkService.sendRequest(
-        requestType: RequestType.get,
-        baseUrl: _baseUrl,
-        endPoint: '/profile',
-        accessToken: accessToken);
+        requestType: RequestType.get, baseUrl: _baseUrl, endPoint: '/profile', accessToken: accessToken);
     debugPrint('Response ${response?.body}');
     if (response?.statusCode == 401) return false;
     return true;
@@ -104,13 +98,9 @@ class PetaminApiClient {
         });
   }
 
-  static Future<R> httpPost<R>(
-      {required String endPoint, required Map<String, dynamic> body}) async {
+  static Future<R> httpPost<R>({required String endPoint, required Map<String, dynamic> body}) async {
     final response = await NetworkService.sendRequest(
-        requestType: RequestType.post,
-        baseUrl: _baseUrl,
-        endPoint: endPoint,
-        body: body);
+        requestType: RequestType.post, baseUrl: _baseUrl, endPoint: endPoint, body: body);
     return await NetworkHelper.filterResponse(
         response: response,
         parameterName: CallBackParameterName.all,
@@ -122,13 +112,8 @@ class PetaminApiClient {
   }
 
   /// Register `/auth/register`.
-  Future<Auth> register(
-      {required String name,
-      required String email,
-      required String password}) async {
-    return await httpPost(
-        endPoint: '/auth/register',
-        body: {'name': name, 'email': email, 'password': password});
+  Future<Auth> register({required String name, required String email, required String password}) async {
+    return await httpPost(endPoint: '/auth/register', body: {'name': name, 'email': email, 'password': password});
     // final response = await NetworkService.sendRequest(
     //     requestType: RequestType.post,
     //     baseUrl: _baseUrl,
@@ -175,16 +160,14 @@ class PetaminApiClient {
     return await NetworkHelper.filterResponse(
         response: response,
         parameterName: CallBackParameterName.all,
-        callBack: (json) =>
-            (json as List<dynamic>).map((pet) => PetRes.fromJson(pet)).toList(),
+        callBack: (json) => (json as List<dynamic>).map((pet) => PetRes.fromJson(pet)).toList(),
         onFailureCallBackWithMessage: (errorType, msg) {
           debugPrint('Error type-$errorType - Message $msg');
           return null;
         });
   }
 
-  Future<PetRes> getPetDetail(
-      {required String id, required String accessToken}) async {
+  Future<PetRes> getPetDetail({required String id, required String accessToken}) async {
     final response = await NetworkService.sendRequest(
       requestType: RequestType.get,
       baseUrl: _baseUrl,
@@ -202,8 +185,7 @@ class PetaminApiClient {
         });
   }
 
-  Future<bool> updatePet(
-      {required PetRes pet, required String accessToken}) async {
+  Future<bool> updatePet({required PetRes pet, required String accessToken}) async {
     debugPrint("Update Pet API");
     final response = await NetworkService.sendRequest(
       requestType: RequestType.patch,
@@ -212,7 +194,7 @@ class PetaminApiClient {
       body: pet.toJson(),
       accessToken: accessToken,
     );
-     debugPrint('Response ${response?.body}');
+    debugPrint('Response ${response?.body}');
     if (response!.statusCode == 200) {
       return true;
     } else {
@@ -249,8 +231,8 @@ class PetaminApiClient {
     debugPrint('Response ${response?.body}');
     return await NetworkHelper.filterResponse(
         response: response,
-        parameterName: CallBackParameterName.data,
-        callBack: (json) => ChatConversation.fromJson(json),
+        parameterName: CallBackParameterName.all,
+        callBack: (json) => chatConversationFromJson(json),
         onFailureCallBackWithMessage: (errorType, msg) {
           debugPrint('Error type-$errorType - Message $msg');
           return null;

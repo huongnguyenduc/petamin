@@ -7,28 +7,22 @@ part of 'chat_profile.dart';
 // **************************************************************************
 
 ChatProfile _$ChatProfileFromJson(Map<String, dynamic> json) => ChatProfile(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      avatar: json['avatar'] as String?,
-      address: json['address'] as String?,
-      phone: json['phone'] as String?,
-      bio: json['bio'] as String?,
-      gender: json['gender'] as String?,
-      birthday: json['birthday'] as String?,
-      totalFollowers: json['totalFollowers'] as int,
-      totalFollowings: json['totalFollowings'] as int,
+      id: json['id'] as String? ?? "",
+      name: json['name'] as String? ?? "",
+      avatar: json['avatar'] as String? ?? "",
     );
 
-Map<String, dynamic> _$ChatProfileToJson(ChatProfile instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'avatar': instance.avatar,
-      'address': instance.address,
-      'phone': instance.phone,
-      'bio': instance.bio,
-      'gender': instance.gender,
-      'birthday': instance.birthday,
-      'totalFollowers': instance.totalFollowers,
-      'totalFollowings': instance.totalFollowings,
-    };
+Map<String, dynamic> _$ChatProfileToJson(ChatProfile instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('id', instance.id);
+  writeNotNull('name', instance.name);
+  writeNotNull('avatar', instance.avatar);
+  return val;
+}

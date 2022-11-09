@@ -9,22 +9,24 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 part 'chat_detail_state.dart';
 
 class ChatDetailCubit extends Cubit<ChatDetailState> {
-  ChatDetailCubit(this.conversationId) : super(ChatDetailState());
+  ChatDetailCubit(this.conversationId, this.accessToken) : super(ChatDetailState());
   late IO.Socket socket;
   final conversationId;
+  final accessToken;
 
   void initSocket() {
-    socket = IO.io('http://192.168.3.158:3000', <String, dynamic>{
+    final apiLink = dotenv.env['API_LINK'];
+    socket = IO.io(apiLink, <String, dynamic>{
       'autoConnect': false,
       'transports': ['websocket'],
       'extraHeaders': {
-        'Authorization':
-            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imh1eUBjb2RlbGlnaHQuY28iLCJ1c2VySWQiOiIwYmQ5NThlNi05YjU5LTQzMDgtODI4MC0zM2RkY2JhYzRhZjEiLCJpYXQiOjE2Njc3MjA5NTcsImV4cCI6MTY2ODMyNTc1N30.N1aqAOa-rxXVLVgLMDQuKzKksD5kP1jViYZw5C1EJxw'
+        'Authorization': 'Bearer $accessToken',
       },
     });
 

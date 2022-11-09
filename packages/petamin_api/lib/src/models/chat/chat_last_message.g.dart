@@ -8,18 +8,24 @@ part of 'chat_last_message.dart';
 
 ChatLastMessage _$ChatLastMessageFromJson(Map<String, dynamic> json) =>
     ChatLastMessage(
-      id: json['id'] as String,
-      status: json['status'] as bool,
-      message: json['message'] as String,
-      userId: json['userId'] as String,
-      conversationId: json['conversationId'] as String,
+      id: json['id'] as String? ?? "",
+      status: json['status'] as bool? ?? false,
+      message: json['message'] as String? ?? "",
+      userId: json['userId'] as String? ?? "",
     );
 
-Map<String, dynamic> _$ChatLastMessageToJson(ChatLastMessage instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'status': instance.status,
-      'message': instance.message,
-      'userId': instance.userId,
-      'conversationId': instance.conversationId,
-    };
+Map<String, dynamic> _$ChatLastMessageToJson(ChatLastMessage instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('id', instance.id);
+  writeNotNull('status', instance.status);
+  writeNotNull('message', instance.message);
+  writeNotNull('userId', instance.userId);
+  return val;
+}

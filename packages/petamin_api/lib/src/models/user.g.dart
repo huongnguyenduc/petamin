@@ -26,6 +26,7 @@ Map<String, dynamic> _$UserToJson(User instance) {
       val[key] = value;
     }
   }
+
   writeNotNull('userId', instance.userId);
   writeNotNull('name', instance.name);
   writeNotNull('avatar', instance.avatar);
