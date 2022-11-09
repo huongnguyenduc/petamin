@@ -35,6 +35,14 @@ class _ProfileInfoViewState extends State<ProfileInfoView> {
   TextEditingController dayOfBirthController = TextEditingController();
   TextEditingController addressController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
+  void initState() {
+    super.initState();
+    nameController.text = ' ';
+    bioController.text = ' ';
+    addressController.text = ' ';
+    phoneController.text = '          ';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,111 +104,114 @@ class _ProfileInfoViewState extends State<ProfileInfoView> {
                   listener: (context, state) =>
                       nameController.text = state.name,
                   child: TextFormField(
-                      controller: nameController,
-                      style: CustomTextTheme.body2(context),
-                      decoration: InputDecoration(
-                        fillColor: AppTheme.colors.white,
-                        filled: true,
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                        focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: AppTheme.colors.pink, width: 2.0),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(16.0))),
-                        enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: AppTheme.colors.lightPurple, width: 2.0),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(16.0))),
-                        helperText: '',
-                        labelText: 'Name',
-                        labelStyle: CustomTextTheme.body2(context,
-                            textColor: AppTheme.colors.lightGreen),
-                      ),
+                    controller: nameController,
+                    style: CustomTextTheme.body2(context),
+                    decoration: InputDecoration(
+                      errorText: nameController.value.text.isEmpty
+                          ? 'Name is required'
+                          : null,
+                      fillColor: AppTheme.colors.white,
+                      filled: true,
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: AppTheme.colors.pink, width: 2.0),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(16.0))),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: AppTheme.colors.lightPurple, width: 2.0),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(16.0))),
+                      helperText: '',
+                      labelText: 'Name',
+                      labelStyle: CustomTextTheme.body2(context,
+                          textColor: AppTheme.colors.lightGreen),
                     ),
+                  ),
                 ),
                 SizedBox(
                   height: 8.0,
                 ),
                 BlocListener<ProfileInfoCubit, ProfileInfoState>(
-                  listener: (context, state) =>
-                      bioController.text = state.bio,
-                  child: 
-                   TextFormField(
-                      controller: bioController,
-                      style: CustomTextTheme.body2(context),
-                      decoration: InputDecoration(
-                        fillColor: AppTheme.colors.white,
-                        filled: true,
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                        focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: AppTheme.colors.pink, width: 2.0),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(16.0))),
-                        enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: AppTheme.colors.lightPurple, width: 2.0),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(16.0))),
-                        helperText: '',
-                        labelText: 'Bio',
-                        labelStyle: CustomTextTheme.body2(context,
-                            textColor: AppTheme.colors.lightGreen),
-                      ),
+                  listener: (context, state) => bioController.text = state.bio,
+                  child: TextFormField(
+                    controller: bioController,
+                    style: CustomTextTheme.body2(context),
+                    decoration: InputDecoration(
+                      fillColor: AppTheme.colors.white,
+                      filled: true,
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: AppTheme.colors.pink, width: 2.0),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(16.0))),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: AppTheme.colors.lightPurple, width: 2.0),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(16.0))),
+                      helperText: '',
+                      labelText: 'Bio',
+                      labelStyle: CustomTextTheme.body2(context,
+                          textColor: AppTheme.colors.lightGreen),
                     ),
+                  ),
                 ),
                 SizedBox(
                   height: 8.0,
                 ),
                 BlocListener<ProfileInfoCubit, ProfileInfoState>(
-                  listener: (context, state) =>
-                      dayOfBirthController.text = DateFormat("dd/MM/yyyy").format(DateTime.parse(state.dayOfBirth)),
-                  child:
-                   TextFormField(
-                      controller: dayOfBirthController,
-                      style: CustomTextTheme.body2(context),
-                      readOnly: true,
-                      onTap: () async {
-                        final DateTime? picked = await showDatePicker(
-                          context: context,
-                          initialDate: DateFormat("dd/MM/yyyy").parse(dayOfBirthController.text),
-                          firstDate: DateTime(1969),
-                          lastDate: DateTime(2025),
-                        );
-                        if (picked != null && picked != dayOfBirthController.text)
-                        dayOfBirthController.text = DateFormat("dd/MM/yyyy").format(picked);
-                          // context
-                          //     .read<ProfileInfoCubit>()
-                          //     .updateDayOfBirth(picked.toString());
-                      },
-                      decoration: InputDecoration(
-                        suffixIcon: Icon(
-                          Icons.calendar_today_outlined,
-                          color: AppTheme.colors.green,
-                        ),
-                        fillColor: AppTheme.colors.white,
-                        filled: true,
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                        focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: AppTheme.colors.pink, width: 2.0),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(16.0))),
-                        enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: AppTheme.colors.lightPurple, width: 2.0),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(16.0))),
-                        helperText: '',
-                        labelText: 'Day of Birth',
-                        labelStyle: CustomTextTheme.body2(context,
-                            textColor: AppTheme.colors.lightGreen),
+                  listener: (context, state) => dayOfBirthController.text =
+                      DateFormat("dd/MM/yyyy")
+                          .format(DateTime.parse(state.dayOfBirth)),
+                  child: TextFormField(
+                    controller: dayOfBirthController,
+                    style: CustomTextTheme.body2(context),
+                    readOnly: true,
+                    onTap: () async {
+                      final DateTime? picked = await showDatePicker(
+                        context: context,
+                        initialDate: DateFormat("dd/MM/yyyy")
+                            .parse(dayOfBirthController.text),
+                        firstDate: DateTime(1969),
+                        lastDate: DateTime(2025),
+                      );
+                      if (picked != null && picked != dayOfBirthController.text)
+                        dayOfBirthController.text =
+                            DateFormat("dd/MM/yyyy").format(picked);
+                      // context
+                      //     .read<ProfileInfoCubit>()
+                      //     .updateDayOfBirth(picked.toString());
+                    },
+                    decoration: InputDecoration(
+                      suffixIcon: Icon(
+                        Icons.calendar_today_outlined,
+                        color: AppTheme.colors.green,
                       ),
+                      fillColor: AppTheme.colors.white,
+                      filled: true,
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: AppTheme.colors.pink, width: 2.0),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(16.0))),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: AppTheme.colors.lightPurple, width: 2.0),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(16.0))),
+                      helperText: '',
+                      labelText: 'Day of Birth',
+                      labelStyle: CustomTextTheme.body2(context,
+                          textColor: AppTheme.colors.lightGreen),
                     ),
+                  ),
                 ),
                 SizedBox(
                   height: 8.0,
@@ -210,29 +221,28 @@ class _ProfileInfoViewState extends State<ProfileInfoView> {
                       addressController.text = state.address,
                   child: TextFormField(
                     controller: addressController,
-                      key: UniqueKey(),
-                      style: CustomTextTheme.body2(context),
-                      decoration: InputDecoration(
-                        fillColor: AppTheme.colors.white,
-                        filled: true,
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                        focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: AppTheme.colors.pink, width: 2.0),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(16.0))),
-                        enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: AppTheme.colors.lightPurple, width: 2.0),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(16.0))),
-                        helperText: '',
-                        labelText: 'Address',
-                        labelStyle: CustomTextTheme.body2(context,
-                            textColor: AppTheme.colors.lightGreen),
-                      ),
+                    style: CustomTextTheme.body2(context),
+                    decoration: InputDecoration(
+                      fillColor: AppTheme.colors.white,
+                      filled: true,
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: AppTheme.colors.pink, width: 2.0),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(16.0))),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: AppTheme.colors.lightPurple, width: 2.0),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(16.0))),
+                      helperText: '',
+                      labelText: 'Address',
+                      labelStyle: CustomTextTheme.body2(context,
+                          textColor: AppTheme.colors.lightGreen),
                     ),
+                  ),
                 ),
                 SizedBox(
                   height: 8.0,
@@ -240,31 +250,34 @@ class _ProfileInfoViewState extends State<ProfileInfoView> {
                 BlocListener<ProfileInfoCubit, ProfileInfoState>(
                   listener: (context, state) =>
                       phoneController.text = state.phoneNumber,
-                  child:
-                  TextFormField(    
-                     controller: phoneController,
-                      style: CustomTextTheme.body2(context),
-                      decoration: InputDecoration(
-                        fillColor: AppTheme.colors.white,
-                        filled: true,
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                        focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: AppTheme.colors.pink, width: 2.0),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(16.0))),
-                        enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: AppTheme.colors.lightPurple, width: 2.0),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(16.0))),
-                        helperText: '',
-                        labelText: 'Phone number',
-                        labelStyle: CustomTextTheme.body2(context,
-                            textColor: AppTheme.colors.lightGreen),
-                      ),
+                  child: TextFormField(
+                    controller: phoneController,
+                    style: CustomTextTheme.body2(context),
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      errorText: phoneController.value.text.length != 10 
+                          ? 'Phone number must be 10 digits'
+                          : null,
+                      fillColor: AppTheme.colors.white,
+                      filled: true,
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: AppTheme.colors.pink, width: 2.0),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(16.0))),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: AppTheme.colors.lightPurple, width: 2.0),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(16.0))),
+                      helperText: '',
+                      labelText: 'Phone number',
+                      labelStyle: CustomTextTheme.body2(context,
+                          textColor: AppTheme.colors.lightGreen),
                     ),
+                  ),
                 ),
                 SizedBox(
                   height: 8.0,
@@ -323,12 +336,12 @@ class _ProfileInfoViewState extends State<ProfileInfoView> {
                         onSurface: AppTheme.colors.pink),
                     onPressed: () => {
                       context.read<ProfileInfoCubit>().updateProfile(
-                        name: nameController.text,
-                        bio: bioController.text,
-                        address: addressController.text,
-                        phoneNumber: phoneController.text,
-                        dayOfBirth: dayOfBirthController.text,
-                      ),
+                            name: nameController.text,
+                            bio: bioController.text,
+                            address: addressController.text,
+                            phoneNumber: phoneController.text,
+                            dayOfBirth: dayOfBirthController.text,
+                          ),
                     },
                     icon: state.submitStatus.isLoading
                         ? Container(
