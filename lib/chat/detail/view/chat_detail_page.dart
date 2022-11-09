@@ -7,6 +7,7 @@ import 'package:Petamin/shared/shared_widgets.dart';
 import 'package:Petamin/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:petamin_repository/petamin_repository.dart';
 
 // import 'chat_model.dart';
 
@@ -20,7 +21,9 @@ class ChatPage extends StatelessWidget {
     // Get session from app bloc
     final session = context.read<AppSessionBloc>().state.session;
     return BlocProvider(
-      create: (_) => ChatDetailCubit(conversationId, session.accessToken)..initSocket(),
+      create: (_) => ChatDetailCubit(conversationId, session.accessToken, context.read<PetaminRepository>())
+        ..initSocket()
+        ..getMessages(),
       child: ChatDetailPage(),
     );
   }
@@ -30,8 +33,6 @@ class ChatDetailPage extends StatelessWidget {
   ChatDetailPage({
     Key? key,
   }) : super(key: key);
-
-  ScrollController _scrollController = new ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -105,13 +106,18 @@ class ChatDetailPage extends StatelessWidget {
                       return ListView.builder(
                           itemCount: state.messages.length,
                           shrinkWrap: true,
-                          controller: _scrollController,
+                          reverse: true,
+                          controller: context.read<ChatDetailCubit>().scrollController,
                           itemBuilder: (context, index) {
-                            switch (state.messages[index].messageType) {
-                              case ChatMessageType.text:
-                                return TextMessage(chatMessage: state.messages[index]);
-                              case ChatMessageType.image:
-                                return ImageMessage(chatMessage: state.messages[index]);
+                            switch (state.messages[index].type) {
+                              case "TEXT":
+                                return state.messages.length > 0
+                                    ? TextMessage(chatMessage: state.messages[state.messages.length - 1 - index])
+                                    : Container();
+                              case "IMAGE":
+                                return state.messages.length > 0
+                                    ? ImageMessage(chatMessage: state.messages[state.messages.length - 1 - index])
+                                    : Container();
                               default:
                                 return Container();
                             }
@@ -124,7 +130,7 @@ class ChatDetailPage extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    Expanded(child: ChatInputField(scrollController: _scrollController)),
+                    Expanded(child: ChatInputField()),
                     SizedBox(
                       width: 20.0,
                     ),
@@ -153,15 +159,15 @@ class ChatDetailPage extends StatelessWidget {
 class ImageMessage extends StatelessWidget {
   const ImageMessage({super.key, required this.chatMessage});
 
-  final ChatMessage chatMessage;
+  final Message chatMessage;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: chatMessage.isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
+      mainAxisAlignment: chatMessage.isMe! ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
-        if (!chatMessage.isSender) ...[
+        if (!chatMessage.isMe!) ...[
           CircleAvatar(
             radius: 14.0,
             backgroundImage: AssetImage('assets/images/dog.png'),
@@ -194,7 +200,7 @@ class TextMessage extends StatelessWidget {
     required this.chatMessage,
   }) : super(key: key);
 
-  final ChatMessage chatMessage;
+  final Message chatMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -202,9 +208,9 @@ class TextMessage extends StatelessWidget {
       padding: const EdgeInsets.only(top: 16.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: chatMessage.isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: chatMessage.isMe! ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
-          if (!chatMessage.isSender) ...[
+          if (!chatMessage.isMe!) ...[
             CircleAvatar(
               radius: 14.0,
               backgroundImage: AssetImage('assets/images/dog.png'),
@@ -214,24 +220,25 @@ class TextMessage extends StatelessWidget {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
             decoration: BoxDecoration(
-                color: chatMessage.isSender ? AppTheme.colors.pink : AppTheme.colors.lightPurple,
+                color: chatMessage.isMe! ? AppTheme.colors.pink : AppTheme.colors.lightPurple,
                 borderRadius: BorderRadius.circular(20.0)),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  chatMessage.data,
+                  chatMessage.message!,
+                  overflow: TextOverflow.ellipsis,
                   style: CustomTextTheme.body2(context,
-                      textColor: chatMessage.isSender ? AppTheme.colors.white : AppTheme.colors.green),
+                      textColor: chatMessage.isMe! ? AppTheme.colors.white : AppTheme.colors.green),
                 ),
                 SizedBox(
                   width: 16.0,
                 ),
                 Text(
-                  '19:15',
+                  chatMessage.time!.hour.toString() + ":" + chatMessage.time!.minute.toString(),
                   style: CustomTextTheme.caption(context,
-                      textColor: chatMessage.isSender ? AppTheme.colors.white : AppTheme.colors.grey),
+                      textColor: chatMessage.isMe! ? AppTheme.colors.white : AppTheme.colors.grey),
                 )
               ],
             ),

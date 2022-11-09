@@ -2,16 +2,16 @@ import 'package:equatable/equatable.dart';
 
 class LastMessage extends Equatable {
   String message;
-  bool isSender;
+  bool isMe;
 
   LastMessage({
     required this.message,
-    required this.isSender,
+    required this.isMe,
   });
 
   // Empty LastMessage
-  LastMessage.empty() : this(message: '', isSender: false);
+  LastMessage.empty() : this(message: '', isMe: false);
 
   @override
-  List<Object?> get props => [message, isSender];
+  List<Object?> get props => [message, isMe];
 }

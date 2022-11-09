@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:cache/cache.dart';
@@ -228,12 +227,8 @@ class PetaminRepository {
 
   Future<List<Conversation>> getChatConversations() async {
     try {
-      print('getChatConversations1');
       final session = await currentSession;
-      print('getChatConversations2');
       final conversations = await _petaminApiClient.getConversations(accessToken: session.accessToken);
-      print('getChatConversations3 ${json.encode(conversations)}');
-      inspect(conversations);
       return conversations.map((conversation) {
         ChatUser partner = conversation.users!.firstWhere((user) => user.profile!.id != session.userId);
         return Conversation(
@@ -244,14 +239,33 @@ class PetaminRepository {
           ),
           lastMessage: conversation.lastMessage != null
               ? LastMessage(
-                  isSender: partner.id != conversation.lastMessage!.userId,
+                  isMe: partner.id != conversation.lastMessage!.userId,
                   message: conversation.lastMessage!.message ?? "",
                 )
               : LastMessage.empty(),
         );
       }).toList();
     } catch (_) {
-      print('getChatConversations4 ${_.toString()}');
+      throw const CallApiFailure();
+    }
+  }
+
+  // Get Chat Message
+  Future<List<Message>> getChatMessages(String conversationId) async {
+    try {
+      final session = await currentSession;
+      final messages =
+          await _petaminApiClient.getMessages(accessToken: session.accessToken, conversationId: conversationId);
+      return messages.map((message) {
+        return Message(
+          isMe: message.userId == session.userId,
+          message: message.message ?? '',
+          time: message.createdAt ?? DateTime.now(),
+          status: message.status ?? false,
+          type: message.type ?? 'TEXT',
+        );
+      }).toList();
+    } catch (_) {
       throw const CallApiFailure();
     }
   }

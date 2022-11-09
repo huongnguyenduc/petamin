@@ -132,7 +132,6 @@ class ChatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("Chat ne ${chat}");
     return InkWell(
       onTap: () => Navigator.of(context, rootNavigator: true)
           .push(MaterialPageRoute(builder: (context) => ChatPage(conversationId: chat.id))),
@@ -190,7 +189,7 @@ class ChatCard extends StatelessWidget {
               ),
             ),
             Text(
-              chat.lastMessage.isSender ? "You" : chat.partner.name ?? "",
+              chat.lastMessage.isMe ? "You" : chat.partner.name ?? "",
               style: CustomTextTheme.caption(context, textColor: AppTheme.colors.grey),
             ),
           ],

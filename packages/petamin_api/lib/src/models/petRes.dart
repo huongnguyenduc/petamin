@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:json_annotation/json_annotation.dart';
 
 part 'petRes.g.dart';
@@ -32,14 +30,15 @@ class PetRes {
   String? description;
   final String? species;
   final List<Images>? photos;
+
   @override
-  List<Object?> get props =>
-      [id, name, month, year, gender, breed, isNeuter, avatarUrl, weight, description];
+  List<Object?> get props => [id, name, month, year, gender, breed, isNeuter, avatarUrl, weight, description];
 
-  factory PetRes.fromJson(Map<String, dynamic> json) => _$PetFromJson(json);
+  factory PetRes.fromJson(Map<String, dynamic> json) => _$PetResFromJson(json);
 
-  Map<String, dynamic> toJson() => _$PetToJson(this);
+  Map<String, dynamic> toJson() => _$PetResToJson(this);
 }
+
 class Images {
   Images({
     required this.id,
@@ -48,7 +47,7 @@ class Images {
 
   final String id;
   final String imgUrl;
-  
+
   factory Images.fromJson(Map<String, dynamic> json) => Images(
         id: json["id"],
         imgUrl: json["imgUrl"],

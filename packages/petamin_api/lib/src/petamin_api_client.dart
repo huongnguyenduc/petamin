@@ -238,4 +238,22 @@ class PetaminApiClient {
           return null;
         });
   }
+
+// Get [ChatMessage] list `/messages/conversation/{conversationId}`.
+  Future<List<ChatMessage>> getMessages({required String accessToken, required String conversationId}) async {
+    final response = await NetworkService.sendRequest(
+        requestType: RequestType.get,
+        baseUrl: _baseUrl,
+        endPoint: '/messages/conversation/$conversationId',
+        accessToken: accessToken);
+    debugPrint('Response ${response?.body}');
+    return await NetworkHelper.filterResponse(
+        response: response,
+        parameterName: CallBackParameterName.data,
+        callBack: (json) => chatMessageFromJson(json),
+        onFailureCallBackWithMessage: (errorType, msg) {
+          debugPrint('Error type-$errorType - Message $msg');
+          return null;
+        });
+  }
 }
