@@ -1,15 +1,16 @@
+import 'package:Petamin/app/app.dart';
 import 'package:Petamin/call/cubit/call_cubit.dart';
 import 'package:Petamin/home/cubit/home_cubit.dart';
 import 'package:Petamin/homeRoot/cubit/home_root_cubit.dart';
 import 'package:Petamin/app/bloc/app_bloc.dart';
 import 'package:Petamin/profile-info/cubit/profile_info_cubit.dart';
+import 'package:Petamin/home/bloc/socket_bloc.dart';
 import 'package:Petamin/routes/routes.dart';
 import 'package:Petamin/theme/app_theme.dart';
-import 'package:petamin_repository/petamin_repository.dart';
 import 'package:flow_builder/flow_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:Petamin/app/app.dart';
+import 'package:petamin_repository/petamin_repository.dart';
 
 class App extends StatelessWidget {
   const App({
@@ -20,17 +21,6 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //final user = context.select((AppBloc bloc) => bloc.state.user);
-    // return RepositoryProvider.value(
-    //   value: _authenticationRepository,
-    //   child: MultiBlocProvider(
-    //     providers: [
-    //       BlocProvider(
-    //        create: (_) => AppBloc( authenticationRepository: _authenticationRepository,)
-    //       ),
-
-    //     ],
-    //      child: const AppView(),
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider(create: (_) => _petaminRepository),
@@ -68,8 +58,7 @@ class AppView extends StatelessWidget {
     return MaterialApp(
       theme: AppTheme.define(),
       home: FlowBuilder<SessionStatus>(
-        state:
-            context.select((AppSessionBloc bloc) => bloc.state.sessionStatus),
+        state: context.select((AppSessionBloc bloc) => bloc.state.sessionStatus),
         onGeneratePages: onGenerateAppViewPages,
       ),
       debugShowCheckedModeBanner: false,
