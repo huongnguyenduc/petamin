@@ -6,7 +6,7 @@ import 'package:cache/cache.dart';
 import 'package:petamin_api/petamin_api.dart';
 import 'package:flutter/foundation.dart'
     show debugPrint, kIsWeb, visibleForTesting;
-import './models/models.dart';
+import './models/models.dart' as models;
 
 class CallApiFailure implements Exception {
   const CallApiFailure([
@@ -172,6 +172,21 @@ class PetaminRepository {
     }
   }
 
+  Future<void> checkToken() async {
+    try {
+      final session = await currentSession;
+      final checkToken =
+          await _petaminApiClient.checkToken(accessToken: session.accessToken);
+      if (checkToken) {
+        return;
+      } else {
+        _sessionController.add(Session.empty);
+      }
+    } catch (_) {
+      throw const LogOutFailure();
+    }
+  }
+
   /// Get user profile
   Future<Profile> getUserProfile() async {
     try {
@@ -245,7 +260,14 @@ class PetaminRepository {
             isNeuter: element.isNeuter,
             avatarUrl: element.avatarUrl,
             weight: element.weight,
-            description: element.description));
+            description: element.description,
+            photos: element.photos
+                ?.map((e) => models.Images(id: e.id, imgUrl: e.imgUrl))
+                .toList(),
+            species: models.Species(
+                id: element.species.id,
+                name: element.species.name,
+                imgUrl: element.species.imgUrl)));
       }
       return list;
     } catch (_) {
@@ -259,17 +281,45 @@ class PetaminRepository {
       final petDetail = await _petaminApiClient.getPetDetail(
           id: id, accessToken: session.accessToken);
       return Pet(
-        id: petDetail.id,
-        name: petDetail.name,
-        avatarUrl: petDetail.avatarUrl,
-        month: petDetail.month,
-        year: petDetail.year,
-        breed: petDetail.breed,
-        isNeuter: petDetail.isNeuter,
-        gender: petDetail.gender,
-        description: petDetail.description,
-        weight: petDetail.weight,
-      );
+          id: petDetail.id,
+          name: petDetail.name,
+          avatarUrl: petDetail.avatarUrl,
+          month: petDetail.month,
+          year: petDetail.year,
+          breed: petDetail.breed,
+          isNeuter: petDetail.isNeuter,
+          gender: petDetail.gender,
+          description: petDetail.description,
+          weight: petDetail.weight,
+          photos: petDetail.photos
+              ?.map((e) => models.Images(id: e.id, imgUrl: e.imgUrl))
+              .toList(),
+          species: models.Species(
+              id: petDetail.species.id,
+              name: petDetail.species.name,
+              imgUrl: petDetail.species.imgUrl));
+    } catch (_) {
+      throw const CallApiFailure();
+    }
+  }
+
+  Future<bool> updatePet({required Pet pet}) async {
+    try {
+      debugPrint("Update Pet Repo");
+      final session = await currentSession;
+      return await _petaminApiClient.updatePet(
+        pet: PetRes(id: pet.id, 
+                    name: pet.name, 
+                    month: pet.month, 
+                    year: pet.year, 
+                    gender: pet.gender, 
+                    breed: pet.breed, 
+                    isNeuter: pet.isNeuter,
+                    avatarUrl: pet.avatarUrl, 
+                    description: pet.description, 
+                    weight: pet.weight,
+                    speciesId: pet.species.id,),
+        accessToken: session.accessToken);
     } catch (_) {
       throw const CallApiFailure();
     }

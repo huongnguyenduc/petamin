@@ -12,6 +12,7 @@ class PetAddState extends Equatable {
       this.breed = "",
       this.currentStep = 1,
       this.species = Species.unselected,
+      this.speciesId = "",
       this.gender = Gender.unknown,
       this.neutered = Neutered.unknown,
       this.year = 0,
@@ -27,6 +28,7 @@ class PetAddState extends Equatable {
   final String breed;
   final int currentStep;
   final Species species;
+  final String speciesId;
   final Gender gender;
   final Neutered neutered;
   final int year;
@@ -59,6 +61,7 @@ class PetAddState extends Equatable {
       String? breed,
       int? currentStep,
       Species? species,
+      String? speciesId,
       Gender? gender,
       Neutered? neutered,
       int? year,
@@ -74,6 +77,7 @@ class PetAddState extends Equatable {
         breed: breed ?? this.breed,
         currentStep: currentStep ?? this.currentStep,
         species: species ?? this.species,
+        speciesId: speciesId ?? this.speciesId,
         gender: gender ?? this.gender,
         neutered: neutered ?? this.neutered,
         year: year ?? this.year,

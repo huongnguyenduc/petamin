@@ -9,9 +9,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:petamin_repository/petamin_repository.dart';
 
 class HomeRootCubit extends Cubit<HomeRootState> {
-  HomeRootCubit() : super(HomeRootInitial());
+  HomeRootCubit(this._petaminRepository) : super(HomeRootInitial());
+  PetaminRepository _petaminRepository;
+
+  Future<void> checkSession() async {
+    await _petaminRepository.checkToken();
+    return;
+  }
 
   static HomeRootCubit get(context) => BlocProvider.of(context);
 

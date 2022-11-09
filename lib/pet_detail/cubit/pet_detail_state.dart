@@ -6,7 +6,7 @@ class PetDetailState extends Equatable {
     this.pet = Pet.empty,
     this.status = PetDetailStatus.initial,
   });
-
+  
   final Pet pet;
   final PetDetailStatus status;
   @override

@@ -92,6 +92,7 @@ flutter:
           style: italic
 
 dependency_overrides:
+  firebase_core_platform_interface: 4.5.1
   bloc: ^8.1.0
   bloc_test: ^9.0.3
   flutter_bloc: ^8.0.1

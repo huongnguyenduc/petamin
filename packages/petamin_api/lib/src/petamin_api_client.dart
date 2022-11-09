@@ -20,7 +20,7 @@ class PetaminApiClient {
         baseUrl: _baseUrl,
         endPoint: '/profile',
         accessToken: accessToken);
-    debugPrint('Response ${response?.body}');
+    debugPrint('Response ${response?.statusCode} ${response?.body}');
     return await NetworkHelper.filterResponse(
         response: response,
         parameterName: CallBackParameterName.all,
@@ -29,6 +29,17 @@ class PetaminApiClient {
           debugPrint('Error type-$errorType - Message $msg');
           return null;
         });
+  }
+
+  Future<bool> checkToken({required String accessToken}) async {
+    final response = await NetworkService.sendRequest(
+        requestType: RequestType.get,
+        baseUrl: _baseUrl,
+        endPoint: '/profile',
+        accessToken: accessToken);
+    debugPrint('Response ${response?.body}');
+    if (response?.statusCode == 401) return false;
+    return true;
   }
 
   /// Update [User] profile `PATCH /profile`.
@@ -42,8 +53,7 @@ class PetaminApiClient {
     String? name,
   }) async {
     String? avatarUrl;
-   
-    
+
     if (avatar != null) {
       avatarUrl = await uploadFile(accessToken: accessToken, file: avatar);
     }
@@ -190,11 +200,29 @@ class PetaminApiClient {
         });
   }
 
+  Future<bool> updatePet(
+      {required PetRes pet, required String accessToken}) async {
+    debugPrint("Update Pet API");
+    final response = await NetworkService.sendRequest(
+      requestType: RequestType.patch,
+      baseUrl: _baseUrl,
+      endPoint: '/pets/${pet.id}',
+      body: pet.toJson(),
+      accessToken: accessToken,
+    );
+     debugPrint('Response ${response?.body}');
+    if (response!.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   Future<String> uploadFile({
     required String accessToken,
     File? file,
   }) async {
-     debugPrint('Avatar UPloadFIle $file');
+    debugPrint('Avatar UPloadFIle $file');
     final response = await NetworkService.sendRequest(
         requestType: RequestType.post,
         baseUrl: _baseUrl,

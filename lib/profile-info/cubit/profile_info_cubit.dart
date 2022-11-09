@@ -12,9 +12,13 @@ class ProfileInfoCubit extends Cubit<ProfileInfoState> {
   ProfileInfoCubit(this._petaminRepository) : super(ProfileInfoState());
   PetaminRepository _petaminRepository;
 
+  Future<void> checkSession() async {
+    await _petaminRepository.checkToken();
+    return;
+  }
+
   Future<void> getProfile() async {
     emit(state.copyWith(status: ProfileStatus.loading));
-
     try {
       Profile profile = await _petaminRepository.getUserProfile();
 
@@ -55,7 +59,7 @@ class ProfileInfoCubit extends Cubit<ProfileInfoState> {
         name: name,
         description: bio,
         address: address,
-        birthday: DateFormat("dd/MM/yyyy").parse(dayOfBirth!).toString() ,
+        birthday: DateFormat("dd/MM/yyyy").parse(dayOfBirth!).toString(),
         phone: phoneNumber,
         avatar: state.avatar,
       );
@@ -73,8 +77,8 @@ class ProfileInfoCubit extends Cubit<ProfileInfoState> {
   }
 
   void updateName(String name) {
-      emit(state.copyWith(name: name));
-   // emit(state.copyWith(name: name));
+    emit(state.copyWith(name: name));
+    // emit(state.copyWith(name: name));
   }
 
   void updatePhoneNumber(String phoneNumber) {

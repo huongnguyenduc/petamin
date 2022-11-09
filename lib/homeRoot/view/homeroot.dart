@@ -10,6 +10,7 @@ import 'package:Petamin/shared/network/cache_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:petamin_repository/petamin_repository.dart';
 
 class HomeRootScreen extends StatefulWidget {
   const HomeRootScreen({Key? key}) : super(key: key);
@@ -48,7 +49,8 @@ class _HomeRootScreenState extends State<HomeRootScreen> {
     final user = context.select((AppSessionBloc bloc) => bloc.state.session);
     debugPrint('UserIdIs: ${user.userId}');
     return BlocProvider(
-      create: (_) => HomeRootCubit()
+      create: (context) => HomeRootCubit(context.read<PetaminRepository>())
+        ..checkSession()
         ..updateFcmToken(uId: user.userId)
         ..listenToInComingCalls(uId: user.userId),
       child: Scaffold(

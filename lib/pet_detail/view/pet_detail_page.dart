@@ -102,7 +102,8 @@ class PetDetailPage extends StatelessWidget {
                                             width: 35.0,
                                             height: 35.0,
                                             decoration: BoxDecoration(
-                                               color: AppTheme.colors.green.withOpacity(0.4),
+                                                color: AppTheme.colors.green
+                                                    .withOpacity(0.4),
                                                 borderRadius:
                                                     BorderRadius.circular(8.0)),
                                             child: Icon(
@@ -169,9 +170,13 @@ class PetDetailPage extends StatelessWidget {
                                                 Navigator.of(context).push(
                                                     new MaterialPageRoute(
                                                         builder: (context) =>
-                                                            PetInfoPage()));
+                                                            PetInfoPage(pet: pet,)));
                                               },
-                                              child: Icon(Icons.edit))
+                                              child: Container(
+                                                width: 35.0,
+                                                height: 35.0,
+                                                child: Icon(Icons.edit),
+                                              ))
                                         ],
                                       ),
                                       SizedBox(
@@ -292,7 +297,7 @@ class PetDetailPage extends StatelessWidget {
                                       mainAxisSpacing: 4.0,
                                       crossAxisCount: 3,
                                     ),
-                                    itemCount: _items.length,
+                                    itemCount: pet.photos!.length,
                                     itemBuilder: (context, index) {
                                       // Item rendering
                                       return GestureDetector(
@@ -300,14 +305,16 @@ class PetDetailPage extends StatelessWidget {
                                           await showDialog(
                                               context: context,
                                               builder: (_) => ImageDialog(
-                                                  image: _items[index].image));
+                                                name: pet.photos![index].id,
+                                                  image: pet
+                                                      .photos![index].imgUrl));
                                         },
                                         child: Container(
                                           decoration: BoxDecoration(
                                             image: DecorationImage(
                                               fit: BoxFit.cover,
                                               image: NetworkImage(
-                                                  _items[index].image),
+                                                  pet.photos![index].imgUrl),
                                             ),
                                           ),
                                         ),
@@ -417,9 +424,11 @@ class PetProperty extends StatelessWidget {
 class ImageDialog extends StatelessWidget {
   const ImageDialog({
     required this.image,
+    required this.name,
     Key? key,
   }) : super(key: key);
   final String image;
+  final String name;
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -446,7 +455,7 @@ class ImageDialog extends StatelessWidget {
                   width: 8.0,
                 ),
                 Text(
-                  "Tyler",
+                  name ?? "",
                   style: CustomTextTheme.caption(context,
                       textColor: AppTheme.colors.white),
                 )

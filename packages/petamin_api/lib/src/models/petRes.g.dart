@@ -17,6 +17,10 @@ PetRes _$PetFromJson(Map<String, dynamic> json) => PetRes(
       avatarUrl: json['avatarUrl'] as String?,
       weight: json['weight'] as double?,
       description: json['description'] as String?,
+      photos: (json['photos'] as List<dynamic>?)
+          ?.map((e) => Images.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      species: Species.fromJson(json['species'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$PetToJson(PetRes instance) => <String, dynamic>{
@@ -30,4 +34,6 @@ Map<String, dynamic> _$PetToJson(PetRes instance) => <String, dynamic>{
       'avatarUrl': instance.avatarUrl,
       'weight': instance.weight,
       'description': instance.description,
+      'speciesId': instance.speciesId,
+      'photos': instance.photos,
     };
