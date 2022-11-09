@@ -18,8 +18,7 @@ class PetRes {
       this.weight,
       this.description,
       this.photos,
-      this.speciesId,
-      this.species = Species.empty});
+      this.species});
 
   String? id;
   String? name;
@@ -32,7 +31,7 @@ class PetRes {
   double? weight;
   String? description;
   String? speciesId;
-  final Species species;
+  final String? species;
   final List<Images>? photos;
   @override
   List<Object?> get props =>
@@ -58,33 +57,6 @@ class Images {
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "imgUrl": imgUrl,
-      };
-}
-
-class Species {
-  const Species({
-    required this.id,
-    required this.name,
-    required this.imgUrl,
-  });
-  final String id;
-  final String name;
-  final String imgUrl;
-
-   static const empty =  Species(
-      id: '', name: '', imgUrl: '');
-
-  factory Species.fromJson(Map<String, dynamic> json) => Species(
-        id: json["id"],
-        name: json["name"],
-        imgUrl: json["imgUrl"],
-      );
- 
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "petId": name,
         "imgUrl": imgUrl,
       };
 }

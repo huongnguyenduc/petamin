@@ -264,10 +264,7 @@ class PetaminRepository {
             photos: element.photos
                 ?.map((e) => models.Images(id: e.id, imgUrl: e.imgUrl))
                 .toList(),
-            species: models.Species(
-                id: element.species.id,
-                name: element.species.name,
-                imgUrl: element.species.imgUrl)));
+            species: element.species));
       }
       return list;
     } catch (_) {
@@ -294,10 +291,7 @@ class PetaminRepository {
           photos: petDetail.photos
               ?.map((e) => models.Images(id: e.id, imgUrl: e.imgUrl))
               .toList(),
-          species: models.Species(
-              id: petDetail.species.id,
-              name: petDetail.species.name,
-              imgUrl: petDetail.species.imgUrl));
+          species: petDetail.species);
     } catch (_) {
       throw const CallApiFailure();
     }
@@ -318,7 +312,7 @@ class PetaminRepository {
                     avatarUrl: pet.avatarUrl, 
                     description: pet.description, 
                     weight: pet.weight,
-                    speciesId: pet.species.id,),
+                    species: pet.species,),
         accessToken: session.accessToken);
     } catch (_) {
       throw const CallApiFailure();

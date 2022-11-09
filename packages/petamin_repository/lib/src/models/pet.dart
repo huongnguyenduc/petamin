@@ -32,7 +32,7 @@ class Pet extends Equatable {
   final String? avatarUrl;
   final double? weight;
   final String? description;
-  final Species species;
+  final String? species;
   final List<Images>? photos;
   static const empty = Pet(
       id: '',
@@ -46,7 +46,7 @@ class Pet extends Equatable {
       weight: 0,
       description: '',
       photos: [],
-      species: Species.empty);
+      species: '');
 
   @override
   List<Object?> get props => [
@@ -73,7 +73,7 @@ class Pet extends Equatable {
     String? avatarUrl,
     double? weight,
     String? description,
-    Species? species,
+    String? species,
     List<Images>? photos,
   }) =>
       Pet(
@@ -114,29 +114,3 @@ class Images {
       };
 }
 
-class Species {
-  const Species({
-    required this.id,
-    required this.name,
-    required this.imgUrl,
-  });
-  final String id;
-  final String name;
-  final String imgUrl;
-
-   static const empty =  Species(
-      id: '', name: '', imgUrl: '');
-
-  factory Species.fromJson(Map<String, dynamic> json) => Species(
-        id: json["id"],
-        name: json["name"],
-        imgUrl: json["imgUrl"],
-      );
- 
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "petId": name,
-        "imgUrl": imgUrl,
-      };
-}

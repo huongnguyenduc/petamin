@@ -137,25 +137,25 @@ class SpeciesDetail {
 
 final species = [
   SpeciesDetail(
-      id: "7b5636e8-0bb7-4db6-b5e4-cf715fade282",
+      id: "CAT",
       name: "Cat",
       image: AssetImage("assets/images/cat.png"),
       color: AppTheme.colors.lightPurple,
       species: Species.cat),
   SpeciesDetail(
-      id: "ae20187c-79eb-4699-a97a-3a483ab7cf72",
+      id: "DOG",
       name: "Dog",
       image: AssetImage("assets/images/dog.png"),
       color: AppTheme.colors.lightYellow,
       species: Species.dog),
   SpeciesDetail(
-      id: "ae30187c-79eb-4699-a97a-3a483ab7cf72",
+      id: "BIRD",
       name: "Bird",
       image: AssetImage("assets/images/parrot.png"),
       color: AppTheme.colors.softGreen,
       species: Species.bird),
   SpeciesDetail(
-      id: "ae40187c-79eb-4699-a97a-3a483ab7cf72",
+      id: "POCKET_PET",
       name: "Pocket Pet",
       image: AssetImage("assets/images/rabbit.png"),
       color: AppTheme.colors.lightPink,

@@ -55,7 +55,7 @@ class _PetInfoViewState extends State<PetInfoView> {
   Widget build(BuildContext context) {
     final numberRangeYear = Iterable<int>.generate(99 + 1).toList();
     final numberRangeMonth = Iterable<int>.generate(12).toList();
-    var speciesController = widget.pet.species.id;
+    var speciesController = widget.pet.species;
     var genderController = widget.pet.gender;
     var neuteredController = widget.pet.isNeuter;
     var yearController = widget.pet.year;
@@ -179,7 +179,7 @@ class _PetInfoViewState extends State<PetInfoView> {
                                         child: Text(speciesDetail.name),
                                       ))
                                   .toList(),
-                              value: widget.pet.species.id,
+                              value: widget.pet.species,
                               onChanged: (selectedSpecies) => {
                                 speciesController = selectedSpecies!,
                               },
