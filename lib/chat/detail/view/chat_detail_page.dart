@@ -1,10 +1,7 @@
-import 'package:Petamin/chat/chat.dart';
 import 'package:Petamin/app/bloc/app_bloc.dart';
 import 'package:Petamin/call/view/call_screen.dart';
-import 'package:Petamin/chat/cubit/chat_detail_cubit.dart';
-import 'package:Petamin/chat/view/chat_input_field.dart';
+import 'package:Petamin/chat/chat.dart';
 import 'package:Petamin/data/models/call_model.dart';
-import 'package:Petamin/home/cubit/home_cubit.dart';
 import 'package:Petamin/shared/constants.dart';
 import 'package:Petamin/shared/shared_widgets.dart';
 import 'package:Petamin/theme/theme.dart';
@@ -33,7 +30,6 @@ class ChatDetailPage extends StatelessWidget {
   }) : super(key: key);
 
   ScrollController _scrollController = new ScrollController();
-
 
   @override
   Widget build(BuildContext context) {
@@ -71,26 +67,24 @@ class ChatDetailPage extends StatelessWidget {
                   IconButton(
                       onPressed: () {
                         // call video
-                        ChatDetailCubit.get(context).fireVideoCall(
-                      callModel: CallModel(
-                          id: 'call_${UniqueKey().hashCode.toString()}',
-                          callerId: user.userId,
-                          callerAvatar: 'ưe',
-                          callerName: 'Huy',
-                          receiverId: 'da283s4wjweYjuqf3PmlkFvBYss1',
-                          receiverAvatar: 'ưe',
-                          receiverName: 'bui',
-                          status: CallStatus.ringing.name,
-                          createAt: DateTime.now().millisecondsSinceEpoch,
-                        current: true
-                      ));
+                        context.read<ChatDetailCubit>().fireVideoCall(
+                            callModel: CallModel(
+                                id: 'call_${UniqueKey().hashCode.toString()}',
+                                callerId: user.userId,
+                                callerAvatar: 'ưe',
+                                callerName: 'Huy',
+                                receiverId: 'da283s4wjweYjuqf3PmlkFvBYss1',
+                                receiverAvatar: 'ưe',
+                                receiverName: 'bui',
+                                status: CallStatus.ringing.name,
+                                createAt: DateTime.now().millisecondsSinceEpoch,
+                                current: true));
                       },
                       icon: Icon(Icons.call))
                 ],
                 title: Text(
                   "Peter Thornton",
-                  style: CustomTextTheme.heading4(context,
-                      textColor: AppTheme.colors.white),
+                  style: CustomTextTheme.heading4(context, textColor: AppTheme.colors.white),
                 ),
               ),
             ),
@@ -135,8 +129,8 @@ class ChatDetailPage extends StatelessWidget {
                     Container(
                       height: 44.0,
                       width: 44.0,
-                      decoration:
-                      BoxDecoration(color: AppTheme.colors.superLightPurple, borderRadius: BorderRadius.circular(10.0)),
+                      decoration: BoxDecoration(
+                          color: AppTheme.colors.superLightPurple, borderRadius: BorderRadius.circular(10.0)),
                       child: Icon(
                         Icons.add,
                         color: AppTheme.colors.pink,
