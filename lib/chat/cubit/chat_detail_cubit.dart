@@ -38,7 +38,7 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
 
    final _callApi = CallApi();
   bool fireCallLoading = false;
-  Future<void> fireVideoCall({required CallModel callModel}) async { 
+  Future<void> fireVideoCall({required CallModel callModel}) async {
     fireCallLoading = true;
     emit(LoadingFireVideoCallState());
     //1-generate call token

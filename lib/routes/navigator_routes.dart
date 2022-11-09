@@ -1,11 +1,11 @@
-import 'package:Petamin/chat/view/chat_list_page.dart';
+import 'package:Petamin/chat/chat.dart';
 import 'package:Petamin/explore/explore.dart';
 import 'package:Petamin/home/cubit/home_cubit.dart';
+import 'package:Petamin/home/home.dart';
 import 'package:Petamin/landing/landing.dart';
 import 'package:Petamin/pet_list/pet.dart';
 import 'package:Petamin/profile/view/profile_page.dart';
 import 'package:flutter/widgets.dart';
-import 'package:Petamin/home/home.dart';
 
 List<Page<dynamic>> onGenerateAppViewWindows(
   HomeState state,

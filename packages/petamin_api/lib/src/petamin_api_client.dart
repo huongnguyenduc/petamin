@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:petamin_api/petamin_api.dart';
@@ -11,6 +12,7 @@ import 'networking/network_helper.dart';
 
 class PetaminApiClient {
   static const _baseUrl = StaticValues.baseUrl;
+
   // static const _baseSocketIoUrl = StaticValues.baseSocketIoUrl;
 
   /// Get [User] profile `/profile`.
@@ -234,6 +236,21 @@ class PetaminApiClient {
         response: response,
         parameterName: CallBackParameterName.all,
         callBack: (json) => json['url'] as String,
+        onFailureCallBackWithMessage: (errorType, msg) {
+          debugPrint('Error type-$errorType - Message $msg');
+          return null;
+        });
+  }
+
+  // Get [Conversation] list `/users/conversations`.
+  Future<List<ChatConversation>> getConversations({required String accessToken}) async {
+    final response = await NetworkService.sendRequest(
+        requestType: RequestType.get, baseUrl: _baseUrl, endPoint: '/users/conversations', accessToken: accessToken);
+    debugPrint('Response ${response?.body}');
+    return await NetworkHelper.filterResponse(
+        response: response,
+        parameterName: CallBackParameterName.data,
+        callBack: (json) => ChatConversation.fromJson(json),
         onFailureCallBackWithMessage: (errorType, msg) {
           debugPrint('Error type-$errorType - Message $msg');
           return null;

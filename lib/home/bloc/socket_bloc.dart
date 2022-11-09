@@ -8,24 +8,26 @@ part 'socket_state.dart';
 
 class SocketBloc extends Bloc<SocketEvent, SocketState> {
   late final Socket _socket;
+  final String _token;
 
-  SocketBloc() : super(SocketState.initial()) {
+  SocketBloc({required String token})
+      : _token = token,
+        super(SocketState.initial()) {
+    print("SocketBloc: $_token");
     _socket = io(
-      'http://10.0.20.199:3000',
-      OptionBuilder()
-          .setTimeout(3000)
-          .setReconnectionDelay(5000)
-          .disableAutoConnect()
-          .build(),
+      'http://13.212.216.134',
+      OptionBuilder().setTimeout(3000).setReconnectionDelay(5000).disableAutoConnect().build(),
     );
-
+    print("SocketBloc: $_token");
+    // Add authentication token
+    _socket.io.options['extraHeaders'] = {'Authorization': 'Bearer $_token'};
     _socket.onConnecting((data) => add(_SocketConnectingEvent()));
     _socket.onConnect((_) => add(_SocketOnConnect()));
     _socket.onConnectError((data) => add(_SocketConnectErrorEvent()));
     _socket.onConnectTimeout((data) => add(_SocketConnectTimeoutEvent()));
     _socket.onDisconnect((_) => add(_SocketOnDisconnect()));
     _socket.onError((data) => add(_SocketErrorEvent()));
-    _socket.on('joined', (data) => add(_SocketJoinedEvent()));
+    _socket.on('message_received', (data) => add(_SocketJoinedEvent()));
 
     // User events
     on<_SocketConnect>((event, emit) {
@@ -58,6 +60,7 @@ class SocketBloc extends Bloc<SocketEvent, SocketState> {
       emit(SocketState.connected("JoinedEvent"));
     });
   }
+
   @override
   Future<void> close() {
     _socket.dispose();

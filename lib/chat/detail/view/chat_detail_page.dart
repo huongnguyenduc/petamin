@@ -1,3 +1,4 @@
+import 'package:Petamin/chat/chat.dart';
 import 'package:Petamin/app/bloc/app_bloc.dart';
 import 'package:Petamin/call/view/call_screen.dart';
 import 'package:Petamin/chat/cubit/chat_detail_cubit.dart';
@@ -13,12 +14,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'chat_model.dart';
 
 class ChatPage extends StatelessWidget {
-  const ChatPage({super.key});
+  final conversationId;
+
+  const ChatPage({required this.conversationId, super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ChatDetailCubit(),
+      create: (_) => ChatDetailCubit(conversationId)..initSocket(),
       child: ChatDetailPage(),
     );
   }
@@ -31,7 +34,7 @@ class ChatDetailPage extends StatelessWidget {
 
   ScrollController _scrollController = new ScrollController();
 
-  
+
   @override
   Widget build(BuildContext context) {
     final user = context.select((AppSessionBloc bloc) => bloc.state.session);
@@ -69,7 +72,7 @@ class ChatDetailPage extends StatelessWidget {
                       onPressed: () {
                         // call video
                         ChatDetailCubit.get(context).fireVideoCall(
-                      callModel: CallModel(                          
+                      callModel: CallModel(
                           id: 'call_${UniqueKey().hashCode.toString()}',
                           callerId: user.userId,
                           callerAvatar: 'ưe',
@@ -96,15 +99,12 @@ class ChatDetailPage extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 20.0),
             decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(18.0),
-                    topRight: Radius.circular(18.0))),
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(18.0), topRight: Radius.circular(18.0))),
             child: Column(
               children: [
                 Expanded(
                   child: BlocBuilder<ChatDetailCubit, ChatDetailState>(
-                    buildWhen: (previous, current) =>
-                    previous.messages != current.messages,
+                    buildWhen: (previous, current) => previous.messages != current.messages,
                     builder: (context, state) {
                       return ListView.builder(
                           itemCount: state.messages.length,
@@ -113,11 +113,9 @@ class ChatDetailPage extends StatelessWidget {
                           itemBuilder: (context, index) {
                             switch (state.messages[index].messageType) {
                               case ChatMessageType.text:
-                                return TextMessage(
-                                    chatMessage: state.messages[index]);
+                                return TextMessage(chatMessage: state.messages[index]);
                               case ChatMessageType.image:
-                                return ImageMessage(
-                                    chatMessage: state.messages[index]);
+                                return ImageMessage(chatMessage: state.messages[index]);
                               default:
                                 return Container();
                             }
@@ -130,17 +128,15 @@ class ChatDetailPage extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    Expanded(
-                        child: ChatInputField(scrollController: _scrollController)),
+                    Expanded(child: ChatInputField(scrollController: _scrollController)),
                     SizedBox(
                       width: 20.0,
                     ),
                     Container(
                       height: 44.0,
                       width: 44.0,
-                      decoration: BoxDecoration(
-                          color: AppTheme.colors.superLightPurple,
-                          borderRadius: BorderRadius.circular(10.0)),
+                      decoration:
+                      BoxDecoration(color: AppTheme.colors.superLightPurple, borderRadius: BorderRadius.circular(10.0)),
                       child: Icon(
                         Icons.add,
                         color: AppTheme.colors.pink,
@@ -167,9 +163,7 @@ class ImageMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: chatMessage.isSender
-          ? MainAxisAlignment.end
-          : MainAxisAlignment.start,
+      mainAxisAlignment: chatMessage.isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
         if (!chatMessage.isSender) ...[
           CircleAvatar(
@@ -183,9 +177,7 @@ class ImageMessage extends StatelessWidget {
           height: 130.0,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(25.0),
-              image: DecorationImage(
-                  image: AssetImage('assets/images/cat-1.jpg'),
-                  fit: BoxFit.cover)),
+              image: DecorationImage(image: AssetImage('assets/images/cat-1.jpg'), fit: BoxFit.cover)),
         ),
         SizedBox(width: 12.0),
         Container(
@@ -193,9 +185,7 @@ class ImageMessage extends StatelessWidget {
           height: 130.0,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(25.0),
-              image: DecorationImage(
-                  image: AssetImage('assets/images/cat-2.jpg'),
-                  fit: BoxFit.cover)),
+              image: DecorationImage(image: AssetImage('assets/images/cat-2.jpg'), fit: BoxFit.cover)),
         ),
       ],
     );
@@ -216,9 +206,7 @@ class TextMessage extends StatelessWidget {
       padding: const EdgeInsets.only(top: 16.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: chatMessage.isSender
-            ? MainAxisAlignment.end
-            : MainAxisAlignment.start,
+        mainAxisAlignment: chatMessage.isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           if (!chatMessage.isSender) ...[
             CircleAvatar(
@@ -230,9 +218,7 @@ class TextMessage extends StatelessWidget {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
             decoration: BoxDecoration(
-                color: chatMessage.isSender
-                    ? AppTheme.colors.pink
-                    : AppTheme.colors.lightPurple,
+                color: chatMessage.isSender ? AppTheme.colors.pink : AppTheme.colors.lightPurple,
                 borderRadius: BorderRadius.circular(20.0)),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -241,9 +227,7 @@ class TextMessage extends StatelessWidget {
                 Text(
                   chatMessage.data,
                   style: CustomTextTheme.body2(context,
-                      textColor: chatMessage.isSender
-                          ? AppTheme.colors.white
-                          : AppTheme.colors.green),
+                      textColor: chatMessage.isSender ? AppTheme.colors.white : AppTheme.colors.green),
                 ),
                 SizedBox(
                   width: 16.0,
@@ -251,9 +235,7 @@ class TextMessage extends StatelessWidget {
                 Text(
                   '19:15',
                   style: CustomTextTheme.caption(context,
-                      textColor: chatMessage.isSender
-                          ? AppTheme.colors.white
-                          : AppTheme.colors.grey),
+                      textColor: chatMessage.isSender ? AppTheme.colors.white : AppTheme.colors.grey),
                 )
               ],
             ),
