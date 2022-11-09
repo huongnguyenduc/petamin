@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:formz/formz.dart';
+import 'package:petamin_repository/petamin_repository.dart';
 
 class PetCreatePost extends StatelessWidget {
   const PetCreatePost({Key? key}) : super(key: key);
@@ -12,7 +13,7 @@ class PetCreatePost extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => CreatePostCubit(),
+      create: (_) => CreatePostCubit(context.read<PetaminRepository>()),
       child: const PetCreatePostView(),
     );
   }
@@ -31,11 +32,13 @@ class PetCreatePostView extends StatelessWidget {
             builder: (context, state) {
               return IconButton(
                 onPressed: () {
-                    context.read<CreatePostCubit>().submit();
+                  context.read<CreatePostCubit>().submit();
                 },
                 icon: SvgPicture.asset(
                   'assets/icons/send.svg',
-                  color: state.status.isValidated ? AppTheme.colors.yellow : AppTheme.colors.grey,
+                  color: state.status.isValidated
+                      ? AppTheme.colors.yellow
+                      : AppTheme.colors.grey,
                   width: 20.0,
                 ),
               );
@@ -43,77 +46,85 @@ class PetCreatePostView extends StatelessWidget {
           ),
         ],
       ),
-      body: Container(padding: EdgeInsets.symmetric(vertical: 40.0, horizontal: 30.0), child: Column(children: [
-        Row(
-          children: [
-            CircleAvatar(
-              radius: 30.0,
-              backgroundImage: AssetImage('assets/images/cat-1.jpg'),
-            ),
-            SizedBox(width: 16.0),
-            Text("Tyler", style: CustomTextTheme.subtitle(context)),
-          ],
-        ),
-        SizedBox(height: 28.0,),
-        BlocBuilder<CreatePostCubit, CreatePostState>(
-          builder: (context, state) {
-            return TextFormField(
-              style: CustomTextTheme.body2(context),
-              keyboardType: TextInputType.number,
-              onChanged: (price) =>
-                  context.read<CreatePostCubit>().priceChanged(price),
-              decoration: InputDecoration(
-                fillColor: AppTheme.colors.white,
-                filled: true,
-                contentPadding:
-                EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: AppTheme.colors.pink, width: 2.0),
-                    borderRadius:
-                    const BorderRadius.all(Radius.circular(16.0))),
-                enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: AppTheme.colors.lightPurple, width: 2.0),
-                    borderRadius:
-                    const BorderRadius.all(Radius.circular(16.0))),
-                helperText: '',
-                labelText: 'Price',
-                errorText: state.price.invalid ? 'Invalid price' : null,
-                labelStyle: CustomTextTheme.body2(context,
-                    textColor: AppTheme.colors.lightGreen),
+      body: Container(
+          padding: EdgeInsets.symmetric(vertical: 40.0, horizontal: 30.0),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 30.0,
+                    backgroundImage: AssetImage('assets/images/cat-1.jpg'),
+                  ),
+                  SizedBox(width: 16.0),
+                  Text("Tyler", style: CustomTextTheme.subtitle(context)),
+                ],
               ),
-            );
-          },
-        ),
-        SizedBox(height: 8.0,),
-        TextFormField(
-          style: CustomTextTheme.body2(context),
-          onChanged: (description) =>
-              context.read<CreatePostCubit>().descriptionChanged(description),
-          decoration: InputDecoration(
-            fillColor: AppTheme.colors.white,
-            filled: true,
-            contentPadding:
-            EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-            focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                    color: AppTheme.colors.pink, width: 2.0),
-                borderRadius:
-                const BorderRadius.all(Radius.circular(16.0))),
-            enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                    color: AppTheme.colors.lightPurple, width: 2.0),
-                borderRadius:
-                const BorderRadius.all(Radius.circular(16.0))),
-            helperText: '',
-            labelText: 'Description',
-            labelStyle: CustomTextTheme.body2(context,
-                textColor: AppTheme.colors.lightGreen),
-          ),
-        ),
-      ],)),
+              SizedBox(
+                height: 28.0,
+              ),
+              BlocBuilder<CreatePostCubit, CreatePostState>(
+                builder: (context, state) {
+                  return TextFormField(
+                    style: CustomTextTheme.body2(context),
+                    keyboardType: TextInputType.number,
+                    onChanged: (price) =>
+                        context.read<CreatePostCubit>().priceChanged(price),
+                    decoration: InputDecoration(
+                      fillColor: AppTheme.colors.white,
+                      filled: true,
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: AppTheme.colors.pink, width: 2.0),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(16.0))),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: AppTheme.colors.lightPurple, width: 2.0),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(16.0))),
+                      helperText: '',
+                      labelText: 'Price',
+                      errorText: state.price.invalid ? 'Invalid price' : null,
+                      labelStyle: CustomTextTheme.body2(context,
+                          textColor: AppTheme.colors.lightGreen),
+                    ),
+                  );
+                },
+              ),
+              SizedBox(
+                height: 8.0,
+              ),
+              TextFormField(
+                style: CustomTextTheme.body2(context),
+                onChanged: (description) => context
+                    .read<CreatePostCubit>()
+                    .descriptionChanged(description),
+                decoration: InputDecoration(
+                  fillColor: AppTheme.colors.white,
+                  filled: true,
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  focusedBorder: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: AppTheme.colors.pink, width: 2.0),
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(16.0))),
+                  enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                          color: AppTheme.colors.lightPurple, width: 2.0),
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(16.0))),
+                  helperText: '',
+                  labelText: 'Description',
+                  labelStyle: CustomTextTheme.body2(context,
+                      textColor: AppTheme.colors.lightGreen),
+                ),
+              ),
+            ],
+          )),
     );
   }
 }
-

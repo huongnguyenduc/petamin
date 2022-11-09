@@ -21,6 +21,7 @@ Pet _$PetFromJson(Map<String, dynamic> json) => Pet(
           ?.map((e) => Images.fromJson(e as Map<String, dynamic>))
           .toList(),
       species: json['species'] as String?,
+      isAdopting: json['isAdopting'] as bool?,
     );
 
 Map<String, dynamic> _$PetToJson(Pet instance) => <String, dynamic>{

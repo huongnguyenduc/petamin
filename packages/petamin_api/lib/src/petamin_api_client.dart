@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:petamin_api/petamin_api.dart';
+import 'package:petamin_api/src/models/adopt/adopt.dart';
 import 'package:petamin_api/src/networking/network_service.dart';
-import 'package:petamin_api/src/networking/network_wrapper.dart';
 import 'package:petamin_api/src/static/static_values.dart';
 import 'networking/network_enums.dart';
 import 'networking/network_helper.dart';
@@ -212,7 +212,59 @@ class PetaminApiClient {
       body: pet.toJson(),
       accessToken: accessToken,
     );
-     debugPrint('Response ${response?.body}');
+    debugPrint('Response ${response?.body}');
+    if (response!.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  Future<Adopt> getAdoptDetail(
+      {required String petId, required String accessToken}) async {
+    final response = await NetworkService.sendRequest(
+      requestType: RequestType.get,
+      baseUrl: _baseUrl,
+      endPoint: '/adoptions/pet/$petId',
+      accessToken: accessToken,
+    );
+    debugPrint('Response ${response?.body}');
+    return await NetworkHelper.filterResponse(
+        response: response,
+        parameterName: CallBackParameterName.all,
+        callBack: (json) => Adopt.fromJson(json),
+        onFailureCallBackWithMessage: (errorType, msg) {
+          debugPrint('Error type-$errorType - Message $msg');
+          return null;
+        });
+  }
+  Future<bool> createAdopt(
+      {required Adopt adopt, required String accessToken}) async {
+    debugPrint("Create Adopt API");
+    final response = await NetworkService.sendRequest(
+      requestType: RequestType.post,
+      baseUrl: _baseUrl,
+      endPoint: '/adoptions',
+      body: adopt.toJson(),
+      accessToken: accessToken,
+    );
+    debugPrint('Response ${response?.body}');
+    if (response!.statusCode == 201) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  Future<bool> updateAdopt(
+      {required Adopt adopt, required String accessToken}) async {
+    debugPrint("Update Adopt API");
+    final response = await NetworkService.sendRequest(
+      requestType: RequestType.patch,
+      baseUrl: _baseUrl,
+      endPoint: '/adoptions/${adopt.id}',
+      body: adopt.toJson(),
+      accessToken: accessToken,
+    );
+    debugPrint('Response ${response?.body}');
     if (response!.statusCode == 200) {
       return true;
     } else {
@@ -243,9 +295,13 @@ class PetaminApiClient {
   }
 
   // Get [Conversation] list `/users/conversations`.
-  Future<List<ChatConversation>> getConversations({required String accessToken}) async {
+  Future<List<ChatConversation>> getConversations(
+      {required String accessToken}) async {
     final response = await NetworkService.sendRequest(
-        requestType: RequestType.get, baseUrl: _baseUrl, endPoint: '/users/conversations', accessToken: accessToken);
+        requestType: RequestType.get,
+        baseUrl: _baseUrl,
+        endPoint: '/users/conversations',
+        accessToken: accessToken);
     debugPrint('Response ${response?.body}');
     return await NetworkHelper.filterResponse(
         response: response,

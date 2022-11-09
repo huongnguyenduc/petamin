@@ -4,6 +4,7 @@ part of 'edit_post_cubit.dart';
 class EditPostState extends Equatable {
   final Price price;
   final String description;
+  final String adoptStatus;
   final FormzStatus status;
   final String? errorMessage;
   final String initPrice;
@@ -16,10 +17,12 @@ class EditPostState extends Equatable {
     this.errorMessage,
     this.initPrice = '',
     this.initDescription = '',
+    this.adoptStatus = 'HIDE',
   });
 
   @override
-  List<Object> get props => [price, description, status, initDescription, initPrice];
+  List<Object> get props =>
+      [price, description, status, initDescription, initPrice];
 
   EditPostState copyWith({
     Price? price,
@@ -28,6 +31,7 @@ class EditPostState extends Equatable {
     String? errorMessage,
     String? initPrice,
     String? initDescription,
+    String? adoptStatus,
   }) {
     return EditPostState(
       price: price ?? this.price,
@@ -36,6 +40,7 @@ class EditPostState extends Equatable {
       errorMessage: errorMessage ?? this.errorMessage,
       initPrice: initPrice ?? this.initPrice,
       initDescription: initDescription ?? this.initDescription,
+      adoptStatus: adoptStatus ?? this.adoptStatus,
     );
   }
 }

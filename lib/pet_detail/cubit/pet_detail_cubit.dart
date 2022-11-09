@@ -8,6 +8,7 @@ class PetDetailCubit extends Cubit<PetDetailState> {
 
   final PetaminRepository _petaminRepository;
   Future<void> getPetDetail({required String id}) async {
+    debugPrint('call getPetDetail');
     emit(state.copyWith(status: PetDetailStatus.loading));
     try {
       final pet = await _petaminRepository.getPetDetail(id: id);
@@ -16,14 +17,15 @@ class PetDetailCubit extends Cubit<PetDetailState> {
       emit(state.copyWith(pet: Pet.empty, status: PetDetailStatus.failure));
     }
   }
+
   Future<void> updatePet({required Pet pet}) async {
     debugPrint("Update Pet Cubit");
     emit(state.copyWith(status: PetDetailStatus.loading));
     try {
-       await _petaminRepository.updatePet(pet: pet);
-    
+      await _petaminRepository.updatePet(pet: pet);   
     } catch (e) {
       emit(state.copyWith(pet: Pet.empty, status: PetDetailStatus.failure));
     }
+   // await this.getPetDetail(id: pet.id!);
   }
 }

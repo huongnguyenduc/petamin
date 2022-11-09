@@ -13,11 +13,15 @@ import 'package:flutter_svg/flutter_svg.dart';
 class PetDetailPage extends StatelessWidget {
   const PetDetailPage({Key? key, required this.id}) : super(key: key);
   final String id;
+
   @override
   Widget build(BuildContext context) {
+    final cubit = PetDetailCubit(context.read<PetaminRepository>());
+    void onGoBack() {
+      cubit..getPetDetail(id: id);
+    }
     return BlocProvider(
-        create: (_) => PetDetailCubit(context.read<PetaminRepository>())
-          ..getPetDetail(id: id),
+        create: (_) => cubit..getPetDetail(id: id),
         child: DefaultTabController(
             length: 2,
             child: Container(
@@ -66,13 +70,14 @@ class PetDetailPage extends StatelessWidget {
                                       height: 24.0,
                                     ),
                                     backgroundColor: AppTheme.colors.green,
-                                    label: 'Post Adopt',
+                                    label: pet.isAdopting == false ? 'Post Adopt' : 'Edit Adopt',
                                     labelStyle: TextStyle(fontSize: 18.0),
                                     onTap: () => Navigator.of(context,
                                             rootNavigator: true)
                                         .push(MaterialPageRoute(
-                                            builder: (context) =>
-                                                const PetCreatePost()))),
+                                            builder: (context) => 
+                                              pet.isAdopting == false ?
+                                                const PetCreatePost() :  PetEditPost(petId: pet.id!, petName: pet.name!, petImage: pet.avatarUrl!,)))),
                                 SpeedDialChild(
                                     child: Icon(
                                       Icons.delete,
@@ -167,10 +172,16 @@ class PetDetailPage extends StatelessWidget {
                                           ),
                                           GestureDetector(
                                               onTap: () {
-                                                Navigator.of(context).push(
-                                                    new MaterialPageRoute(
+                                                Navigator.of(context,
+                                                        rootNavigator: true)
+                                                    .push(MaterialPageRoute(
                                                         builder: (context) =>
-                                                            PetInfoPage(pet: pet,)));
+                                                            PetInfoPage(
+                                                              pet: pet,
+                                                            )))
+                                                    .then((_) {
+                                                  onGoBack();
+                                                });
                                               },
                                               child: Container(
                                                 width: 35.0,
@@ -305,7 +316,7 @@ class PetDetailPage extends StatelessWidget {
                                           await showDialog(
                                               context: context,
                                               builder: (_) => ImageDialog(
-                                                name: pet.photos![index].id,
+                                                  name: pet.photos![index].id,
                                                   image: pet
                                                       .photos![index].imgUrl));
                                         },

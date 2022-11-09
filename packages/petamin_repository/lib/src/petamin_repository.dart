@@ -3,11 +3,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cache/cache.dart';
-import 'package:flutter/foundation.dart' show debugPrint, kIsWeb, visibleForTesting;
+import 'package:flutter/foundation.dart'
+    show debugPrint, kIsWeb, visibleForTesting;
 import 'package:petamin_api/petamin_api.dart';
+import 'package:petamin_api/src/models/models.dart' as apiModels;
 import 'package:petamin_repository/petamin_repository.dart';
 
-import './models/models.dart';
 import './models/models.dart' as models;
 
 class CallApiFailure implements Exception {
@@ -41,15 +42,19 @@ class LogOutFailure implements Exception {
 }
 
 class PetaminRepository {
-  PetaminRepository._create(this._petaminApiClient, this._cache, this._sessionController, this._session);
+  PetaminRepository._create(this._petaminApiClient, this._cache,
+      this._sessionController, this._session);
 
   static Future<PetaminRepository> create(
       {PetaminApiClient? apiClient,
       CacheClient? cacheClient,
       StreamController<Session>? sessionController,
       Session? initSession}) async {
-    var component = PetaminRepository._create(apiClient ?? PetaminApiClient(), cacheClient ?? CacheClient(),
-        sessionController ?? StreamController<Session>(), initSession ?? Session.empty);
+    var component = PetaminRepository._create(
+        apiClient ?? PetaminApiClient(),
+        cacheClient ?? CacheClient(),
+        sessionController ?? StreamController<Session>(),
+        initSession ?? Session.empty);
     await component._asyncInit();
     return component;
   }
@@ -85,7 +90,8 @@ class PetaminRepository {
     try {
       return _sessionController.stream.map((session) {
         final convertedSession = session ?? Session.empty;
-        _cache.write(key: sessionCacheKey, value: jsonEncode(convertedSession.toJson()));
+        _cache.write(
+            key: sessionCacheKey, value: jsonEncode(convertedSession.toJson()));
         return session;
       });
     } catch (e) {
@@ -105,7 +111,9 @@ class PetaminRepository {
         _session = Session.empty;
       } else {
         final sessionMap = jsonDecode(cachedSession) as Map<String, dynamic>;
-        _session = sessionMap.isNotEmpty ? Session.fromJson(sessionMap) : Session.empty;
+        _session = sessionMap.isNotEmpty
+            ? Session.fromJson(sessionMap)
+            : Session.empty;
       }
       return _session;
     } catch (e) {
@@ -284,12 +292,60 @@ class PetaminRepository {
             avatarUrl: element.avatarUrl,
             weight: element.weight,
             description: element.description,
+            isAdopting: element.isAdopting,
             photos: element.photos
                 ?.map((e) => models.Images(id: e.id, imgUrl: e.imgUrl))
                 .toList(),
             species: element.species));
       }
       return list;
+    } catch (_) {
+      throw const CallApiFailure();
+    }
+  }
+
+  Future<models.Adopt> getAdoptDetail(String petId) async {
+    try {
+      final session = await currentSession;
+      final adopt = await _petaminApiClient.getAdoptDetail(
+          petId: petId, accessToken: session.accessToken);
+      return models.Adopt(
+        id: adopt.id,
+        price: adopt.price,
+        description: adopt.description,
+        status: adopt.status,
+      );
+    } catch (_) {
+      throw const CallApiFailure();
+    }
+  }
+
+  Future<bool> createAdopt(models.Adopt adopt) async {
+    try {
+      final session = await currentSession;
+      return await _petaminApiClient.createAdopt(
+          adopt: apiModels.Adopt(
+            id: '',
+            price: adopt.price,
+            description: adopt.description,
+            status: adopt.status,
+          ),
+          accessToken: session.accessToken);
+    } catch (_) {
+      throw const CallApiFailure();
+    }
+  }
+
+  Future<bool> updateAdopt(models.Adopt adopt) async {
+    try {
+      final session = await currentSession;
+      return await _petaminApiClient.updateAdopt(
+          adopt: apiModels.Adopt(
+              description: adopt.description,
+              id: adopt.id,
+              price: adopt.price,
+              status: adopt.status),
+          accessToken: session.accessToken);
     } catch (_) {
       throw const CallApiFailure();
     }
@@ -311,6 +367,7 @@ class PetaminRepository {
           gender: petDetail.gender,
           description: petDetail.description,
           weight: petDetail.weight,
+          isAdopting: petDetail.isAdopting,
           photos: petDetail.photos
               ?.map((e) => models.Images(id: e.id, imgUrl: e.imgUrl))
               .toList(),
@@ -325,18 +382,20 @@ class PetaminRepository {
       debugPrint("Update Pet Repo");
       final session = await currentSession;
       return await _petaminApiClient.updatePet(
-        pet: PetRes(id: pet.id,
-                    name: pet.name,
-                    month: pet.month,
-                    year: pet.year,
-                    gender: pet.gender,
-                    breed: pet.breed,
-                    isNeuter: pet.isNeuter,
-                    avatarUrl: pet.avatarUrl,
-                    description: pet.description,
-                    weight: pet.weight,
-                    species: pet.species,),
-        accessToken: session.accessToken);
+          pet: PetRes(
+            id: pet.id,
+            name: pet.name,
+            month: pet.month,
+            year: pet.year,
+            gender: pet.gender,
+            breed: pet.breed,
+            isNeuter: pet.isNeuter,
+            avatarUrl: pet.avatarUrl,
+            description: pet.description,
+            weight: pet.weight,
+            species: pet.species,
+          ),
+          accessToken: session.accessToken);
     } catch (_) {
       throw const CallApiFailure();
     }

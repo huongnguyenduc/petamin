@@ -3,12 +3,14 @@ import 'package:equatable/equatable.dart';
 import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
 import 'package:meta/meta.dart';
+import 'package:petamin_repository/petamin_repository.dart';
 
 part 'create_post_state.dart';
 
 class CreatePostCubit extends Cubit<CreatePostState> {
-  CreatePostCubit() : super(CreatePostState());
+  CreatePostCubit(this._petaminRepository) : super(CreatePostState());
 
+  final PetaminRepository _petaminRepository;
   void priceChanged(String value) {
     final price = Price.dirty(value);
     emit(
