@@ -7,6 +7,7 @@ part of 'user.dart';
 // **************************************************************************
 
 User _$UserFromJson(Map<String, dynamic> json) => User(
+      userId: json['userId'] as String?,
       name: json['name'] as String? ?? "",
       avatar: json['avatar'] as String? ?? "",
       address: json['address'] as String? ?? "",
@@ -25,7 +26,7 @@ Map<String, dynamic> _$UserToJson(User instance) {
       val[key] = value;
     }
   }
-
+  writeNotNull('userId', instance.userId);
   writeNotNull('name', instance.name);
   writeNotNull('avatar', instance.avatar);
   writeNotNull('address', instance.address);

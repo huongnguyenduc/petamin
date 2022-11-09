@@ -476,7 +476,7 @@ class _PetInfoViewState extends State<PetInfoView> {
                                     id: widget.pet.id.toString(),
                                     name: nameController.text,
                                     description: bioController.text,
-                                    species: widget.pet.species,
+                                    species: speciesController.toString(),
                                     gender: genderController,
                                     breed: breedController.text,
                                     month: monthController,

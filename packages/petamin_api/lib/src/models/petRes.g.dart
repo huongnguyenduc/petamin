@@ -34,6 +34,6 @@ Map<String, dynamic> _$PetToJson(PetRes instance) => <String, dynamic>{
       'avatarUrl': instance.avatarUrl,
       'weight': instance.weight,
       'description': instance.description,
-      'speciesId': instance.speciesId,
+      'species': instance.species,
       'photos': instance.photos,
     };

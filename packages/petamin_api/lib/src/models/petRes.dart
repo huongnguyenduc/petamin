@@ -30,7 +30,6 @@ class PetRes {
   String? avatarUrl;
   double? weight;
   String? description;
-  String? speciesId;
   final String? species;
   final List<Images>? photos;
   @override

@@ -127,7 +127,7 @@ class PetaminRepository {
       // debugPrint('Pettttt ${yourPet.toString()}');
       final session = Session(
         accessToken: loginResponse.accessToken,
-        userId: user.email ?? 'empty',
+        userId: user.userId ?? 'empty',
       );
       await _cache.write(
           key: sessionCacheKey, value: jsonEncode(session.toJson()));
