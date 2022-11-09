@@ -8,29 +8,30 @@ part of 'chat_conversation.dart';
 
 ChatConversation _$ChatConversationFromJson(Map<String, dynamic> json) =>
     ChatConversation(
-      id: json['id'] as String,
-      title: json['title'] as String?,
-      description: json['description'] as String?,
-      background: json['background'] as String?,
-      emoji: json['emoji'] as String?,
-      lastMessageId: json['lastMessageId'] as String,
-      users: (json['users'] as List<dynamic>)
-          .map((e) => ChatUser.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      id: json['id'] as String? ?? "",
+      lastMessageId: json['lastMessageId'] as String? ?? "",
+      users: (json['users'] as List<dynamic>?)
+              ?.map((e) => ChatUser.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
       lastMessage: json['lastMessage'] == null
           ? null
           : ChatLastMessage.fromJson(
               json['lastMessage'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$ChatConversationToJson(ChatConversation instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'title': instance.title,
-      'description': instance.description,
-      'background': instance.background,
-      'emoji': instance.emoji,
-      'lastMessageId': instance.lastMessageId,
-      'users': instance.users,
-      'lastMessage': instance.lastMessage,
-    };
+Map<String, dynamic> _$ChatConversationToJson(ChatConversation instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('id', instance.id);
+  writeNotNull('lastMessageId', instance.lastMessageId);
+  writeNotNull('users', instance.users);
+  writeNotNull('lastMessage', instance.lastMessage);
+  return val;
+}

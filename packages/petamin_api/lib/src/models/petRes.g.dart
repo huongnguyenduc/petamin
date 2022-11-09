@@ -6,7 +6,7 @@ part of 'petRes.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-PetRes _$PetFromJson(Map<String, dynamic> json) => PetRes(
+PetRes _$PetResFromJson(Map<String, dynamic> json) => PetRes(
       id: json['id'] as String?,
       name: json['name'] as String?,
       month: json['month'] as int?,
@@ -15,7 +15,7 @@ PetRes _$PetFromJson(Map<String, dynamic> json) => PetRes(
       breed: json['breed'] as String?,
       isNeuter: json['isNeuter'] as bool?,
       avatarUrl: json['avatarUrl'] as String?,
-      weight: json['weight'] as double?,
+      weight: (json['weight'] as num?)?.toDouble(),
       description: json['description'] as String?,
       photos: (json['photos'] as List<dynamic>?)
           ?.map((e) => Images.fromJson(e as Map<String, dynamic>))
@@ -23,7 +23,7 @@ PetRes _$PetFromJson(Map<String, dynamic> json) => PetRes(
       species: json['species'] as String?,
     );
 
-Map<String, dynamic> _$PetToJson(PetRes instance) => <String, dynamic>{
+Map<String, dynamic> _$PetResToJson(PetRes instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
       'month': instance.month,

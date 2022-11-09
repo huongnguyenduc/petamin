@@ -9,22 +9,28 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:petamin_repository/petamin_repository.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 part 'chat_detail_state.dart';
 
 class ChatDetailCubit extends Cubit<ChatDetailState> {
-  ChatDetailCubit(this.conversationId) : super(ChatDetailState());
+  ChatDetailCubit(this.conversationId, this.accessToken, this._petaminRepository) : super(ChatDetailState());
   late IO.Socket socket;
   final conversationId;
+  final accessToken;
+  final ScrollController scrollController = new ScrollController();
+  final PetaminRepository _petaminRepository;
 
   void initSocket() {
-    socket = IO.io('http://192.168.3.158:3000', <String, dynamic>{
+    final apiLink = dotenv.env['API_LINK'];
+    socket = IO.io(apiLink, <String, dynamic>{
       'autoConnect': false,
       'transports': ['websocket'],
       'extraHeaders': {
-        'Authorization':
-            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imh1eUBjb2RlbGlnaHQuY28iLCJ1c2VySWQiOiIwYmQ5NThlNi05YjU5LTQzMDgtODI4MC0zM2RkY2JhYzRhZjEiLCJpYXQiOjE2Njc3MjA5NTcsImV4cCI6MTY2ODMyNTc1N30.N1aqAOa-rxXVLVgLMDQuKzKksD5kP1jViYZw5C1EJxw'
+        'Authorization': 'Bearer $accessToken',
       },
     });
 
@@ -39,31 +45,50 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
       print(data);
       emit(state.copyWith(messages: [
         ...state.messages,
-        ChatMessage(
-            data: data["message"],
-            messageType: ChatMessageType.text,
-            messageStatus: MessageStatus.not_view,
-            isSender: false,
-            time: '19:15')
+        Message(
+            message: data["message"],
+            type: data["type"],
+            status: data["status"],
+            isMe: false,
+            time: DateTime.tryParse(data["createdAt"]))
       ], chatMessage: ''));
+      scrollToBottom();
     });
   }
 
+  void scrollToBottom() {
+    scrollController.animateTo(
+      // scrollController.position.maxScrollExtent + 75.0,
+      0.0,
+      curve: Curves.easeOut,
+      duration: const Duration(milliseconds: 300),
+    );
+  }
+
   void sendMessage() {
-    print("send message");
-    print("message: ${state.chatMessage}");
     if (state.chatMessage.isNotEmpty) {
-      socket.emit("messages", {"conversationId": conversationId, "message": state.chatMessage});
+      socket.emit("messages", {"conversationId": conversationId, "message": state.chatMessage, "type": "TEXT"});
       emit(state.copyWith(messages: [
         ...state.messages,
-        ChatMessage(
-            data: state.chatMessage,
-            messageType: ChatMessageType.text,
-            messageStatus: MessageStatus.not_view,
-            isSender: true,
-            time: '19:15')
+        Message(message: state.chatMessage, type: "TEXT", status: false, isMe: true, time: DateTime.now())
       ], chatMessage: ''));
+      scrollToBottom();
     }
+  }
+
+  Future<void> getMessages() async {
+    try {
+      emit(state.copyWith(status: ChatDetailStatus.loading));
+      final messages = await _petaminRepository.getChatMessages(conversationId);
+      scrollToBottom();
+      emit(state.copyWith(status: ChatDetailStatus.loaded, messages: messages));
+    } catch (e) {
+      emit(state.copyWith(status: ChatDetailStatus.error));
+    }
+  }
+
+  ScrollController getScrollController() {
+    return scrollController;
   }
 
   void typeMessage(String message) {
