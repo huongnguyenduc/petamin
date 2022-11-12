@@ -1,4 +1,5 @@
 import 'package:Petamin/pet_add/pet_add.dart';
+import 'package:Petamin/pet_list/cubit/pet_list_cubit.dart';
 import 'package:Petamin/theme/theme.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -100,6 +101,7 @@ class PetImage extends StatelessWidget {
                                       .descriptionChanged(description),
                                   minLines: 1,
                                   maxLines: 5,
+                                  textInputAction: TextInputAction.done,
                                   style: CustomTextTheme.label(context),
                                   decoration: InputDecoration(
                                       focusedBorder: InputBorder.none,
@@ -137,7 +139,7 @@ class PetImage extends StatelessWidget {
                                                     .read<PetAddCubit>()
                                                     .selectIntegralWeight(
                                                         index),
-                                            end: 100,
+                                            end: 99,
                                             height: 72.0,
                                           );
                                         },
@@ -179,21 +181,37 @@ class PetImage extends StatelessWidget {
                           ],
                         ),
                       ),
-                      ElevatedButton(
-                        key: const Key('next_property_raisedButton'),
-                        style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: EdgeInsets.symmetric(vertical: 15),
-                            minimumSize: const Size.fromHeight(40),
-                            primary: AppTheme.colors.pink,
-                            onSurface: AppTheme.colors.pink),
-                        onPressed: () =>
-                            context.read<PetAddCubit>().addNewPet(),
-                        child:
-                            Text('Done', style: CustomTextTheme.label(context)),
-                      )
+                      BlocBuilder<PetAddCubit, PetAddState>(
+                          buildWhen: (previous, current) =>
+                              previous.imageName != current.imageName,
+                          builder: (context, state) {
+                            return ElevatedButton(
+                              key: const Key('next_property_raisedButton'),
+                              style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  padding: EdgeInsets.symmetric(vertical: 15),
+                                  minimumSize: const Size.fromHeight(40),
+                                  primary: state.imageFile == null
+                                      ? AppTheme.colors.lightGrey
+                                      : AppTheme.colors.pink,
+                                  onSurface: AppTheme.colors.pink),
+                              onPressed: () async {
+                                if (state.imageFile == null) {
+                                  return;
+                                } else {
+                                 final result = await context.read<PetAddCubit>().addNewPet();
+                                  if(result){
+            
+                                    Navigator.of(context).pop();
+                                  }
+                                }
+                              },
+                              child: Text('Done',
+                                  style: CustomTextTheme.label(context)),
+                            );
+                          }),
                     ],
                   ),
                 ),

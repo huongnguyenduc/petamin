@@ -314,6 +314,8 @@ class PetaminRepository {
         price: adopt.price,
         description: adopt.description,
         status: adopt.status,
+        petId: adopt.petId,
+        userId: adopt.userId,
       );
     } catch (_) {
       throw const CallApiFailure();
@@ -329,6 +331,8 @@ class PetaminRepository {
             price: adopt.price,
             description: adopt.description,
             status: adopt.status,
+            userId: adopt.userId,
+            petId: adopt.petId,
           ),
           accessToken: session.accessToken);
     } catch (_) {
@@ -344,7 +348,9 @@ class PetaminRepository {
               description: adopt.description,
               id: adopt.id,
               price: adopt.price,
-              status: adopt.status),
+              status: adopt.status,
+              petId: adopt.petId,
+              userId: adopt.userId),
           accessToken: session.accessToken);
     } catch (_) {
       throw const CallApiFailure();
@@ -372,6 +378,49 @@ class PetaminRepository {
               ?.map((e) => models.Images(id: e.id, imgUrl: e.imgUrl))
               .toList(),
           species: petDetail.species);
+    } catch (_) {
+      throw const CallApiFailure();
+    }
+  }
+
+  Future<bool> deletePhotos(
+      {required String photoId, required String petId}) async {
+    try {
+      final session = await currentSession;
+      return await _petaminApiClient.deletePhotos(
+          photoId: photoId, petId: petId, accessToken: session.accessToken);
+    } catch (_) {
+      throw const CallApiFailure();
+    }
+  }
+
+  Future<bool> createPet({required Pet pet, required File? avatar}) async {
+    try {
+      debugPrint("Create Pet");
+      final session = await currentSession;
+      String? avatarUrl = "";
+
+      if (avatar != null) {
+        avatarUrl = await _petaminApiClient.uploadFile(
+            accessToken: session.accessToken, file: avatar);
+        return await _petaminApiClient.createPet(
+            pet: PetRes(
+              id: pet.id,
+              name: pet.name,
+              month: pet.month,
+              year: pet.year,
+              gender: pet.gender,
+              breed: pet.breed,
+              isNeuter: pet.isNeuter,
+              avatarUrl: avatarUrl,
+              description: pet.description,
+              weight: pet.weight,
+              species: pet.species,
+            ),
+            accessToken: session.accessToken);
+      } else {
+        return false;
+      }
     } catch (_) {
       throw const CallApiFailure();
     }

@@ -2,7 +2,7 @@ part of 'pet_add_cubit.dart';
 
 enum Species { cat, dog, bird, pocketPet, unselected }
 
-enum Gender { male, female, unknown }
+enum Gender { MALE, FEMALE, OTHER }
 
 enum Neutered { yes, no, unknown }
 
@@ -13,7 +13,7 @@ class PetAddState extends Equatable {
       this.currentStep = 1,
       this.species = Species.unselected,
       this.speciesId = "",
-      this.gender = Gender.unknown,
+      this.gender = Gender.OTHER,
       this.neutered = Neutered.unknown,
       this.year = 0,
       this.month = 0,
@@ -43,17 +43,17 @@ class PetAddState extends Equatable {
   @override
   List<Object> get props => [
         name,
-        breed,
-        currentStep,
-        species,
-        gender,
-        neutered,
-        year,
         month,
+        year,
+        gender,
+        breed,
+        neutered,
+        species,
         description,
         integralWeight,
         fractionalWeight,
-        imageName
+        imageName,
+        currentStep,
       ];
 
   PetAddState copyWith(

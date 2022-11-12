@@ -1,16 +1,14 @@
 part of 'create_post_cubit.dart';
 
-@immutable
 class CreatePostState extends Equatable {
   final Price price;
   final String description;
-  final FormzStatus status;
   final String? errorMessage;
-
+  final PostAdoptStatus status;
   const CreatePostState({
     this.price = const Price.pure(),
     this.description = '',
-    this.status = FormzStatus.pure,
+    this.status = PostAdoptStatus.initial,
     this.errorMessage,
   });
 
@@ -20,7 +18,7 @@ class CreatePostState extends Equatable {
   CreatePostState copyWith({
     Price? price,
     String? description,
-    FormzStatus? status,
+    PostAdoptStatus? status,
     String? errorMessage,
   }) {
     return CreatePostState(
@@ -30,4 +28,14 @@ class CreatePostState extends Equatable {
       errorMessage: errorMessage ?? this.errorMessage,
     );
   }
+}
+
+enum PostAdoptStatus { initial, loading, success, failure, isPosted }
+
+extension PostAdoptStatusX on PostAdoptStatus {
+  bool get isInitial => this == PostAdoptStatus.initial;
+  bool get isLoading => this == PostAdoptStatus.loading;
+  bool get isSuccess => this == PostAdoptStatus.success;
+  bool get isFailure => this == PostAdoptStatus.failure;
+  bool get isPosted => this == PostAdoptStatus.isPosted;
 }

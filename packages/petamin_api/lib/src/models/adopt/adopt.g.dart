@@ -11,6 +11,8 @@ Adopt _$AdoptFromJson(Map<String, dynamic> json) => Adopt(
       price: (json['price'] as num?)?.toDouble(),
       description: json['description'] as String?,
       status: json['status'] as String?,
+      petId: json['petId'] as String?,
+      userId: json['userId'] as String?,
     );
 
 Map<String, dynamic> _$AdoptToJson(Adopt instance) => <String, dynamic>{
@@ -18,4 +20,6 @@ Map<String, dynamic> _$AdoptToJson(Adopt instance) => <String, dynamic>{
       'price': instance.price,
       'description': instance.description,
       'status': instance.status,
+      'petId': instance.petId,
+      'userId': instance.userId,
     };

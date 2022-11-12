@@ -17,9 +17,9 @@ class PetListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cubit = PetListCubit(context.read<PetaminRepository>());
     return BlocProvider(
-        create: (_) =>
-            PetListCubit(context.read<PetaminRepository>())..getPets(),
+        create: (_) => cubit..getPets(),
         child: Scaffold(
             appBar: AppBar(
               centerTitle: true,
@@ -60,7 +60,7 @@ class PetListPage extends StatelessWidget {
                                 mainAxisSpacing: 30.0),
                         itemCount: state.pets.length + 1,
                         itemBuilder: (context, index) {
-                          if (index == 0) return AddPetItem();
+                          if (index == 0) return AddPetItem(cubit: cubit);
                           final pet = state.pets[index - 1];
                           return PetItem(
                             id: pet.id ?? '',
@@ -81,7 +81,6 @@ class PetItem extends StatelessWidget {
   final String id;
   final String name;
   final String photo;
-
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -123,19 +122,23 @@ class PetItem extends StatelessWidget {
 }
 
 class AddPetItem extends StatelessWidget {
-  const AddPetItem({Key? key}) : super(key: key);
-
+  const AddPetItem({required this.cubit, Key? key}) : super(key: key);
+  final PetListCubit cubit;
   @override
   Widget build(BuildContext context) {
+    void onGoBack() {
+      cubit.getPets();
+    }
     return Material(
       color: Colors.transparent,
       child: Ink(
         decoration: BoxDecoration(
             color: Colors.white, borderRadius: BorderRadius.circular(5.0)),
         child: InkWell(
-          onTap: () => {
+          onTap: () {
             Navigator.of(context, rootNavigator: true).push(
-                MaterialPageRoute(builder: (context) => const PetAddPage()))
+                MaterialPageRoute(builder: (context) => const PetAddPage())).then((_) => onGoBack());
+            debugPrint("Listttt pettttt");
           },
           borderRadius: BorderRadius.circular(10.0),
           splashColor: AppTheme.colors.pink,

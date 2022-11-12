@@ -20,6 +20,7 @@ class PetDetailPage extends StatelessWidget {
     void onGoBack() {
       cubit..getPetDetail(id: id);
     }
+
     return BlocProvider(
         create: (_) => cubit..getPetDetail(id: id),
         child: DefaultTabController(
@@ -28,7 +29,8 @@ class PetDetailPage extends StatelessWidget {
                 color: AppTheme.colors.white,
                 child: BlocBuilder<PetDetailCubit, PetDetailState>(
                     buildWhen: (previous, current) =>
-                        previous.status != current.status,
+                        previous.status != current.status  ||
+                        previous.pet.photos != current.pet.photos,
                     builder: (context, state) {
                       final pet = state.pet;
                       if (state.status == PetDetailStatus.loading) {
@@ -70,14 +72,29 @@ class PetDetailPage extends StatelessWidget {
                                       height: 24.0,
                                     ),
                                     backgroundColor: AppTheme.colors.green,
-                                    label: pet.isAdopting == false ? 'Post Adopt' : 'Edit Adopt',
+                                    label: pet.isAdopting == false
+                                        ? 'Post Adopt'
+                                        : 'Edit Adopt',
                                     labelStyle: TextStyle(fontSize: 18.0),
                                     onTap: () => Navigator.of(context,
-                                            rootNavigator: true)
-                                        .push(MaterialPageRoute(
-                                            builder: (context) => 
-                                              pet.isAdopting == false ?
-                                                const PetCreatePost() :  PetEditPost(petId: pet.id!, petName: pet.name!, petImage: pet.avatarUrl!,)))),
+                                                rootNavigator: true)
+                                            .push(MaterialPageRoute(
+                                                builder: (context) =>
+                                                    pet.isAdopting == false
+                                                        ? PetCreatePost(
+                                                            petId: pet.id!,
+                                                            petImage:
+                                                                pet.avatarUrl!,
+                                                            petName: pet.name!)
+                                                        : PetEditPost(
+                                                            petId: pet.id!,
+                                                            petName: pet.name!,
+                                                            petImage:
+                                                                pet.avatarUrl!,
+                                                          )))
+                                            .then((_) {
+                                          onGoBack();
+                                        })),
                                 SpeedDialChild(
                                     child: Icon(
                                       Icons.delete,
@@ -315,7 +332,9 @@ class PetDetailPage extends StatelessWidget {
                                         onTap: () async {
                                           await showDialog(
                                               context: context,
-                                              builder: (_) => ImageDialog(
+                                              builder: (context) => ImageDialog(
+                                                  cubit: cubit,
+                                                  petAvatar: pet.avatarUrl!,
                                                   name: pet.photos![index].id,
                                                   image: pet
                                                       .photos![index].imgUrl));
@@ -343,45 +362,6 @@ class PetDetailPage extends StatelessWidget {
                     }))));
   }
 }
-
-final List<PetPhotoItem> _items = [
-  PetPhotoItem(
-      "https://images.pexels.com/photos/7752793/pexels-photo-7752793.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1",
-      "Stephan Seeber"),
-  PetPhotoItem(
-      "https://images.pexels.com/photos/1107807/pexels-photo-1107807.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1",
-      "Liam Gant"),
-  PetPhotoItem(
-      "https://images.pexels.com/photos/2361952/pexels-photo-2361952.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1",
-      "Liam Ganttt"),
-  PetPhotoItem(
-      "https://images.pexels.com/photos/667228/pexels-photo-667228.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1",
-      "Liam Gantt"),
-  PetPhotoItem(
-      "https://images.pexels.com/photos/179222/pexels-photo-179222.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1",
-      "Liam Gant"),
-  PetPhotoItem(
-      "https://images.pexels.com/photos/51439/pexels-photo-51439.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1",
-      "Liam Gant"),
-  PetPhotoItem(
-      "https://images.pexels.com/photos/3652805/pexels-photo-3652805.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1",
-      "Liam Gant"),
-  PetPhotoItem(
-      "https://images.pexels.com/photos/160839/cat-animal-love-pet-160839.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1",
-      "Liam Gant"),
-  PetPhotoItem(
-      "https://images.pexels.com/photos/4790612/pexels-photo-4790612.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1",
-      "Liam Gant"),
-  PetPhotoItem(
-      "https://images.pexels.com/photos/8519611/pexels-photo-8519611.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1",
-      "Liam Gant"),
-  PetPhotoItem(
-      "https://images.pexels.com/photos/1107807/pexels-photo-1107807.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1",
-      "Liam Gant"),
-  PetPhotoItem(
-      "https://images.pexels.com/photos/7319488/pexels-photo-7319488.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1",
-      "Liam Gant"),
-];
 
 class PetPhotoItem {
   final String image;
@@ -436,10 +416,14 @@ class ImageDialog extends StatelessWidget {
   const ImageDialog({
     required this.image,
     required this.name,
+    required this.petAvatar,
+    required this.cubit,
     Key? key,
   }) : super(key: key);
   final String image;
   final String name;
+  final String petAvatar;
+  final PetDetailCubit cubit;
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -459,7 +443,7 @@ class ImageDialog extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 15,
-                  backgroundImage: NetworkImage(
+                  backgroundImage: NetworkImage(petAvatar ??
                       "https://images.pexels.com/photos/2173872/pexels-photo-2173872.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=1"),
                 ),
                 SizedBox(
@@ -491,10 +475,22 @@ class ImageDialog extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.delete_outline_rounded,
-                  color: AppTheme.colors.white,
-                  size: 24,
+                InkWell(
+                  onTap: () async {
+                   final result = await cubit.deletePhoto(id: name);
+                   if(result) Navigator.pop(context);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                        color: AppTheme.colors.black,
+                        borderRadius: BorderRadius.circular(8.0)),
+                    child: Icon(
+                      Icons.delete_outline_rounded,
+                      color: AppTheme.colors.white,
+                      size: 24,
+                    ),
+                  ),
                 ),
               ],
             ),

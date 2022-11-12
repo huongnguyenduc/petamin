@@ -50,13 +50,13 @@ class _PetEditPostViewState extends State<PetEditPostView> {
             builder: (context, state) {
               return IconButton(
                 onPressed: () {
-                  context.read<EditPostCubit>().submit();
+                  context.read<EditPostCubit>().submit(
+                      priceController.text, descriptionController.text);
                 },
                 icon: SvgPicture.asset(
                   'assets/icons/send.svg',
-                  color: state.status.isValidated
-                      ? AppTheme.colors.yellow
-                      : AppTheme.colors.grey,
+                  color: 
+                      AppTheme.colors.yellow,
                   width: 20.0,
                 ),
               );
@@ -116,15 +116,15 @@ class _PetEditPostViewState extends State<PetEditPostView> {
               SizedBox(
                 height: 8.0,
               ),
-              BlocBuilder<EditPostCubit, EditPostState>(
-                buildWhen: (previous, current) =>
-                    previous.initDescription != current.initDescription,
-                builder: (context, state) {
-                  return TextFormField(
+               BlocListener<EditPostCubit, EditPostState>(
+                listener: (context, state) =>
+                    descriptionController.text = state.initDescription,
+                child: TextFormField(
+                    controller: descriptionController,
                     style: CustomTextTheme.body2(context),
-                    onChanged: (description) => context
-                        .read<EditPostCubit>()
-                        .descriptionChanged(description),
+                    // onChanged: (description) => context
+                    //     .read<EditPostCubit>()
+                    //     .descriptionChanged(description),
                     decoration: InputDecoration(
                       fillColor: AppTheme.colors.white,
                       filled: true,
@@ -145,8 +145,7 @@ class _PetEditPostViewState extends State<PetEditPostView> {
                       labelStyle: CustomTextTheme.body2(context,
                           textColor: AppTheme.colors.lightGreen),
                     ),
-                  );
-                },
+                  ),
               ),
             ],
           )),

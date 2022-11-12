@@ -37,10 +37,10 @@ class PetBreed extends StatelessWidget {
                     child: Align(
                   alignment: const Alignment(0, -1 / 1.5),
                   child: TextField(
+                    maxLength: 20,
                     key: const Key('addPetForm_nameInput_textField'),
-                    onChanged: (breed) => context
-                        .read<PetAddCubit>()
-                        .breedChanged(breed),
+                    onChanged: (breed) =>
+                        context.read<PetAddCubit>().breedChanged(breed),
                     style: CustomTextTheme.heading2(context),
                     decoration: InputDecoration(
                         focusedBorder: InputBorder.none,
@@ -50,20 +50,25 @@ class PetBreed extends StatelessWidget {
                             textColor: AppTheme.colors.lightGrey)),
                   ),
                 )),
-                ElevatedButton(
-                  key: const Key('next_property_raisedButton'),
-                  style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 15),
-                      minimumSize: const Size.fromHeight(40),
-                      primary: AppTheme.colors.pink,
-                      onSurface: AppTheme.colors.pink),
-                  onPressed: () => context.read<PetAddCubit>().nextStep(),
-                  child: Text('Next to Gender',
-                      style: CustomTextTheme.label(context)),
-                )
+                BlocBuilder<PetAddCubit, PetAddState>(
+                    buildWhen: (previous, current) =>
+                        current.breed.length > 0 || current.breed.length == 0,
+                    builder: (context, state) {
+                      return ElevatedButton(
+                        key: const Key('next_property_raisedButton'),
+                        style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: EdgeInsets.symmetric(vertical: 15),
+                            minimumSize: const Size.fromHeight(40),
+                            primary: state.breed.length > 0 ?AppTheme.colors.pink : AppTheme.colors.lightGrey,
+                            onSurface: AppTheme.colors.pink),
+                        onPressed: () => state.breed.length > 0 ? context.read<PetAddCubit>().nextStep() : null,
+                        child: Text('Next to Gender',
+                            style: CustomTextTheme.label(context)),
+                      );
+                    }),
               ],
             ),
           ),

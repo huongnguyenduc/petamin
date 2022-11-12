@@ -43,14 +43,14 @@ class PetGender extends StatelessWidget {
                         children: [
                           GenderItem(
                             icon: Icons.male_rounded,
-                            gender: Gender.male,
+                            gender: Gender.MALE,
                           ),
                           SizedBox(
                             width: 48.0,
                           ),
                           GenderItem(
                             icon: Icons.female_rounded,
-                            gender: Gender.female,
+                            gender: Gender.FEMALE,
                           ),
                         ],
                       ),
@@ -67,7 +67,7 @@ class PetGender extends StatelessWidget {
                           onTap: () {
                             context
                                 .read<PetAddCubit>()
-                                .selectGender(Gender.unknown);
+                                .selectGender(Gender.OTHER);
                             context.read<PetAddCubit>().nextStep();
                           },
                           child: Text(
@@ -79,7 +79,10 @@ class PetGender extends StatelessWidget {
                     ],
                   )),
                 ),
-                ElevatedButton(
+                BlocBuilder<PetAddCubit,PetAddState>(
+                  buildWhen: (previous, current) => current.gender != Gender.OTHER,
+                  builder: (context, state) {
+                  return ElevatedButton(
                   key: const Key('next_property_raisedButton'),
                   style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
@@ -87,12 +90,12 @@ class PetGender extends StatelessWidget {
                       ),
                       padding: EdgeInsets.symmetric(vertical: 15),
                       minimumSize: const Size.fromHeight(40),
-                      primary: AppTheme.colors.pink,
+                      primary: state.gender != Gender.OTHER ?AppTheme.colors.pink : AppTheme.colors.lightGrey,
                       onSurface: AppTheme.colors.pink),
-                  onPressed: () => context.read<PetAddCubit>().nextStep(),
+                  onPressed: () => state.gender != Gender.OTHER ? context.read<PetAddCubit>().nextStep() : null,
                   child: Text('Next to Neuter',
                       style: CustomTextTheme.label(context)),
-                )
+                );}),
               ],
             ),
           ),
@@ -111,9 +114,9 @@ class GenderItem extends StatelessWidget {
 
   String convertGenderToString(Gender gender) {
     switch (gender) {
-      case Gender.male:
+      case Gender.MALE:
         return "Male";
-      case Gender.female:
+      case Gender.FEMALE:
         return "Female";
       default:
         return "Other";

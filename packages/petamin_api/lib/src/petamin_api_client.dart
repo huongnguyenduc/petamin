@@ -85,9 +85,6 @@ class PetaminApiClient {
 
   /// Login `/auth/login`.
   Future<Auth> login({required String email, required String password}) async {
-    // return await httpPost(
-    //     endPoint: '/auth/login',
-    //     body: {'email': email, 'password': password});
     final response = await NetworkService.sendRequest(
         requestType: RequestType.post,
         baseUrl: _baseUrl,
@@ -104,13 +101,18 @@ class PetaminApiClient {
         });
   }
 
-  static Future<R> httpPost<R>(
-      {required String endPoint, required Map<String, dynamic> body}) async {
+
+  /// Register `/auth/register`.
+  Future<Auth> register(
+      {required String name,
+      required String email,
+      required String password}) async {
     final response = await NetworkService.sendRequest(
         requestType: RequestType.post,
         baseUrl: _baseUrl,
-        endPoint: endPoint,
-        body: body);
+        endPoint: '/auth/register',
+        body: {'name': name, 'email': email, 'password': password});
+    debugPrint('Response ${response?.body}');
     return await NetworkHelper.filterResponse(
         response: response,
         parameterName: CallBackParameterName.all,
@@ -119,30 +121,6 @@ class PetaminApiClient {
           debugPrint('Error type-$errorType - Message $msg');
           return null;
         });
-  }
-
-  /// Register `/auth/register`.
-  Future<Auth> register(
-      {required String name,
-      required String email,
-      required String password}) async {
-    return await httpPost(
-        endPoint: '/auth/register',
-        body: {'name': name, 'email': email, 'password': password});
-    // final response = await NetworkService.sendRequest(
-    //     requestType: RequestType.post,
-    //     baseUrl: _baseUrl,
-    //     endPoint: '/auth/register',
-    //     body: {'name': name, 'email': email, 'password': password});
-    // debugPrint('Response ${response?.body}');
-    // return await NetworkHelper.filterResponse(
-    //     response: response,
-    //     parameterName: CallBackParameterName.all,
-    //     callBack: (json) => Auth.fromJson(json),
-    //     onFailureCallBackWithMessage: (errorType, msg) {
-    //       debugPrint('Error type-$errorType - Message $msg');
-    //       return null;
-    //     });
   }
 
   /// Register `/auth/logout`.
@@ -201,7 +179,21 @@ class PetaminApiClient {
           return null;
         });
   }
-
+  Future<bool> createPet({required PetRes pet, required String accessToken}) async {
+    final response = await NetworkService.sendRequest(
+      requestType: RequestType.post,
+      baseUrl: _baseUrl,
+      endPoint: '/pets',
+      accessToken: accessToken,
+      body: pet.toJson(),
+    );
+    debugPrint('Response ${response?.body}');
+    if (response!.statusCode == 201) {
+      return true;
+    } else {
+      return false;
+    }
+  }
   Future<bool> updatePet(
       {required PetRes pet, required String accessToken}) async {
     debugPrint("Update Pet API");
@@ -271,7 +263,22 @@ class PetaminApiClient {
       return false;
     }
   }
-
+  Future<bool> deletePhotos({required String photoId,required String petId, required String accessToken}) async {
+    debugPrint("Delete Photos API");
+    final response = await NetworkService.sendRequest(
+      requestType: RequestType.post,
+      baseUrl: _baseUrl,
+      body: {'photoIds': [photoId]},
+      endPoint: '/pets/$petId/photos/delete',
+      accessToken: accessToken,
+    );
+    debugPrint('Response ${response?.body}');
+    if (response!.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
   Future<String> uploadFile({
     required String accessToken,
     File? file,

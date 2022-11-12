@@ -8,11 +8,15 @@ class Adopt  {
     required this.price,
     required this.description,
     required this.status,
+    required this.petId,
+    required this.userId,
   });
   final String? id;
   final double? price;
   final String? description;
   final String? status;
+  final String? petId;
+  final String? userId;
   @override
   List<Object?> get props => [
         id,
