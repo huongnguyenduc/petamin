@@ -96,29 +96,39 @@ class SearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(15.0),
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 20.0),
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(25.0), color: AppTheme.colors.superLightPurple),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SvgPicture.asset(
-              'assets/icons/search.svg',
-              width: 20.0,
-              color: AppTheme.colors.grey,
-            ),
-            SizedBox(
-              width: 12.0,
-            ),
-            Text(
-              "Search",
-              style: CustomTextTheme.label(context, textColor: AppTheme.colors.grey),
-            ),
-          ],
-        ),
-      ),
-    );
+        padding: const EdgeInsets.all(15.0),
+        child: Ink(
+            decoration:
+                BoxDecoration(color: AppTheme.colors.superLightPurple, borderRadius: BorderRadius.circular(5.0)),
+            child: InkWell(
+              onTap: () => {
+                Navigator.of(context, rootNavigator: true)
+                    .push(MaterialPageRoute(builder: (context) => const ChatSearchPage()))
+              },
+              borderRadius: BorderRadius.circular(10.0),
+              splashColor: AppTheme.colors.lightPurple,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 20.0),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(25.0)),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset(
+                      'assets/icons/search.svg',
+                      width: 20.0,
+                      color: AppTheme.colors.grey,
+                    ),
+                    SizedBox(
+                      width: 12.0,
+                    ),
+                    Text(
+                      "Search",
+                      style: CustomTextTheme.label(context, textColor: AppTheme.colors.grey),
+                    ),
+                  ],
+                ),
+              ),
+            )));
   }
 }
 

@@ -6,6 +6,7 @@ import 'package:cache/cache.dart';
 import 'package:flutter/foundation.dart' show debugPrint, kIsWeb, visibleForTesting;
 import 'package:petamin_api/petamin_api.dart';
 import 'package:petamin_repository/petamin_repository.dart';
+import 'package:petamin_repository/src/models/user_pagination.dart';
 
 import './models/models.dart';
 import './models/models.dart' as models;
@@ -230,7 +231,7 @@ class PetaminRepository {
       final session = await currentSession;
       final conversations = await _petaminApiClient.getConversations(accessToken: session.accessToken);
       return conversations.map((conversation) {
-        ChatUser partner = conversation.users!.firstWhere((user) => user.profile!.id != session.userId);
+        ChatUser partner = conversation.users!.firstWhere((user) => user.id != session.userId);
         return Conversation(
           id: conversation.id ?? '',
           partner: Profile(
@@ -245,6 +246,77 @@ class PetaminRepository {
               : LastMessage.empty(),
         );
       }).toList();
+    } catch (_) {
+      throw const CallApiFailure();
+    }
+  }
+
+  // Get user pagination
+  Future<UserPagination> getUserPagination({required int page, required int limit, required String query}) async {
+    try {
+      final session = await currentSession;
+      final userPaginationData =
+          await _petaminApiClient.getUsers(accessToken: session.accessToken, page: page, limit: limit, search: query);
+      final users = userPaginationData.data;
+      final pagination = userPaginationData.meta;
+      return UserPagination(
+          users: users
+              .map((user) => Profile(
+                    userId: user.id,
+                    name: user.profile!.name ?? "",
+                    profileId: user.profile!.id ?? "",
+                    email: user.email,
+                    avatar: user.profile!.avatar ?? "",
+                  ))
+              .toList(),
+          pagination: PaginationData(
+            pagination.currentPage,
+            pagination.itemsPerPage,
+            pagination.totalItems,
+            pagination.totalPages,
+          ));
+    } catch (_) {
+      throw const CallApiFailure();
+    }
+  }
+
+  // Get detail user conversation
+  Future<UserConversationDetail> getUserDetailConversation({required String conversationId}) async {
+    try {
+      final session = await currentSession;
+      final detailConversation =
+          await _petaminApiClient.getConversationById(accessToken: session.accessToken, id: conversationId);
+      final partner = detailConversation.users!.firstWhere((user) => user.id != session.userId);
+      return UserConversationDetail(
+        conversationId: detailConversation.id ?? "",
+        partner: Profile(
+          userId: partner.id,
+          name: partner.profile!.name,
+          avatar: partner.profile!.avatar ?? "",
+          profileId: partner.profile!.id ?? "",
+        ),
+      );
+    } catch (_) {
+      throw const CallApiFailure();
+    }
+  }
+
+  // Post detail user conversation
+  Future<UserConversationDetail> postUserDetailConversation({required String userId}) async {
+    try {
+      final session = await currentSession;
+      final detailConversation =
+          await _petaminApiClient.postConversationById(accessToken: session.accessToken, id: userId);
+      final partner = detailConversation.users!.firstWhere((user) => user.id != session.userId);
+      return UserConversationDetail(
+        conversationId: detailConversation.id ?? "",
+        partner: Profile(
+          userId: partner.id,
+          name: partner.profile!.name,
+          avatar: partner.profile!.avatar ?? "",
+          profileId: partner.profile!.id ?? "",
+        ),
+      );
     } catch (_) {
       throw const CallApiFailure();
     }

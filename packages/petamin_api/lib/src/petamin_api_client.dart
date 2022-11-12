@@ -239,7 +239,37 @@ class PetaminApiClient {
         });
   }
 
-// Get [ChatMessage] list `/messages/conversation/{conversationId}`.
+  // Get [Conversation] by id `/conversations/:id`.
+  Future<ChatConversation> getConversationById({required String id, required String accessToken}) async {
+    final response = await NetworkService.sendRequest(
+        requestType: RequestType.get, baseUrl: _baseUrl, endPoint: '/conversations/$id', accessToken: accessToken);
+    debugPrint('Response ${response?.body}');
+    return await NetworkHelper.filterResponse(
+        response: response,
+        parameterName: CallBackParameterName.all,
+        callBack: (json) => ChatConversation.fromJson(json),
+        onFailureCallBackWithMessage: (errorType, msg) {
+          debugPrint('Error type-$errorType - Message $msg');
+          return null;
+        });
+  }
+
+  // Post [Conversation] by id `/conversations/:id`.
+  Future<ChatConversation> postConversationById({required String id, required String accessToken}) async {
+    final response = await NetworkService.sendRequest(
+        requestType: RequestType.post, baseUrl: _baseUrl, endPoint: '/conversations/$id', accessToken: accessToken);
+    debugPrint('Response ${response?.body}');
+    return await NetworkHelper.filterResponse(
+        response: response,
+        parameterName: CallBackParameterName.all,
+        callBack: (json) => ChatConversation.fromJson(json),
+        onFailureCallBackWithMessage: (errorType, msg) {
+          debugPrint('Error type-$errorType - Message $msg');
+          return null;
+        });
+  }
+
+  // Get [ChatMessage] list `/messages/conversation/{conversationId}`.
   Future<List<ChatMessage>> getMessages({required String accessToken, required String conversationId}) async {
     final response = await NetworkService.sendRequest(
         requestType: RequestType.get,
@@ -251,6 +281,25 @@ class PetaminApiClient {
         response: response,
         parameterName: CallBackParameterName.data,
         callBack: (json) => chatMessageFromJson(json),
+        onFailureCallBackWithMessage: (errorType, msg) {
+          debugPrint('Error type-$errorType - Message $msg');
+          return null;
+        });
+  }
+
+  // Get [ChatUser] list pagination `/users?{page}&{limit}&{search}`.
+  Future<ChatSearchPagination> getUsers(
+      {required String accessToken, required int page, required int limit, String? search}) async {
+    final response = await NetworkService.sendRequest(
+        requestType: RequestType.get,
+        baseUrl: _baseUrl,
+        endPoint: '/users?page=$page&limit=$limit&search=$search',
+        accessToken: accessToken);
+    debugPrint('Response ${response?.body}');
+    return await NetworkHelper.filterResponse(
+        response: response,
+        parameterName: CallBackParameterName.all,
+        callBack: (json) => ChatSearchPagination.fromJson(json),
         onFailureCallBackWithMessage: (errorType, msg) {
           debugPrint('Error type-$errorType - Message $msg');
           return null;
