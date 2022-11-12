@@ -103,7 +103,7 @@ class SearchBar extends StatelessWidget {
             child: InkWell(
               onTap: () => {
                 Navigator.of(context, rootNavigator: true)
-                    .push(MaterialPageRoute(builder: (context) => const ChatSearchPage()))
+                    .push(MaterialPageRoute(builder: (context) =>  ChatSearchPage()))
               },
               borderRadius: BorderRadius.circular(10.0),
               splashColor: AppTheme.colors.lightPurple,

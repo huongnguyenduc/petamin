@@ -18,7 +18,10 @@ class PetaminApiClient {
   /// Get [User] profile `/profile`.
   Future<User> getUserProfile({required String accessToken}) async {
     final response = await NetworkService.sendRequest(
-        requestType: RequestType.get, baseUrl: _baseUrl, endPoint: '/profile', accessToken: accessToken);
+        requestType: RequestType.get,
+        baseUrl: _baseUrl,
+        endPoint: '/profile',
+        accessToken: accessToken);
     debugPrint('Response ${response?.statusCode} ${response?.body}');
     return await NetworkHelper.filterResponse(
         response: response,
@@ -32,7 +35,10 @@ class PetaminApiClient {
 
   Future<bool> checkToken({required String accessToken}) async {
     final response = await NetworkService.sendRequest(
-        requestType: RequestType.get, baseUrl: _baseUrl, endPoint: '/profile', accessToken: accessToken);
+        requestType: RequestType.get,
+        baseUrl: _baseUrl,
+        endPoint: '/profile',
+        accessToken: accessToken);
     debugPrint('Response ${response?.body}');
     if (response?.statusCode == 401) return false;
     return true;
@@ -98,9 +104,13 @@ class PetaminApiClient {
         });
   }
 
-  static Future<R> httpPost<R>({required String endPoint, required Map<String, dynamic> body}) async {
+  static Future<R> httpPost<R>(
+      {required String endPoint, required Map<String, dynamic> body}) async {
     final response = await NetworkService.sendRequest(
-        requestType: RequestType.post, baseUrl: _baseUrl, endPoint: endPoint, body: body);
+        requestType: RequestType.post,
+        baseUrl: _baseUrl,
+        endPoint: endPoint,
+        body: body);
     return await NetworkHelper.filterResponse(
         response: response,
         parameterName: CallBackParameterName.all,
@@ -112,8 +122,13 @@ class PetaminApiClient {
   }
 
   /// Register `/auth/register`.
-  Future<Auth> register({required String name, required String email, required String password}) async {
-    return await httpPost(endPoint: '/auth/register', body: {'name': name, 'email': email, 'password': password});
+  Future<Auth> register(
+      {required String name,
+      required String email,
+      required String password}) async {
+    return await httpPost(
+        endPoint: '/auth/register',
+        body: {'name': name, 'email': email, 'password': password});
     // final response = await NetworkService.sendRequest(
     //     requestType: RequestType.post,
     //     baseUrl: _baseUrl,
@@ -160,14 +175,16 @@ class PetaminApiClient {
     return await NetworkHelper.filterResponse(
         response: response,
         parameterName: CallBackParameterName.all,
-        callBack: (json) => (json as List<dynamic>).map((pet) => PetRes.fromJson(pet)).toList(),
+        callBack: (json) =>
+            (json as List<dynamic>).map((pet) => PetRes.fromJson(pet)).toList(),
         onFailureCallBackWithMessage: (errorType, msg) {
           debugPrint('Error type-$errorType - Message $msg');
           return null;
         });
   }
 
-  Future<PetRes> getPetDetail({required String id, required String accessToken}) async {
+  Future<PetRes> getPetDetail(
+      {required String id, required String accessToken}) async {
     final response = await NetworkService.sendRequest(
       requestType: RequestType.get,
       baseUrl: _baseUrl,
@@ -185,7 +202,8 @@ class PetaminApiClient {
         });
   }
 
-  Future<bool> updatePet({required PetRes pet, required String accessToken}) async {
+  Future<bool> updatePet(
+      {required PetRes pet, required String accessToken}) async {
     debugPrint("Update Pet API");
     final response = await NetworkService.sendRequest(
       requestType: RequestType.patch,
@@ -225,9 +243,13 @@ class PetaminApiClient {
   }
 
   // Get [Conversation] list `/users/conversations`.
-  Future<List<ChatConversation>> getConversations({required String accessToken}) async {
+  Future<List<ChatConversation>> getConversations(
+      {required String accessToken}) async {
     final response = await NetworkService.sendRequest(
-        requestType: RequestType.get, baseUrl: _baseUrl, endPoint: '/users/conversations', accessToken: accessToken);
+        requestType: RequestType.get,
+        baseUrl: _baseUrl,
+        endPoint: '/users/conversations',
+        accessToken: accessToken);
     debugPrint('Response ${response?.body}');
     return await NetworkHelper.filterResponse(
         response: response,
@@ -240,9 +262,13 @@ class PetaminApiClient {
   }
 
   // Get [Conversation] by id `/conversations/:id`.
-  Future<ChatConversation> getConversationById({required String id, required String accessToken}) async {
+  Future<ChatConversation> getConversationById(
+      {required String id, required String accessToken}) async {
     final response = await NetworkService.sendRequest(
-        requestType: RequestType.get, baseUrl: _baseUrl, endPoint: '/conversations/$id', accessToken: accessToken);
+        requestType: RequestType.get,
+        baseUrl: _baseUrl,
+        endPoint: '/conversations/$id',
+        accessToken: accessToken);
     debugPrint('Response ${response?.body}');
     return await NetworkHelper.filterResponse(
         response: response,
@@ -255,9 +281,14 @@ class PetaminApiClient {
   }
 
   // Post [Conversation] by id `/conversations/:id`.
-  Future<ChatConversation> postConversationById({required String id, required String accessToken}) async {
+  Future<ChatConversation> postConversationById(
+      {required String userId, required String accessToken}) async {
     final response = await NetworkService.sendRequest(
-        requestType: RequestType.post, baseUrl: _baseUrl, endPoint: '/conversations/$id', accessToken: accessToken);
+        requestType: RequestType.post,
+        baseUrl: _baseUrl,
+        endPoint: '/conversations',
+        body: {'userIds': [userId]},
+        accessToken: accessToken);
     debugPrint('Response ${response?.body}');
     return await NetworkHelper.filterResponse(
         response: response,
@@ -270,7 +301,8 @@ class PetaminApiClient {
   }
 
   // Get [ChatMessage] list `/messages/conversation/{conversationId}`.
-  Future<List<ChatMessage>> getMessages({required String accessToken, required String conversationId}) async {
+  Future<List<ChatMessage>> getMessages(
+      {required String accessToken, required String conversationId}) async {
     final response = await NetworkService.sendRequest(
         requestType: RequestType.get,
         baseUrl: _baseUrl,
@@ -289,7 +321,11 @@ class PetaminApiClient {
 
   // Get [ChatUser] list pagination `/users?{page}&{limit}&{search}`.
   Future<ChatSearchPagination> getUsers(
-      {required String accessToken, required int page, required int limit, String? search}) async {
+      {required String accessToken,
+      required int page,
+      required int limit,
+      String? search}) async {
+    debugPrint("Call APi Get user");
     final response = await NetworkService.sendRequest(
         requestType: RequestType.get,
         baseUrl: _baseUrl,

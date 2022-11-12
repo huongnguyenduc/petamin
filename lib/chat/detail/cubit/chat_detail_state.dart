@@ -4,24 +4,26 @@ part of 'chat_detail_cubit.dart';
 enum ChatDetailStatus { initial, loading, loaded, error }
 
 class ChatDetailState extends Equatable {
-  ChatDetailState({this.messages = const [], this.chatMessage = "", this.status = ChatDetailStatus.initial});
+  ChatDetailState({this.messages = const [], this.chatMessage = "",this.status = ChatDetailStatus.initial, this.partner});
 
   final List<Message> messages;
   final String chatMessage;
   final ChatDetailStatus status;
-
+  Profile? partner = Profile.empty();
   @override
-  List<Object> get props => [messages, chatMessage, status];
-
+  List<Object?> get props => [messages, chatMessage, status, partner];
+ 
   ChatDetailState copyWith({
     List<Message>? messages,
     String? chatMessage,
     ChatDetailStatus? status,
+    Profile? partner,
   }) {
     return ChatDetailState(
       messages: messages ?? this.messages,
       chatMessage: chatMessage ?? this.chatMessage,
       status: status ?? this.status,
+      partner: partner ?? this.partner,
     );
   }
 }

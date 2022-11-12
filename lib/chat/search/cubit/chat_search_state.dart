@@ -2,6 +2,7 @@ part of 'chat_search_cubit.dart';
 
 // ChatSearchStatus
 enum ChatSearchStatus {
+  newQuery,
   initial,
   searching,
   success,

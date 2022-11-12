@@ -8,7 +8,7 @@ class PaginationData {
 
   // Initialize the pagination data with default values
   const PaginationData.initial()
-      : currentPage = 1,
+      : currentPage = 0,
         itemsPerPage = 10,
         totalItems = 0,
         totalPages = 0;

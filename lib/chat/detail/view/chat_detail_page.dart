@@ -21,8 +21,10 @@ class ChatPage extends StatelessWidget {
     // Get session from app bloc
     final session = context.read<AppSessionBloc>().state.session;
     return BlocProvider(
-      create: (_) => ChatDetailCubit(conversationId, session.accessToken, context.read<PetaminRepository>())
+      create: (_) => ChatDetailCubit(conversationId, session.accessToken,
+          context.read<PetaminRepository>())
         ..initSocket()
+        ..getUserDetailConversation()
         ..getMessages(),
       child: ChatDetailPage(),
     );
@@ -61,62 +63,76 @@ class ChatDetailPage extends StatelessWidget {
           backgroundColor: AppTheme.colors.green,
           appBar: PreferredSize(
             preferredSize: Size.fromHeight(72),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: AppBar(
-                centerTitle: true,
-                elevation: 0,
-                actions: [
-                  IconButton(
-                      onPressed: () {
-                        // call video
-                        context.read<ChatDetailCubit>().fireVideoCall(
-                            callModel: CallModel(
-                                id: 'call_${UniqueKey().hashCode.toString()}',
-                                callerId: user.userId,
-                                callerAvatar: 'ưe',
-                                callerName: 'Huy',
-                                receiverId: 'da283s4wjweYjuqf3PmlkFvBYss1',
-                                receiverAvatar: 'ưe',
-                                receiverName: 'bui',
-                                status: CallStatus.ringing.name,
-                                createAt: DateTime.now().millisecondsSinceEpoch,
-                                current: true));
-                      },
-                      icon: Icon(Icons.call))
-                ],
-                title: Text(
-                  "Peter Thornton",
-                  style: CustomTextTheme.heading4(context, textColor: AppTheme.colors.white),
+            child: BlocBuilder<ChatDetailCubit, ChatDetailState>(
+              buildWhen: (previous, current) => previous.partner != current.partner,
+              builder: (context, state) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: AppBar(
+                  centerTitle: true,
+                  elevation: 0,
+                  actions: [
+                    IconButton(
+                        onPressed: () {
+                          // call video
+                          context.read<ChatDetailCubit>().fireVideoCall(
+                              callModel: CallModel(
+                                  id: 'call_${UniqueKey().hashCode.toString()}',
+                                  callerId: user.userId,
+                                  callerAvatar: 'ưe',
+                                  callerName: 'Huy',
+                                  receiverId: 'da283s4wjweYjuqf3PmlkFvBYss1',
+                                  receiverAvatar: 'ưe',
+                                  receiverName: 'bui',
+                                  status: CallStatus.ringing.name,
+                                  createAt:
+                                      DateTime.now().millisecondsSinceEpoch,
+                                  current: true));
+                        },
+                        icon: Icon(Icons.call))
+                  ],
+                  title: Text(
+                    state.partner?.name ?? "",
+                    style: CustomTextTheme.heading4(context,
+                        textColor: AppTheme.colors.white),
+                  ),
                 ),
-              ),
-            ),
+              );
+            }),
           ),
           body: Container(
             padding: EdgeInsets.symmetric(horizontal: 20.0),
             decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(18.0), topRight: Radius.circular(18.0))),
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(18.0),
+                    topRight: Radius.circular(18.0))),
             child: Column(
               children: [
                 Expanded(
                   child: BlocBuilder<ChatDetailCubit, ChatDetailState>(
-                    buildWhen: (previous, current) => previous.messages != current.messages,
+                    buildWhen: (previous, current) =>
+                        previous.messages != current.messages,
                     builder: (context, state) {
                       return ListView.builder(
                           itemCount: state.messages.length,
                           shrinkWrap: true,
                           reverse: true,
-                          controller: context.read<ChatDetailCubit>().scrollController,
+                          controller:
+                              context.read<ChatDetailCubit>().scrollController,
                           itemBuilder: (context, index) {
                             switch (state.messages[index].type) {
                               case "TEXT":
                                 return state.messages.length > 0
-                                    ? TextMessage(chatMessage: state.messages[state.messages.length - 1 - index])
+                                    ? TextMessage(
+                                        chatMessage: state.messages[
+                                            state.messages.length - 1 - index])
                                     : Container();
                               case "IMAGE":
                                 return state.messages.length > 0
-                                    ? ImageMessage(chatMessage: state.messages[state.messages.length - 1 - index])
+                                    ? ImageMessage(
+                                        chatMessage: state.messages[
+                                            state.messages.length - 1 - index])
                                     : Container();
                               default:
                                 return Container();
@@ -138,7 +154,8 @@ class ChatDetailPage extends StatelessWidget {
                       height: 44.0,
                       width: 44.0,
                       decoration: BoxDecoration(
-                          color: AppTheme.colors.superLightPurple, borderRadius: BorderRadius.circular(10.0)),
+                          color: AppTheme.colors.superLightPurple,
+                          borderRadius: BorderRadius.circular(10.0)),
                       child: Icon(
                         Icons.add,
                         color: AppTheme.colors.pink,
@@ -165,7 +182,8 @@ class ImageMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: chatMessage.isMe! ? MainAxisAlignment.end : MainAxisAlignment.start,
+      mainAxisAlignment:
+          chatMessage.isMe! ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
         if (!chatMessage.isMe!) ...[
           CircleAvatar(
@@ -179,7 +197,9 @@ class ImageMessage extends StatelessWidget {
           height: 130.0,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(25.0),
-              image: DecorationImage(image: AssetImage('assets/images/cat-1.jpg'), fit: BoxFit.cover)),
+              image: DecorationImage(
+                  image: AssetImage('assets/images/cat-1.jpg'),
+                  fit: BoxFit.cover)),
         ),
         SizedBox(width: 12.0),
         Container(
@@ -187,7 +207,9 @@ class ImageMessage extends StatelessWidget {
           height: 130.0,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(25.0),
-              image: DecorationImage(image: AssetImage('assets/images/cat-2.jpg'), fit: BoxFit.cover)),
+              image: DecorationImage(
+                  image: AssetImage('assets/images/cat-2.jpg'),
+                  fit: BoxFit.cover)),
         ),
       ],
     );
@@ -208,7 +230,8 @@ class TextMessage extends StatelessWidget {
       padding: const EdgeInsets.only(top: 16.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: chatMessage.isMe! ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment:
+            chatMessage.isMe! ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           if (!chatMessage.isMe!) ...[
             CircleAvatar(
@@ -220,7 +243,9 @@ class TextMessage extends StatelessWidget {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
             decoration: BoxDecoration(
-                color: chatMessage.isMe! ? AppTheme.colors.pink : AppTheme.colors.lightPurple,
+                color: chatMessage.isMe!
+                    ? AppTheme.colors.pink
+                    : AppTheme.colors.lightPurple,
                 borderRadius: BorderRadius.circular(20.0)),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -230,15 +255,21 @@ class TextMessage extends StatelessWidget {
                   chatMessage.message!,
                   overflow: TextOverflow.ellipsis,
                   style: CustomTextTheme.body2(context,
-                      textColor: chatMessage.isMe! ? AppTheme.colors.white : AppTheme.colors.green),
+                      textColor: chatMessage.isMe!
+                          ? AppTheme.colors.white
+                          : AppTheme.colors.green),
                 ),
                 SizedBox(
                   width: 16.0,
                 ),
                 Text(
-                  chatMessage.time!.hour.toString() + ":" + chatMessage.time!.minute.toString(),
+                  chatMessage.time!.hour.toString() +
+                      ":" +
+                      chatMessage.time!.minute.toString(),
                   style: CustomTextTheme.caption(context,
-                      textColor: chatMessage.isMe! ? AppTheme.colors.white : AppTheme.colors.grey),
+                      textColor: chatMessage.isMe!
+                          ? AppTheme.colors.white
+                          : AppTheme.colors.grey),
                 )
               ],
             ),

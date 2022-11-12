@@ -28,8 +28,31 @@ class Profile extends Equatable {
   String? userId;
   String? profileId;
 
+  // empty profile
+  Profile.empty()
+      :  this(
+            name: '',
+            avatar: '',
+            address: '',
+            phone: '',
+            description: '',
+            gender: '',
+            birthday: '',
+            email: '',
+            userId: '',
+            profileId: '');
   @override
-  List<Object?> get props => [avatar, address, phone, description, email, name, birthday, userId, profileId];
+  List<Object?> get props => [
+        avatar,
+        address,
+        phone,
+        description,
+        email,
+        name,
+        birthday,
+        userId,
+        profileId
+      ];
 
   Profile copyWith({
     String? avatar,
@@ -56,7 +79,8 @@ class Profile extends Equatable {
         profileId: profileId ?? this.profileId,
       );
 
-  factory Profile.fromJson(Map<String, dynamic> json) => _$ProfileFromJson(json);
+  factory Profile.fromJson(Map<String, dynamic> json) =>
+      _$ProfileFromJson(json);
 
   Map<String, dynamic> toJson() => _$ProfileToJson(this);
 }

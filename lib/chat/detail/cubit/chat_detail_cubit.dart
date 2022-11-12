@@ -23,7 +23,6 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
   final accessToken;
   final ScrollController scrollController = new ScrollController();
   final PetaminRepository _petaminRepository;
-
   void initSocket() {
     final apiLink = dotenv.env['API_LINK'];
     socket = IO.io(apiLink, <String, dynamic>{
@@ -75,7 +74,15 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
       scrollToBottom();
     }
   }
-
+  Future<void> getUserDetailConversation() async {
+    try {
+      emit(state.copyWith(status: ChatDetailStatus.loading));
+      final infor = await _petaminRepository.getUserDetailConversation(conversationId: conversationId);
+      emit(state.copyWith(status: ChatDetailStatus.loaded, partner: infor.partner));
+    } catch (e) {
+      emit(state.copyWith(status: ChatDetailStatus.error));
+    }
+  }
   Future<void> getMessages() async {
     try {
       emit(state.copyWith(status: ChatDetailStatus.loading));
