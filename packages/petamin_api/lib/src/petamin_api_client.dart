@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:petamin_api/petamin_api.dart';
+import 'package:petamin_api/src/models/adopt/adopt.dart';
 import 'package:petamin_api/src/networking/network_service.dart';
 import 'package:petamin_api/src/static/static_values.dart';
 
@@ -79,9 +80,6 @@ class PetaminApiClient {
 
   /// Login `/auth/login`.
   Future<Auth> login({required String email, required String password}) async {
-    // return await httpPost(
-    //     endPoint: '/auth/login',
-    //     body: {'email': email, 'password': password});
     final response = await NetworkService.sendRequest(
         requestType: RequestType.post,
         baseUrl: _baseUrl,
@@ -98,9 +96,18 @@ class PetaminApiClient {
         });
   }
 
-  static Future<R> httpPost<R>({required String endPoint, required Map<String, dynamic> body}) async {
+
+  /// Register `/auth/register`.
+  Future<Auth> register(
+      {required String name,
+      required String email,
+      required String password}) async {
     final response = await NetworkService.sendRequest(
-        requestType: RequestType.post, baseUrl: _baseUrl, endPoint: endPoint, body: body);
+        requestType: RequestType.post,
+        baseUrl: _baseUrl,
+        endPoint: '/auth/register',
+        body: {'name': name, 'email': email, 'password': password});
+    debugPrint('Response ${response?.body}');
     return await NetworkHelper.filterResponse(
         response: response,
         parameterName: CallBackParameterName.all,
@@ -109,25 +116,6 @@ class PetaminApiClient {
           debugPrint('Error type-$errorType - Message $msg');
           return null;
         });
-  }
-
-  /// Register `/auth/register`.
-  Future<Auth> register({required String name, required String email, required String password}) async {
-    return await httpPost(endPoint: '/auth/register', body: {'name': name, 'email': email, 'password': password});
-    // final response = await NetworkService.sendRequest(
-    //     requestType: RequestType.post,
-    //     baseUrl: _baseUrl,
-    //     endPoint: '/auth/register',
-    //     body: {'name': name, 'email': email, 'password': password});
-    // debugPrint('Response ${response?.body}');
-    // return await NetworkHelper.filterResponse(
-    //     response: response,
-    //     parameterName: CallBackParameterName.all,
-    //     callBack: (json) => Auth.fromJson(json),
-    //     onFailureCallBackWithMessage: (errorType, msg) {
-    //       debugPrint('Error type-$errorType - Message $msg');
-    //       return null;
-    //     });
   }
 
   /// Register `/auth/logout`.
@@ -184,8 +172,23 @@ class PetaminApiClient {
           return null;
         });
   }
-
-  Future<bool> updatePet({required PetRes pet, required String accessToken}) async {
+  Future<bool> createPet({required PetRes pet, required String accessToken}) async {
+    final response = await NetworkService.sendRequest(
+      requestType: RequestType.post,
+      baseUrl: _baseUrl,
+      endPoint: '/pets',
+      accessToken: accessToken,
+      body: pet.toJson(),
+    );
+    debugPrint('Response ${response?.body}');
+    if (response!.statusCode == 201) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  Future<bool> updatePet(
+      {required PetRes pet, required String accessToken}) async {
     debugPrint("Update Pet API");
     final response = await NetworkService.sendRequest(
       requestType: RequestType.patch,
@@ -201,7 +204,74 @@ class PetaminApiClient {
       return false;
     }
   }
-
+  Future<Adopt> getAdoptDetail(
+      {required String petId, required String accessToken}) async {
+    final response = await NetworkService.sendRequest(
+      requestType: RequestType.get,
+      baseUrl: _baseUrl,
+      endPoint: '/adoptions/pet/$petId',
+      accessToken: accessToken,
+    );
+    debugPrint('Response ${response?.body}');
+    return await NetworkHelper.filterResponse(
+        response: response,
+        parameterName: CallBackParameterName.all,
+        callBack: (json) => Adopt.fromJson(json),
+        onFailureCallBackWithMessage: (errorType, msg) {
+          debugPrint('Error type-$errorType - Message $msg');
+          return null;
+        });
+  }
+  Future<bool> createAdopt(
+      {required Adopt adopt, required String accessToken}) async {
+    debugPrint("Create Adopt API");
+    final response = await NetworkService.sendRequest(
+      requestType: RequestType.post,
+      baseUrl: _baseUrl,
+      endPoint: '/adoptions',
+      body: adopt.toJson(),
+      accessToken: accessToken,
+    );
+    debugPrint('Response ${response?.body}');
+    if (response!.statusCode == 201) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  Future<bool> updateAdopt(
+      {required Adopt adopt, required String accessToken}) async {
+    debugPrint("Update Adopt API");
+    final response = await NetworkService.sendRequest(
+      requestType: RequestType.patch,
+      baseUrl: _baseUrl,
+      endPoint: '/adoptions/${adopt.id}',
+      body: adopt.toJson(),
+      accessToken: accessToken,
+    );
+    debugPrint('Response ${response?.body}');
+    if (response!.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  Future<bool> deletePhotos({required String photoId,required String petId, required String accessToken}) async {
+    debugPrint("Delete Photos API");
+    final response = await NetworkService.sendRequest(
+      requestType: RequestType.post,
+      baseUrl: _baseUrl,
+      body: {'photoIds': [photoId]},
+      endPoint: '/pets/$petId/photos/delete',
+      accessToken: accessToken,
+    );
+    debugPrint('Response ${response?.body}');
+    if (response!.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
   Future<String> uploadFile({
     required String accessToken,
     File? file,
@@ -225,9 +295,13 @@ class PetaminApiClient {
   }
 
   // Get [Conversation] list `/users/conversations`.
-  Future<List<ChatConversation>> getConversations({required String accessToken}) async {
+  Future<List<ChatConversation>> getConversations(
+      {required String accessToken}) async {
     final response = await NetworkService.sendRequest(
-        requestType: RequestType.get, baseUrl: _baseUrl, endPoint: '/users/conversations', accessToken: accessToken);
+        requestType: RequestType.get,
+        baseUrl: _baseUrl,
+        endPoint: '/users/conversations',
+        accessToken: accessToken);
     debugPrint('Response ${response?.body}');
     return await NetworkHelper.filterResponse(
         response: response,

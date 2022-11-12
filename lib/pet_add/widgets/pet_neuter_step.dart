@@ -77,7 +77,10 @@ class PetNeuter extends StatelessWidget {
                     ],
                   )),
                 ),
-                ElevatedButton(
+                  BlocBuilder<PetAddCubit,PetAddState>(
+                  buildWhen: (previous, current) => current.neutered != Neutered.unknown,
+                  builder: (context, state) {
+                  return ElevatedButton(
                   key: const Key('next_property_raisedButton'),
                   style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
@@ -85,12 +88,12 @@ class PetNeuter extends StatelessWidget {
                       ),
                       padding: EdgeInsets.symmetric(vertical: 15),
                       minimumSize: const Size.fromHeight(40),
-                      primary: AppTheme.colors.pink,
+                      primary: state.neutered != Neutered.unknown ? AppTheme.colors.pink : AppTheme.colors.lightGrey,
                       onSurface: AppTheme.colors.pink),
-                  onPressed: () => context.read<PetAddCubit>().nextStep(),
+                  onPressed: () => state.neutered != Neutered.unknown ? context.read<PetAddCubit>().nextStep() : null,
                   child: Text('Next to Age',
                       style: CustomTextTheme.label(context)),
-                )
+                );}),
               ],
             ),
           ),

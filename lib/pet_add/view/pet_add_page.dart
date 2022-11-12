@@ -3,6 +3,7 @@ import 'package:Petamin/pet_add/widgets/widgets.dart';
 import 'package:Petamin/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:petamin_repository/petamin_repository.dart';
 
 class PetAddPage extends StatelessWidget {
   const PetAddPage({super.key});
@@ -10,7 +11,7 @@ class PetAddPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => PetAddCubit(),
+      create: (_) => PetAddCubit(context.read<PetaminRepository>()),
       child: const PetAddStep(),
     );
   }

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:petamin_repository/petamin_repository.dart';
@@ -52,8 +53,8 @@ class ProfileInfoCubit extends Cubit<ProfileInfoState> {
     String? dayOfBirth,
     String? name,
   }) async {
+    EasyLoading.show(status: 'Loading...');
     emit(state.copyWith(submitStatus: ProfileStatus.loading));
-
     try {
       await _petaminRepository.updateUserProfile(
         name: name,
@@ -67,6 +68,7 @@ class ProfileInfoCubit extends Cubit<ProfileInfoState> {
     } on Exception {
       emit(state.copyWith(submitStatus: ProfileStatus.failure));
     }
+    EasyLoading.dismiss();
   }
 
   void selectProfileImage(ImageSource imageSource) async {

@@ -37,6 +37,7 @@ class PetName extends StatelessWidget {
                     child: Align(
                   alignment: const Alignment(0, -1 / 1.5),
                   child: TextField(
+                    maxLength: 100,
                     key: const Key('addPetForm_nameInput_textField'),
                     onChanged: (name) =>
                         context.read<PetAddCubit>().nameChanged(name),
@@ -49,20 +50,25 @@ class PetName extends StatelessWidget {
                             textColor: AppTheme.colors.lightGrey)),
                   ),
                 )),
-                ElevatedButton(
-                  key: const Key('next_property_raisedButton'),
-                  style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 15),
-                      minimumSize: const Size.fromHeight(40),
-                      primary: AppTheme.colors.pink,
-                      onSurface: AppTheme.colors.pink),
-                  onPressed: () => context.read<PetAddCubit>().nextStep(),
-                  child: Text('Next to Species',
-                      style: CustomTextTheme.label(context)),
-                )
+                BlocBuilder<PetAddCubit,PetAddState>(
+                  buildWhen: (previous, current) => current.name.length > 0 || current.name.length == 0,
+                  builder: (context, state) {
+                  return ElevatedButton(
+                    
+                    key: const Key('next_property_raisedButton'),
+                    style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: 15),
+                        minimumSize: const Size.fromHeight(40),
+                        primary: state.name.length > 0 ? AppTheme.colors.pink : AppTheme.colors.lightGrey,
+                        onSurface: AppTheme.colors.pink),
+                    onPressed: () =>  state.name.length > 0 ? context.read<PetAddCubit>().nextStep(): null,
+                    child: Text('Next to Species',
+                        style: CustomTextTheme.label(context)),
+                  );
+                })
               ],
             ),
           ),

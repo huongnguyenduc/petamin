@@ -19,7 +19,8 @@ class Pet extends Equatable {
     required this.weight,
     required this.description,
     required this.photos,
-    required this.species
+    required this.species,
+    required this.isAdopting,
   });
 
   final String? id;
@@ -34,6 +35,7 @@ class Pet extends Equatable {
   final String? description;
   final String? species;
   final List<Images>? photos;
+  final isAdopting;
   static const empty = Pet(
       id: '',
       name: '',
@@ -46,7 +48,8 @@ class Pet extends Equatable {
       weight: 0,
       description: '',
       photos: [],
-      species: '');
+      species: '',
+      isAdopting: false);
 
   @override
   List<Object?> get props => [
@@ -75,6 +78,7 @@ class Pet extends Equatable {
     String? description,
     String? species,
     List<Images>? photos,
+    bool? isAdopting,
   }) =>
       Pet(
           id: name ?? this.name,
@@ -88,7 +92,8 @@ class Pet extends Equatable {
           weight: weight ?? this.weight,
           description: description ?? this.description,
           species: species ?? this.species,
-          photos: photos ?? this.photos);
+          photos: photos ?? this.photos,
+          isAdopting: isAdopting ?? this.isAdopting);
   factory Pet.fromJson(Map<String, dynamic> json) => _$PetFromJson(json);
 
   Map<String, dynamic> toJson() => _$PetToJson(this);

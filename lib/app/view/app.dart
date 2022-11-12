@@ -11,7 +11,7 @@ import 'package:flow_builder/flow_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:petamin_repository/petamin_repository.dart';
-
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 class App extends StatelessWidget {
   const App({
     super.key,
@@ -62,6 +62,7 @@ class AppView extends StatelessWidget {
         onGeneratePages: onGenerateAppViewPages,
       ),
       debugShowCheckedModeBanner: false,
+      builder: EasyLoading.init(),
     );
   }
 }

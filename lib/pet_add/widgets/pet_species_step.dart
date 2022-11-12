@@ -55,20 +55,25 @@ class PetSpecies extends StatelessWidget {
                         }),
                   ),
                 ),
-                ElevatedButton(
-                  key: const Key('next_property_raisedButton'),
-                  style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 15),
-                      minimumSize: const Size.fromHeight(40),
-                      primary: AppTheme.colors.pink,
-                      onSurface: AppTheme.colors.pink),
-                  onPressed: () => context.read<PetAddCubit>().nextStep(),
-                  child: Text('Next to Gender',
-                      style: CustomTextTheme.label(context)),
-                )
+                BlocBuilder<PetAddCubit, PetAddState>(
+                    buildWhen: (previous, current) =>
+                        current.speciesId.length > 0 || current.speciesId.length == 0,
+                    builder: (context, state) {
+                      return ElevatedButton(
+                        key: const Key('next_property_raisedButton'),
+                        style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: EdgeInsets.symmetric(vertical: 15),
+                            minimumSize: const Size.fromHeight(40),
+                            primary: state.speciesId.length > 0 ? AppTheme.colors.pink : AppTheme.colors.lightGrey,
+                            onSurface: AppTheme.colors.pink),
+                        onPressed: () => state.speciesId.length > 0 ? context.read<PetAddCubit>().nextStep() : null,
+                        child: Text('Next to Breed',
+                            style: CustomTextTheme.label(context)),
+                      );
+                    })
               ],
             ),
           ),

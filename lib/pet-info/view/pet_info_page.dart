@@ -23,7 +23,6 @@ class PetInfoPage extends StatelessWidget {
         pet: this.pet,
       ),
     );
-    ;
   }
 }
 
@@ -64,6 +63,7 @@ class _PetInfoViewState extends State<PetInfoView> {
         backgroundColor: AppTheme.colors.mediumGrey,
         appBar: AppBar(
           title: Text('Pet Information'),
+          
         ),
         body: Container(
           padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 32.0),
@@ -452,25 +452,7 @@ class _PetInfoViewState extends State<PetInfoView> {
                                     primary: AppTheme.colors.pink,
                                     onSurface: AppTheme.colors.pink),
                                 onPressed: () => {
-                                  debugPrint(
-                                      "pet id: " + widget.pet.id.toString()),
-                                  debugPrint(
-                                      "pet name: " + nameController.text),
-                                  debugPrint("pet bio" + bioController.text),
-                                  debugPrint("pet spices" +
-                                      speciesController.toString()),
-                                  debugPrint(
-                                      "pet breed" + breedController.text),
-                                  debugPrint("pet gender" +
-                                      genderController.toString()),
-                                  debugPrint("pet isNeuter" +
-                                      neuteredController.toString()),
-                                  debugPrint(
-                                      "pet year" + yearController.toString()),
-                                  debugPrint(
-                                      "pet month" + monthController.toString()),
-                                  debugPrint("pet weight" +
-                                      (weightController.text.length > 0 ? weightController.text : "0")),
+          
                                    context.read<PetDetailCubit>().updatePet(pet: 
                                    Pet(
                                     id: widget.pet.id.toString(),
@@ -482,6 +464,7 @@ class _PetInfoViewState extends State<PetInfoView> {
                                     month: monthController,
                                     year: yearController,
                                     isNeuter: neuteredController,
+                                    isAdopting: widget.pet.isAdopting,
                                     photos: [],
                                     weight: weightController.text.length > 0 ? double.tryParse(weightController.text) : 0,
                                     avatarUrl: widget.pet.avatarUrl, )) 
