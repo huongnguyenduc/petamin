@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart'
 import 'package:petamin_api/petamin_api.dart';
 import 'package:petamin_api/src/models/models.dart' as apiModels;
 import 'package:petamin_repository/petamin_repository.dart';
+import 'package:petamin_repository/src/models/user_pagination.dart';
 
 import './models/models.dart' as models;
 
@@ -123,35 +124,46 @@ class PetaminRepository {
     }
   }
 
-  Future<Session> login({required String email, required String password}) async {
+  Future<Session> login(
+      {required String email, required String password}) async {
     try {
-      final loginResponse = await _petaminApiClient.login(email: email, password: password);
-      final user = await _petaminApiClient.getUserProfile(accessToken: loginResponse.accessToken);
+      final loginResponse =
+          await _petaminApiClient.login(email: email, password: password);
+      final user = await _petaminApiClient.getUserProfile(
+          accessToken: loginResponse.accessToken);
       // final yourPet = await getPet(accessToken: loginResponse.accessToken);
       // debugPrint('Pettttt ${yourPet.toString()}');
       final session = Session(
         accessToken: loginResponse.accessToken,
         userId: user.userId ?? 'empty',
       );
-      await _cache.write(key: sessionCacheKey, value: jsonEncode(session.toJson()));
-      _sessionController.add(session.accessToken.isNotEmpty ? session : Session.empty);
+      await _cache.write(
+          key: sessionCacheKey, value: jsonEncode(session.toJson()));
+      _sessionController
+          .add(session.accessToken.isNotEmpty ? session : Session.empty);
       return session;
     } catch (_) {
       throw const LoginFailure();
     }
   }
 
-  Future<Session> signUp({required String email, required String password, required String name}) async {
+  Future<Session> signUp(
+      {required String email,
+      required String password,
+      required String name}) async {
     try {
-      final signUpResponse = await _petaminApiClient.register(email: email, password: password, name: name);
-      final user = await _petaminApiClient.getUserProfile(accessToken: signUpResponse.accessToken);
+      final signUpResponse = await _petaminApiClient.register(
+          email: email, password: password, name: name);
+      final user = await _petaminApiClient.getUserProfile(
+          accessToken: signUpResponse.accessToken);
 
       final session = Session(
         accessToken: signUpResponse.accessToken,
         userId: user.email ?? 'empty',
       );
       _cache.write(key: sessionCacheKey, value: jsonEncode(session.toJson()));
-      _sessionController.add(session.accessToken.isNotEmpty ? session : Session.empty);
+      _sessionController
+          .add(session.accessToken.isNotEmpty ? session : Session.empty);
       return session;
     } catch (_) {
       throw const SignUpFailure();
@@ -171,7 +183,8 @@ class PetaminRepository {
   Future<void> checkToken() async {
     try {
       final session = await currentSession;
-      final checkToken = await _petaminApiClient.checkToken(accessToken: session.accessToken);
+      final checkToken =
+          await _petaminApiClient.checkToken(accessToken: session.accessToken);
       if (checkToken) {
         return;
       } else {
@@ -186,7 +199,8 @@ class PetaminRepository {
   Future<Profile> getUserProfile() async {
     try {
       final session = await currentSession;
-      final profile = await _petaminApiClient.getUserProfile(accessToken: session.accessToken);
+      final profile = await _petaminApiClient.getUserProfile(
+          accessToken: session.accessToken);
       return Profile(
           name: profile.name,
           avatar: profile.avatar,
@@ -236,9 +250,11 @@ class PetaminRepository {
   Future<List<Conversation>> getChatConversations() async {
     try {
       final session = await currentSession;
-      final conversations = await _petaminApiClient.getConversations(accessToken: session.accessToken);
+      final conversations = await _petaminApiClient.getConversations(
+          accessToken: session.accessToken);
       return conversations.map((conversation) {
-        ChatUser partner = conversation.users!.firstWhere((user) => user.profile!.id != session.userId);
+        ChatUser partner =
+            conversation.users!.firstWhere((user) => user.id != session.userId);
         return Conversation(
           id: conversation.id ?? '',
           partner: Profile(
@@ -258,12 +274,92 @@ class PetaminRepository {
     }
   }
 
+  // Get user pagination
+  Future<UserPagination> getUserPagination(
+      {required int page, required int limit, required String query}) async {
+    try {
+      debugPrint("call repo");
+      final session = await currentSession;
+      final userPaginationData = await _petaminApiClient.getUsers(
+          accessToken: session.accessToken,
+          page: page,
+          limit: limit,
+          search: query);
+      final users = userPaginationData.data;
+      final pagination = userPaginationData.meta;
+      return UserPagination(
+          users: users
+              .map((user) => Profile(
+                    userId: user.id,
+                    name: user.profile!.name ?? "",
+                    profileId: user.profile!.id ?? "",
+                    email: user.email,
+                    avatar: user.profile!.avatar ?? "",
+                  ))
+              .toList(),
+          pagination: PaginationData(
+            pagination.currentPage,
+            pagination.itemsPerPage,
+            pagination.totalItems,
+            pagination.totalPages,
+          ));
+    } catch (_) {
+      throw const CallApiFailure();
+    }
+  }
+
+  // Get detail user conversation
+  Future<UserConversationDetail> getUserDetailConversation(
+      {required String conversationId}) async {
+    try {
+      final session = await currentSession;
+      final detailConversation = await _petaminApiClient.getConversationById(
+          accessToken: session.accessToken, id: conversationId);
+      final partner = detailConversation.users!
+          .firstWhere((user) => user.id != session.userId);
+      return UserConversationDetail(
+        conversationId: detailConversation.id ?? "",
+        partner: Profile(
+          userId: partner.id,
+          name: partner.profile!.name,
+          avatar: partner.profile!.avatar ?? "",
+          profileId: partner.profile!.id ?? "",
+        ),
+      );
+    } catch (_) {
+      throw const CallApiFailure();
+    }
+  }
+
+  // Post detail user conversation
+  Future<UserConversationDetail> postUserDetailConversation(
+      {required String userId}) async {
+    try {
+      final session = await currentSession;
+      final detailConversation = await _petaminApiClient.postConversationById(
+          accessToken: session.accessToken, userId: userId);
+      final partner = detailConversation.users!
+          .firstWhere((user) => user.id != session.userId);
+      return UserConversationDetail(
+        conversationId: detailConversation.id ?? "",
+        partner: Profile(
+          userId: partner.id,
+          name: partner.profile!.name,
+          avatar: partner.profile!.avatar ?? "",
+          profileId: partner.profile!.id ?? "",
+        ),
+      );
+    } catch (_) {
+      throw const CallApiFailure();
+    }
+  }
+
   // Get Chat Message
   Future<List<Message>> getChatMessages(String conversationId) async {
     try {
       final session = await currentSession;
-      final messages =
-          await _petaminApiClient.getMessages(accessToken: session.accessToken, conversationId: conversationId);
+      final messages = await _petaminApiClient.getMessages(
+          accessToken: session.accessToken, conversationId: conversationId);
       return messages.map((message) {
         return Message(
           isMe: message.userId == session.userId,
@@ -285,7 +381,8 @@ class PetaminRepository {
   Future<List<Pet>> getPets() async {
     try {
       final session = await currentSession;
-      final petList = await _petaminApiClient.getPets(accessToken: session.accessToken);
+      final petList =
+          await _petaminApiClient.getPets(accessToken: session.accessToken);
       var list = List<Pet>.empty(growable: true);
       for (var element in petList) {
         list.add(Pet(
@@ -367,7 +464,8 @@ class PetaminRepository {
   Future<Pet> getPetDetail({required String id}) async {
     try {
       final session = await currentSession;
-      final petDetail = await _petaminApiClient.getPetDetail(id: id, accessToken: session.accessToken);
+      final petDetail = await _petaminApiClient.getPetDetail(
+          id: id, accessToken: session.accessToken);
       return Pet(
           id: petDetail.id,
           name: petDetail.name,
