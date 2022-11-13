@@ -5,6 +5,7 @@ import 'package:Petamin/landing/landing.dart';
 import 'package:Petamin/search/pet/search_pet.dart';
 import 'package:Petamin/theme/app_theme.dart';
 import 'package:Petamin/theme/text_styles.dart';
+import 'package:Petamin/user_detail/user_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -39,10 +40,19 @@ class LandingView extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Avatar(
-                      size: 28,
-                      photo:
-                          'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=180&q=80',
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push<void>(
+                          MaterialPageRoute(
+                            builder: (context) => const UserDetailPage(),
+                          ),
+                        );
+                      },
+                      child: Avatar(
+                        size: 28,
+                        photo:
+                            'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=180&q=80',
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
