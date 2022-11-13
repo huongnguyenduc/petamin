@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:Petamin/home/home.dart';
 import 'package:Petamin/landing/landing.dart';
+import 'package:Petamin/profile-info/cubit/profile_info_cubit.dart';
 import 'package:Petamin/search/pet/search_pet.dart';
 import 'package:Petamin/theme/app_theme.dart';
 import 'package:Petamin/theme/text_styles.dart';
@@ -30,6 +31,8 @@ class LandingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.select((ProfileInfoCubit bloc) => bloc.state);
+    debugPrint(user.toString());
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -50,8 +53,9 @@ class LandingView extends StatelessWidget {
                       },
                       child: Avatar(
                         size: 28,
-                        photo:
-                            'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=180&q=80',
+                        photo: user.avatarUrl.length > 0
+                            ? user.avatarUrl
+                            : 'https://petamin.s3.ap-southeast-1.amazonaws.com/3faf67c28e038599927d1d3d09a539b8.png',
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -60,7 +64,7 @@ class LandingView extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Farah Anas',
+                            user.name.length > 0 ? user.name : 'Unknown',
                             style: CustomTextTheme.subtitle(context),
                           ),
                           SizedBox(
@@ -74,7 +78,9 @@ class LandingView extends StatelessWidget {
                                 size: 16,
                               ),
                               Text(
-                                'Chu Se, Gia Lai',
+                                user.address.length > 0
+                                    ? user.address
+                                    : 'Your address',
                                 style: CustomTextTheme.body2(context),
                               ),
                             ],
@@ -84,7 +90,9 @@ class LandingView extends StatelessWidget {
                     ),
                     Container(
                       decoration: BoxDecoration(
-                          shape: BoxShape.circle, border: Border.all(color: AppTheme.colors.lightBorder, width: 1.5)),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                              color: AppTheme.colors.lightBorder, width: 1.5)),
                       child: IconButton(
                           onPressed: () {
                             // Navigate to SearchPetPage
@@ -93,7 +101,9 @@ class LandingView extends StatelessWidget {
                                       isFocusSearchBar: true,
                                     )));
                           },
-                          icon: SvgPicture.asset("assets/icons/action=search-small.svg", width: 24)),
+                          icon: SvgPicture.asset(
+                              "assets/icons/action=search-small.svg",
+                              width: 24)),
                     )
                   ],
                 ),
@@ -103,10 +113,13 @@ class LandingView extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Categories", style: CustomTextTheme.heading4(context)),
+                    Text("Categories",
+                        style: CustomTextTheme.heading4(context)),
                     Container(
                       decoration: BoxDecoration(
-                          shape: BoxShape.circle, border: Border.all(color: AppTheme.colors.lightBorder, width: 1.5)),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                              color: AppTheme.colors.lightBorder, width: 1.5)),
                       child: IconButton(
                           onPressed: () {
                             // Navigate to SearchPetPage
@@ -115,7 +128,9 @@ class LandingView extends StatelessWidget {
                                       isShowFilter: true,
                                     )));
                           },
-                          icon: SvgPicture.asset("assets/icons/action=filter.svg", width: 24)),
+                          icon: SvgPicture.asset(
+                              "assets/icons/action=filter.svg",
+                              width: 24)),
                     )
                   ],
                 ),
@@ -124,7 +139,8 @@ class LandingView extends StatelessWidget {
                 GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       childAspectRatio: 3.5,
                       mainAxisSpacing: 12.0,
@@ -160,10 +176,12 @@ class LandingView extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  SvgPicture.asset(data.value.iconAsset, width: 24),
+                                  SvgPicture.asset(data.value.iconAsset,
+                                      width: 24),
                                   SizedBox(width: 8.0),
                                   Text(data.value.name,
-                                      style: CustomTextTheme.body2(context, fontWeight: FontWeight.w500)),
+                                      style: CustomTextTheme.body2(context,
+                                          fontWeight: FontWeight.w500)),
                                 ],
                               ),
                             ),
@@ -179,12 +197,14 @@ class LandingView extends StatelessWidget {
                     TextButton(
                       onPressed: () {
                         // Navigate to SearchPetPage
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => SearchPetPage()));
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => SearchPetPage()));
                       },
                       child: Text(
                         "See all",
                         style: CustomTextTheme.body2(context,
-                            textColor: AppTheme.colors.purple, fontWeight: FontWeight.w600),
+                            textColor: AppTheme.colors.purple,
+                            fontWeight: FontWeight.w600),
                       ),
                       clipBehavior: Clip.hardEdge,
                     )
@@ -197,7 +217,8 @@ class LandingView extends StatelessWidget {
                     // Scroll horizontally
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (context, index) {
-                      return PetCard(data: petsMock[index]); // TODO: use real data
+                      return PetCard(
+                          data: petsMock[index]); // TODO: use real data
                     },
                     separatorBuilder: (context, index) {
                       return SizedBox(
@@ -228,19 +249,25 @@ class LandingBanner extends StatelessWidget {
       children: [
         Positioned(
           child: Transform.rotate(
-              angle: -math.pi / 6, child: Icon(Icons.pets_rounded, size: 64, color: AppTheme.colors.grey)),
+              angle: -math.pi / 6,
+              child: Icon(Icons.pets_rounded,
+                  size: 64, color: AppTheme.colors.grey)),
           top: 8,
           right: 98,
         ),
         Positioned(
           child: Transform.rotate(
-              angle: math.pi / 3, child: Icon(Icons.pets_rounded, size: 24, color: AppTheme.colors.grey)),
+              angle: math.pi / 3,
+              child: Icon(Icons.pets_rounded,
+                  size: 24, color: AppTheme.colors.grey)),
           top: 10,
           right: 14,
         ),
         Positioned(
           child: Transform.rotate(
-              angle: math.pi / 3, child: Icon(Icons.pets_rounded, size: 30, color: AppTheme.colors.grey)),
+              angle: math.pi / 3,
+              child: Icon(Icons.pets_rounded,
+                  size: 30, color: AppTheme.colors.grey)),
           top: 40,
           right: 8,
         ),
@@ -256,7 +283,8 @@ class LandingBanner extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Join our community\nof animal lovers", style: CustomTextTheme.heading4(context)),
+              Text("Join our community\nof animal lovers",
+                  style: CustomTextTheme.heading4(context)),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.colors.green,
@@ -271,7 +299,8 @@ class LandingBanner extends StatelessWidget {
           ),
         ),
         Positioned(
-          child: Lottie.asset("assets/lottie/adopt_box.json", width: 140, height: 140),
+          child: Lottie.asset("assets/lottie/adopt_box.json",
+              width: 140, height: 140),
           top: 0,
           right: 12,
         )

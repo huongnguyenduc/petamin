@@ -10,20 +10,20 @@ extension ProfileStatusX on ProfileStatus {
 }
 
 class ProfileInfoState extends Equatable {
-  const ProfileInfoState(
-      {this.name = "",
-      this.phoneNumber = "",
-      this.status = ProfileStatus.initial,
-      this.submitStatus = ProfileStatus.initial,
-      this.address = "",
-      this.email = "",
-      this.dayOfBirth = '2022-10-20 20:18:04Z',
-      this.id = "",
-      this.avatarUrl =
-          "https://petamin.s3.ap-southeast-1.amazonaws.com/30420dbc5fa9c8930aa7fba27cc6e765.png",
-      this.avatar,
-      this.bio = "",
-      });
+  const ProfileInfoState({
+    this.name = "",
+    this.phoneNumber = "",
+    this.status = ProfileStatus.initial,
+    this.submitStatus = ProfileStatus.initial,
+    this.address = "",
+    this.email = "",
+    this.dayOfBirth = '2022-10-20 20:18:04Z',
+    this.id = "",
+    this.avatarUrl =
+        "https://petamin.s3.ap-southeast-1.amazonaws.com/3faf67c28e038599927d1d3d09a539b8.png",
+    this.avatar,
+    this.bio = "",
+  });
 
   final String name;
   final String bio;

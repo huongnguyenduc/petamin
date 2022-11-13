@@ -53,7 +53,7 @@ class ProfileInfoCubit extends Cubit<ProfileInfoState> {
     String? dayOfBirth,
     String? name,
   }) async {
-    EasyLoading.show(status: 'Loading...');
+    EasyLoading.show();
     emit(state.copyWith(submitStatus: ProfileStatus.loading));
     try {
       await _petaminRepository.updateUserProfile(

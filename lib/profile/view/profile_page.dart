@@ -1,11 +1,12 @@
 import 'package:Petamin/app/bloc/app_bloc.dart';
-import 'package:Petamin/profile-info/profile-info.dart';
+import 'package:Petamin/profile-info/view/profile-info-page.dart';
 import 'package:Petamin/profile/widgets/widgets.dart';
 import 'package:Petamin/theme/app_theme.dart';
 import 'package:Petamin/theme/text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:petamin_repository/petamin_repository.dart';
+import 'package:Petamin/profile-info/cubit/profile_info_cubit.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -15,7 +16,8 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ProfileInfoCubit(context.read<PetaminRepository>())..getProfile(),
+      create: (context) =>
+          ProfileInfoCubit(context.read<PetaminRepository>())..getProfile(),
       child: ProfileView(),
     );
   }
@@ -28,6 +30,8 @@ class ProfileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.select((ProfileInfoCubit bloc) => bloc.state);
+    debugPrint(user.toString());
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -210,27 +214,30 @@ class UserInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = context.select((ProfileInfoCubit bloc) => bloc.state);
-    return
-     Row(
+    debugPrint(user.toString());
+    return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SquaredAvatar(
-          photo: user.avatarUrl,
+          photo: user.avatarUrl.length > 0
+              ? user.avatarUrl
+              : "https://petamin.s3.ap-southeast-1.amazonaws.com/3faf67c28e038599927d1d3d09a539b8.png",
         ),
         SizedBox(
           width: 20,
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [ Text(
-                    user.name ?? "unknown",
-                    style: CustomTextTheme.label(context),
-                  ),
+          children: [
+            Text(
+              user.name.length > 0 ? user.name : 'Unknown',
+              style: CustomTextTheme.label(context),
+            ),
             SizedBox(
               height: 8,
             ),
             Text(
-              user.address ?? "unknown",
+              user.address.length > 0 ? user.address : 'Your address',
               style: CustomTextTheme.caption(context,
                   textColor: AppTheme.colors.grey),
             ),
@@ -238,7 +245,7 @@ class UserInfo extends StatelessWidget {
               height: 8,
             ),
             Text(
-              user.bio ?? "unknown",
+              user.bio.length > 0 ? user.bio : 'Your bio',
               style: CustomTextTheme.caption(context),
             )
           ],

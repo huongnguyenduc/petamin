@@ -55,7 +55,7 @@ class PetaminApiClient {
     File? avatar,
     String? name,
   }) async {
-    String? avatarUrl;
+    String? avatarUrl = '';
 
     if (avatar != null) {
       avatarUrl = await uploadFile(accessToken: accessToken, file: avatar);
@@ -70,7 +70,7 @@ class PetaminApiClient {
           'bio': bio,
           'birthday': birthday,
           'name': name,
-          'avatar': avatarUrl,
+          if (avatarUrl.isNotEmpty) 'avatar': avatarUrl,
         },
         accessToken: accessToken);
     debugPrint('Response ${response?.body}');
