@@ -21,7 +21,9 @@ class AppColors {
   final lightGrey = const Color(0xFFDEDEDE);
   final lightBorder = const Color(0xFFF6F5F6);
   final superLightGreen = const Color(0xFF5B7B81);
+  final ultraLightGreen = const Color(0xFFE6EAEB);
   final red = const Color(0xFFEA544C);
   final mediumGrey = const Color(0xFFF4F3F4);
+
   const AppColors();
 }
