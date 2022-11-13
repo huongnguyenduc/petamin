@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:Petamin/app/bloc/app_bloc.dart';
 import 'package:Petamin/call/view/call_screen.dart';
 import 'package:Petamin/data/models/call_model.dart';
@@ -17,6 +15,7 @@ class HomeRootScreen extends StatefulWidget {
 
   @override
   State<HomeRootScreen> createState() => _HomeRootScreenState();
+
   static Page<void> page() => const MaterialPage<void>(child: HomeRootScreen());
 }
 
@@ -32,8 +31,7 @@ class _HomeRootScreenState extends State<HomeRootScreen> {
   checkInComingTerminatedCall() async {
     if (CacheHelper.getString(key: 'terminateIncomingCallData').isNotEmpty) {
       //if there is a terminated call
-      Map<String, dynamic> callMap =
-          jsonDecode(CacheHelper.getString(key: 'terminateIncomingCallData'));
+      // Map<String, dynamic> callMap = jsonDecode(CacheHelper.getString(key: 'terminateIncomingCallData'));
       await CacheHelper.removeData(key: 'terminateIncomingCallData');
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => CallScreen(
@@ -54,23 +52,23 @@ class _HomeRootScreenState extends State<HomeRootScreen> {
         ..updateFcmToken(uId: user.userId)
         ..listenToInComingCalls(uId: user.userId),
       child: Scaffold(
-          body: BlocConsumer<HomeRootCubit, HomeRootState>(
-              listener: (context, state) {
-        //Receiver Call States
-        if (state is SuccessInComingCallState) {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => CallScreen(
-                    isReceiver: true,
-                    callModel: state.callModel,
-                  )));
-        }
-      }, builder: (context, state) {
-        //var homeRootCubit = HomeRootCubit.get(context);
-        return ModalProgressHUD(
-          inAsyncCall: false,
-          child: HomePage(),
-        );
-      })),
+          resizeToAvoidBottomInset: false,
+          body: BlocConsumer<HomeRootCubit, HomeRootState>(listener: (context, state) {
+            //Receiver Call States
+            if (state is SuccessInComingCallState) {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => CallScreen(
+                        isReceiver: true,
+                        callModel: state.callModel,
+                      )));
+            }
+          }, builder: (context, state) {
+            //var homeRootCubit = HomeRootCubit.get(context);
+            return ModalProgressHUD(
+              inAsyncCall: false,
+              child: HomePage(),
+            );
+          })),
     );
   }
 }
