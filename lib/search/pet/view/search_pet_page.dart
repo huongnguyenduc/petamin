@@ -115,13 +115,22 @@ class SearchPetView extends StatelessWidget {
                         scrollDirection: Axis.horizontal,
                         child: Row(children: [
                           SizedBox(width: 16),
-                          PetFilterItem(species: Species.cat),
+                          PetFilterItem(
+                            species: Species.cat,
+                            onTap: () => context.read<SearchPetCubit>().selectSpecies(Species.cat),
+                          ),
                           SizedBox(width: 8),
-                          PetFilterItem(species: Species.dog),
+                          PetFilterItem(
+                              species: Species.dog,
+                              onTap: () => context.read<SearchPetCubit>().selectSpecies(Species.dog)),
                           SizedBox(width: 8),
-                          PetFilterItem(species: Species.bird),
+                          PetFilterItem(
+                              species: Species.bird,
+                              onTap: () => context.read<SearchPetCubit>().selectSpecies(Species.bird)),
                           SizedBox(width: 8),
-                          PetFilterItem(species: Species.pocketPet),
+                          PetFilterItem(
+                              species: Species.pocketPet,
+                              onTap: () => context.read<SearchPetCubit>().selectSpecies(Species.pocketPet)),
                           SizedBox(width: 16),
                         ]),
                       )
@@ -154,10 +163,13 @@ class SearchPetView extends StatelessWidget {
                               child: ListView.separated(
                                 padding: EdgeInsets.symmetric(horizontal: 16),
                                 scrollDirection: Axis.horizontal,
-                                itemBuilder: (context, index) {
+                                itemBuilder: (contextLV, index) {
                                   return PetFilterItem(
                                     species: state.selectedSpecies[index],
                                     selected: true,
+                                    onTap: () {
+                                      context.read<SearchPetCubit>().selectSpecies(state.selectedSpecies[index]);
+                                    },
                                   );
                                 },
                                 separatorBuilder: (context, index) {
@@ -203,11 +215,13 @@ class PetFilterItemData {
   final String iconAsset;
   final String name;
   final Color color;
+  final Species species;
 
   PetFilterItemData({
     required this.iconAsset,
     required this.name,
     required this.color,
+    required this.species,
   });
 }
 
@@ -216,39 +230,42 @@ var speciesData = {
     iconAsset: 'assets/icons/pet=cat.svg',
     name: 'Cat',
     color: AppTheme.colors.lightYellow,
+    species: Species.cat,
   ),
   Species.dog: PetFilterItemData(
     iconAsset: 'assets/icons/pet=dog.svg',
     name: 'Dog',
     color: AppTheme.colors.lightPurple,
+    species: Species.dog,
   ),
   Species.bird: PetFilterItemData(
     iconAsset: 'assets/icons/pet=bird.svg',
     name: 'Bird',
     color: AppTheme.colors.lightPink,
+    species: Species.bird,
   ),
   Species.pocketPet: PetFilterItemData(
     iconAsset: 'assets/icons/pet=pocket.svg',
     name: 'Pocket Pet',
     color: AppTheme.colors.softGreen,
+    species: Species.pocketPet,
   ),
 };
 
 class PetFilterItem extends StatelessWidget {
-  const PetFilterItem({Key? key, this.selected = false, required this.species, this.cubitContext}) : super(key: key);
+  const PetFilterItem({Key? key, this.selected = false, required this.species, required this.onTap}) : super(key: key);
 
   final bool selected;
   final Species species;
-  final BuildContext? cubitContext;
+
+  // onTap
+  final Function() onTap;
 
   @override
   Widget build(BuildContext context) {
     final data = speciesData[species]!;
     return InkWell(
-      onTap: () {
-        // cubit select species
-        (cubitContext ?? context).read<SearchPetCubit>().selectSpecies(species);
-      },
+      onTap: onTap,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
