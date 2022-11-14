@@ -57,7 +57,8 @@ class PetSpecies extends StatelessWidget {
                 ),
                 BlocBuilder<PetAddCubit, PetAddState>(
                     buildWhen: (previous, current) =>
-                        current.speciesId.length > 0 || current.speciesId.length == 0,
+                        current.speciesId.length > 0 ||
+                        current.speciesId.length == 0,
                     builder: (context, state) {
                       return ElevatedButton(
                         key: const Key('next_property_raisedButton'),
@@ -67,9 +68,13 @@ class PetSpecies extends StatelessWidget {
                             ),
                             padding: EdgeInsets.symmetric(vertical: 15),
                             minimumSize: const Size.fromHeight(40),
-                            primary: state.speciesId.length > 0 ? AppTheme.colors.pink : AppTheme.colors.lightGrey,
+                            primary: state.speciesId.length > 0
+                                ? AppTheme.colors.pink
+                                : AppTheme.colors.lightGrey,
                             onSurface: AppTheme.colors.pink),
-                        onPressed: () => state.speciesId.length > 0 ? context.read<PetAddCubit>().nextStep() : null,
+                        onPressed: () => state.speciesId.length > 0
+                            ? context.read<PetAddCubit>().nextStep()
+                            : null,
                         child: Text('Next to Breed',
                             style: CustomTextTheme.label(context)),
                       );
@@ -146,23 +151,23 @@ final species = [
       name: "Cat",
       image: AssetImage("assets/images/cat.png"),
       color: AppTheme.colors.lightPurple,
-      species: Species.cat),
+      species: Species.CAT),
   SpeciesDetail(
       id: "DOG",
       name: "Dog",
       image: AssetImage("assets/images/dog.png"),
       color: AppTheme.colors.lightYellow,
-      species: Species.dog),
+      species: Species.DOG),
   SpeciesDetail(
       id: "BIRD",
       name: "Bird",
       image: AssetImage("assets/images/parrot.png"),
       color: AppTheme.colors.softGreen,
-      species: Species.bird),
+      species: Species.BIRD),
   SpeciesDetail(
       id: "POCKET_PET",
       name: "Pocket Pet",
       image: AssetImage("assets/images/rabbit.png"),
       color: AppTheme.colors.lightPink,
-      species: Species.pocketPet)
+      species: Species.POCKET_PET)
 ];

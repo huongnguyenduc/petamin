@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:petamin_api/petamin_api.dart';
 import 'package:petamin_api/src/models/adopt/adopt.dart';
+import 'package:petamin_api/src/models/adopt/adopt_search_pagination.dart';
 import 'package:petamin_api/src/networking/network_service.dart';
 import 'package:petamin_api/src/static/static_values.dart';
 
@@ -406,10 +407,38 @@ class PetaminApiClient {
         endPoint: '/users?page=$page&limit=$limit&search=$search',
         accessToken: accessToken);
     debugPrint('Response ${response?.body}');
+
     return await NetworkHelper.filterResponse(
         response: response,
         parameterName: CallBackParameterName.all,
         callBack: (json) => ChatSearchPagination.fromJson(json),
+        onFailureCallBackWithMessage: (errorType, msg) {
+          debugPrint('Error type-$errorType - Message $msg');
+          return null;
+        });
+  }
+
+  Future<AdoptSearchPagination> getAdopts(
+      {required String accessToken,
+      required int page,
+      required int limit,
+      String? search,
+      String? species,
+      String? prices}) async {
+    debugPrint("Call API Get Adopt");
+    debugPrint(
+        '/adoptions?page=$page&limit=$limit${search != null ? '&search=$search' : ''}${species != null ? '&species=$species' : ''}${prices != null ? '&btw_price=$prices' : ''}');
+    final response = await NetworkService.sendRequest(
+        requestType: RequestType.get,
+        baseUrl: _baseUrl,
+        endPoint:
+            '/adoptions?page=$page&limit=$limit${search != null ? '&search=$search' : ''}${species != null ? '&species=$species' : ''}${prices != null ? '&btw_price=$prices' : ''}',
+        accessToken: accessToken);
+    debugPrint('Response ${response?.body}');
+    return await NetworkHelper.filterResponse(
+        response: response,
+        parameterName: CallBackParameterName.all,
+        callBack: (json) => AdoptSearchPagination.fromJson(json),
         onFailureCallBackWithMessage: (errorType, msg) {
           debugPrint('Error type-$errorType - Message $msg');
           return null;

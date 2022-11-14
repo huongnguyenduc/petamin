@@ -7,7 +7,7 @@ class PetCardData {
   final String photo;
   final String breed;
   final String sex;
-  final int age;
+  final String age;
   final double price;
 
   // Constructor
@@ -30,7 +30,9 @@ class PetCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 160.0,
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(16.0), color: AppTheme.colors.white),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16.0),
+          color: AppTheme.colors.white),
       child: Column(
         children: [
           Container(
@@ -55,13 +57,16 @@ class PetCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(data.name, style: CustomTextTheme.body1(context)),
-                    Text('${data.price}\$', style: CustomTextTheme.body1(context)),
+                    Text('${data.price}\$',
+                        style: CustomTextTheme.body1(context)),
                   ],
                 ),
                 SizedBox(height: 8.0),
                 Row(
                   children: [
-                    Text('Breed: ', style: CustomTextTheme.body2(context, textColor: AppTheme.colors.grey)),
+                    Text('Breed: ',
+                        style: CustomTextTheme.body2(context,
+                            textColor: AppTheme.colors.grey)),
                     Text(data.breed, style: CustomTextTheme.body2(context)),
                   ],
                 ),
@@ -76,7 +81,8 @@ class PetCard extends StatelessWidget {
                       ),
                       child: Text(
                         data.sex,
-                        style: CustomTextTheme.caption(context, textColor: AppTheme.colors.white),
+                        style: CustomTextTheme.caption(context,
+                            textColor: AppTheme.colors.white),
                       ),
                     ),
                     SizedBox(width: 8.0),
@@ -87,8 +93,9 @@ class PetCard extends StatelessWidget {
                         color: AppTheme.colors.grey,
                       ),
                       child: Text(
-                        "${data.age} Year",
-                        style: CustomTextTheme.caption(context, textColor: AppTheme.colors.white),
+                        '${data.age} Year',
+                        style: CustomTextTheme.caption(context,
+                            textColor: AppTheme.colors.white),
                       ),
                     ),
                   ],

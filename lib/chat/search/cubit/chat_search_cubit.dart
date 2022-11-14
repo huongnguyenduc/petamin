@@ -33,7 +33,7 @@ class ChatSearchCubit extends Cubit<ChatSearchState> {
     }
     debugPrint('first: $query');
     emit(state.copyWith(status: ChatSearchStatus.searching));
-    debugPrint('saerching: $query');
+    debugPrint('searching: $query');
     try {
       if (query != state.searchQuery) {
         final searchResults = await _petaminRepository.getUserPagination(

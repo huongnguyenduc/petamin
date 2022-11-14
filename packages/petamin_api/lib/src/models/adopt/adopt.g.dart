@@ -13,6 +13,9 @@ Adopt _$AdoptFromJson(Map<String, dynamic> json) => Adopt(
       status: json['status'] as String?,
       petId: json['petId'] as String?,
       userId: json['userId'] as String?,
+      pet: json['pet'] == null
+          ? null
+          : PetRes.fromJson(json['pet'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$AdoptToJson(Adopt instance) => <String, dynamic>{
@@ -22,4 +25,5 @@ Map<String, dynamic> _$AdoptToJson(Adopt instance) => <String, dynamic>{
       'status': instance.status,
       'petId': instance.petId,
       'userId': instance.userId,
+      'pet': instance.pet,
     };

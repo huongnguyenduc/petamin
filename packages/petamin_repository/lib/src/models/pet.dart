@@ -8,19 +8,19 @@ part 'pet.g.dart';
 @JsonSerializable()
 class Pet extends Equatable {
   const Pet({
-    required this.id,
-    required this.name,
-    required this.month,
-    required this.year,
-    required this.gender,
-    required this.breed,
-    required this.isNeuter,
-    required this.avatarUrl,
-    required this.weight,
-    required this.description,
-    required this.photos,
-    required this.species,
-    required this.isAdopting,
+    this.id,
+    this.name,
+    this.month,
+    this.year,
+    this.gender,
+    this.breed,
+    this.isNeuter,
+    this.avatarUrl,
+    this.weight,
+    this.description,
+    this.photos,
+    this.species,
+    this.isAdopting,
   });
 
   final String? id;
@@ -35,7 +35,7 @@ class Pet extends Equatable {
   final String? description;
   final String? species;
   final List<Images>? photos;
-  final isAdopting;
+  final bool? isAdopting;
   static const empty = Pet(
       id: '',
       name: '',
@@ -107,7 +107,7 @@ class Images {
 
   final String id;
   final String imgUrl;
-  
+
   factory Images.fromJson(Map<String, dynamic> json) => Images(
         id: json["id"],
         imgUrl: json["imgUrl"],
@@ -118,4 +118,3 @@ class Images {
         "imgUrl": imgUrl,
       };
 }
-

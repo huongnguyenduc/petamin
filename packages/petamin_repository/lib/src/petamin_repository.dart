@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart'
 import 'package:petamin_api/petamin_api.dart';
 import 'package:petamin_api/src/models/models.dart' as apiModels;
 import 'package:petamin_repository/petamin_repository.dart';
+import 'package:petamin_repository/src/models/adopt_pagination.dart';
 import 'package:petamin_repository/src/models/user_pagination.dart';
 
 import './models/models.dart' as models;
@@ -308,6 +309,76 @@ class PetaminRepository {
     }
   }
 
+  // Get adopt pagination
+  Future<AdoptPagination> getAdoptPagination({
+    required int page,
+    required int limit,
+    required String query,
+    List<String>? species,
+    List<String>? prices,
+  }) async {
+    try {
+      debugPrint("call Repo getAdoptPagination");
+      final session = await currentSession;
+      final userPaginationData =
+          await Function.apply(_petaminApiClient.getAdopts, [], {
+        #accessToken: session.accessToken,
+        #page: page,
+        #limit: limit,
+        #search: query,
+        if (species != null) #species: convertArrayToString(species),
+        if (prices != null) #prices: convertArrayToString(prices),
+      });
+
+      final List pets = userPaginationData.data;
+      final pagination = userPaginationData.meta;
+      return AdoptPagination(
+          pets: pets
+              .map((adopt) => models.Adopt(
+                  petId: adopt.petId,
+                  userId: adopt.userId,
+                  id: adopt.id,
+                  price: adopt.price,
+                  description: adopt.description,
+                  status: adopt.status,
+                  pet: models.Pet(
+                    id: adopt.pet?.id,
+                    name: adopt.pet?.name,
+                    month: adopt.pet?.month,
+                    year: adopt.pet?.year,
+                    gender: adopt.pet?.gender,
+                    breed: adopt.pet?.breed,
+                    isNeuter: adopt.pet?.isNeuter,
+                    avatarUrl: adopt.pet?.avatarUrl,
+                    weight: adopt.pet?.weight,
+                    description: adopt.pet?.description,
+                    species: adopt.pet?.species,
+                    photos: const [],
+                    isAdopting: adopt.pet?.isAdopting,
+                  )))
+              .toList(),
+          pagination: PaginationData(
+            pagination.currentPage,
+            pagination.itemsPerPage,
+            pagination.totalItems,
+            pagination.totalPages,
+          ));
+    } catch (_) {
+      throw const CallApiFailure();
+    }
+  }
+
+  String convertArrayToString(List<String> array) {
+    String result = "";
+    for (int i = 0; i < array.length; i++) {
+      result += array[i];
+      if (i != array.length - 1) {
+        result += "%2C";
+      }
+    }
+    return result;
+  }
+
   // Get detail user conversation
   Future<UserConversationDetail> getUserDetailConversation(
       {required String conversationId}) async {
@@ -401,6 +472,16 @@ class PetaminRepository {
                 ?.map((e) => models.Images(id: e.id, imgUrl: e.imgUrl))
                 .toList(),
             species: element.species));
+      }
+      final AdoptPagination adoptList = await getAdoptPagination(
+        page: 1,
+        limit: 10,
+        query: 'm',
+        species: ['DOG'],
+      );
+      debugPrint("adoptList: ${adoptList.pets.length}");
+      for (var element in adoptList.pets) {
+        debugPrint("adoptInfor: ${element.pet?.props.toString()}");
       }
       return list;
     } catch (_) {

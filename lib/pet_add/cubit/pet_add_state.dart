@@ -1,6 +1,6 @@
 part of 'pet_add_cubit.dart';
 
-enum Species { cat, dog, bird, pocketPet, unselected }
+enum Species { CAT, DOG, BIRD, POCKET_PET, UNSELECTED }
 
 enum Gender { MALE, FEMALE, OTHER }
 
@@ -11,7 +11,7 @@ class PetAddState extends Equatable {
       {this.name = "",
       this.breed = "",
       this.currentStep = 1,
-      this.species = Species.unselected,
+      this.species = Species.UNSELECTED,
       this.speciesId = "",
       this.gender = Gender.OTHER,
       this.neutered = Neutered.unknown,

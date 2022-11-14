@@ -23,7 +23,7 @@ List<PetCardData> petsMock = [
       photo:
           "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80",
       breed: "Persian",
-      age: 1,
+      age: '1',
       sex: "Female",
       price: 1),
   PetCardData(
@@ -31,7 +31,7 @@ List<PetCardData> petsMock = [
       photo:
           "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80",
       breed: "Persian",
-      age: 1,
+      age: '1',
       sex: "Female",
       price: 1),
   PetCardData(
@@ -39,7 +39,7 @@ List<PetCardData> petsMock = [
       photo:
           "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80",
       breed: "Persian",
-      age: 1,
+      age: '1',
       sex: "Female",
       price: 1),
 ];

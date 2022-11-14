@@ -30,20 +30,22 @@ class PetRes {
   double? weight;
   String? description;
   final String? species;
-  final List<Images>? photos;
+  List<Images>? photos;
   bool? isAdopting;
   @override
   List<Object?> get props => [
         id,
         name,
         month,
+        species,
         year,
         gender,
         breed,
         isNeuter,
         avatarUrl,
         weight,
-        description
+        description,
+        photos,
       ];
 
   factory PetRes.fromJson(Map<String, dynamic> json) => _$PetResFromJson(json);

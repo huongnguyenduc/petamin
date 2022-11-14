@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:Petamin/home/home.dart';
 import 'package:Petamin/landing/cubit/landing_cubit.dart';
 import 'package:Petamin/pet_add/pet_add.dart';
@@ -6,9 +8,14 @@ import 'package:Petamin/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:petamin_repository/petamin_repository.dart';
 
 class SearchPetPage extends StatelessWidget {
-  const SearchPetPage({Key? key, this.selectedSpecies, this.isShowFilter = false, this.isFocusSearchBar = false})
+  const SearchPetPage(
+      {Key? key,
+      this.selectedSpecies,
+      this.isShowFilter = false,
+      this.isFocusSearchBar = false})
       : super(key: key);
   final Species? selectedSpecies;
   final bool? isShowFilter;
@@ -19,17 +26,20 @@ class SearchPetPage extends StatelessWidget {
     return BlocProvider(
       create: (blocContext) {
         if (selectedSpecies != null) {
-          return SearchPetCubit(initSelectedSpecies: selectedSpecies);
+          return SearchPetCubit(context.read<PetaminRepository>(),
+              initSelectedSpecies: selectedSpecies);
         }
         if (isShowFilter != null && isShowFilter == true) {
-          return SearchPetCubit()..showFilterBottomSheet(context: context, isDelay: true);
+          return SearchPetCubit(context.read<PetaminRepository>())
+            ..showFilterBottomSheet(context: context, isDelay: true);
         }
 
         if (isFocusSearchBar != null && isFocusSearchBar == true) {
-          return SearchPetCubit()..requestFocusSearchBar();
+          return SearchPetCubit(context.read<PetaminRepository>())
+            ..requestFocusSearchBar();
         }
 
-        return SearchPetCubit();
+        return SearchPetCubit(context.read<PetaminRepository>());
       },
       child: SearchPetView(),
     );
@@ -37,10 +47,40 @@ class SearchPetPage extends StatelessWidget {
 }
 
 class SearchPetView extends StatelessWidget {
-  const SearchPetView({Key? key}) : super(key: key);
-
+  SearchPetView({
+    Key? key,
+  }) : super(key: key);
+  final ScrollController _scrollController = ScrollController();
+  Timer? _debounce;
   @override
   Widget build(BuildContext context) {
+    String _query = '';
+    _onSearchChanged(String query) {
+      if (_debounce?.isActive ?? false) _debounce?.cancel();
+      _debounce = Timer(const Duration(milliseconds: 800), () {
+        // do something with query
+        _query = query;
+        print("Searching............");
+        context.read<SearchPetCubit>().searchAdoption(query, null);
+      });
+    }
+
+    _scrollListener() {
+      if (_scrollController.offset >=
+              _scrollController.position.maxScrollExtent &&
+          !_scrollController.position.outOfRange) {
+        print("reach the bottom");
+        context.read<SearchPetCubit>().searchAdoption(_query, null);
+      }
+      if (_scrollController.offset <=
+              _scrollController.position.minScrollExtent &&
+          !_scrollController.position.outOfRange) {
+        print("reach the top");
+      }
+    }
+
+    _scrollController.addListener(_scrollListener);
+
     return SafeArea(
       top: true,
       child: Scaffold(
@@ -65,20 +105,27 @@ class SearchPetView extends StatelessWidget {
                 SizedBox(width: 8),
                 Expanded(
                   child: TextFormField(
-                    focusNode: context.read<SearchPetCubit>().searchBarFocusNode,
+                    onChanged: _onSearchChanged,
+                    focusNode:
+                        context.read<SearchPetCubit>().searchBarFocusNode,
                     decoration: InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppTheme.colors.white, width: 0.0),
-                          borderRadius: const BorderRadius.all(Radius.circular(16.0))),
+                          borderSide: BorderSide(
+                              color: AppTheme.colors.white, width: 0.0),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(16.0))),
                       enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppTheme.colors.white, width: 0.0),
-                          borderRadius: const BorderRadius.all(Radius.circular(16.0))),
+                          borderSide: BorderSide(
+                              color: AppTheme.colors.white, width: 0.0),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(16.0))),
                       suffixIcon: Icon(
                         Icons.search,
                         color: AppTheme.colors.green,
                       ),
-                      hintText: 'Search pets',
+                      hintText: 'Search by name, breed',
                       hintStyle: TextStyle(color: Colors.grey),
                       border: InputBorder.none,
                       fillColor: AppTheme.colors.white,
@@ -94,7 +141,9 @@ class SearchPetView extends StatelessWidget {
                   ),
                   child: IconButton(
                     onPressed: () {
-                      context.read<SearchPetCubit>().showFilterBottomSheet(context: context);
+                      context
+                          .read<SearchPetCubit>()
+                          .showFilterBottomSheet(context: context);
                     },
                     icon: SvgPicture.asset(
                       'assets/icons/action=filter.svg',
@@ -108,7 +157,8 @@ class SearchPetView extends StatelessWidget {
             ),
             SizedBox(height: 12),
             BlocBuilder<SearchPetCubit, SearchPetState>(
-              buildWhen: (previous, current) => previous.selectedSpecies != current.selectedSpecies,
+              buildWhen: (previous, current) =>
+                  previous.selectedSpecies != current.selectedSpecies,
               builder: (context, state) {
                 return state.selectedSpecies.length == 0
                     ? SingleChildScrollView(
@@ -116,21 +166,29 @@ class SearchPetView extends StatelessWidget {
                         child: Row(children: [
                           SizedBox(width: 16),
                           PetFilterItem(
-                            species: Species.cat,
-                            onTap: () => context.read<SearchPetCubit>().selectSpecies(Species.cat),
+                            species: Species.CAT,
+                            onTap: () => context
+                                .read<SearchPetCubit>()
+                                .selectSpecies(Species.CAT),
                           ),
                           SizedBox(width: 8),
                           PetFilterItem(
-                              species: Species.dog,
-                              onTap: () => context.read<SearchPetCubit>().selectSpecies(Species.dog)),
+                              species: Species.DOG,
+                              onTap: () => context
+                                  .read<SearchPetCubit>()
+                                  .selectSpecies(Species.DOG)),
                           SizedBox(width: 8),
                           PetFilterItem(
-                              species: Species.bird,
-                              onTap: () => context.read<SearchPetCubit>().selectSpecies(Species.bird)),
+                              species: Species.BIRD,
+                              onTap: () => context
+                                  .read<SearchPetCubit>()
+                                  .selectSpecies(Species.BIRD)),
                           SizedBox(width: 8),
                           PetFilterItem(
-                              species: Species.pocketPet,
-                              onTap: () => context.read<SearchPetCubit>().selectSpecies(Species.pocketPet)),
+                              species: Species.POCKET_PET,
+                              onTap: () => context
+                                  .read<SearchPetCubit>()
+                                  .selectSpecies(Species.POCKET_PET)),
                           SizedBox(width: 16),
                         ]),
                       )
@@ -168,7 +226,10 @@ class SearchPetView extends StatelessWidget {
                                     species: state.selectedSpecies[index],
                                     selected: true,
                                     onTap: () {
-                                      context.read<SearchPetCubit>().selectSpecies(state.selectedSpecies[index]);
+                                      context
+                                          .read<SearchPetCubit>()
+                                          .selectSpecies(
+                                              state.selectedSpecies[index]);
                                     },
                                   );
                                 },
@@ -188,21 +249,37 @@ class SearchPetView extends StatelessWidget {
             SizedBox(height: 12),
             // Create Grid View with 2 columns
             Expanded(
-              child: GridView.builder(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 18,
-                  mainAxisSpacing: 18,
-                  childAspectRatio: 0.8,
-                ),
-                itemBuilder: (context, index) {
-                  return PetCard(
-                    data: petsMock[index], // TODO: Change to real data
-                  );
-                },
-                itemCount: petsMock.length, // TODO: Change to real data
-              ),
+              child: BlocBuilder<SearchPetCubit, SearchPetState>(
+                  buildWhen: (previous, current) =>
+                      previous.status != current.status ||
+                      previous.selectedSpecies != current.selectedSpecies,
+                  builder: (context, state) {
+                    return GridView.builder(
+                      controller: _scrollController,
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 18,
+                        mainAxisSpacing: 18,
+                        childAspectRatio: 0.8,
+                      ),
+                      itemBuilder: (context, index) {
+                        final pet = state.searchResults[index];
+                        return PetCard(
+                          data: PetCardData(
+                            age: '${pet.pet?.year ?? '0'}',
+                            name: pet.pet?.name ?? '',
+                            photo: pet.pet?.avatarUrl ?? '',
+                            breed: pet.pet?.breed ?? '',
+                            sex: pet.pet?.gender ?? 'unknown',
+                            price: pet.price ?? 0,
+                            // ignore: todo
+                          ), // TODO: Change to real data
+                        );
+                      },
+                      itemCount: state.searchResults.length,
+                    );
+                  }),
             ),
           ],
         ),
@@ -215,9 +292,11 @@ class PetFilterItemData {
   final String iconAsset;
   final String name;
   final Color color;
+  final String id;
   final Species species;
 
   PetFilterItemData({
+    required this.id,
     required this.iconAsset,
     required this.name,
     required this.color,
@@ -226,34 +305,43 @@ class PetFilterItemData {
 }
 
 var speciesData = {
-  Species.cat: PetFilterItemData(
+  Species.CAT: PetFilterItemData(
+    id: 'CAT',
     iconAsset: 'assets/icons/pet=cat.svg',
     name: 'Cat',
     color: AppTheme.colors.lightYellow,
-    species: Species.cat,
+    species: Species.CAT,
   ),
-  Species.dog: PetFilterItemData(
+  Species.DOG: PetFilterItemData(
+    id: 'DOG',
     iconAsset: 'assets/icons/pet=dog.svg',
     name: 'Dog',
     color: AppTheme.colors.lightPurple,
-    species: Species.dog,
+    species: Species.DOG,
   ),
-  Species.bird: PetFilterItemData(
+  Species.BIRD: PetFilterItemData(
+    id: 'BIRD',
     iconAsset: 'assets/icons/pet=bird.svg',
     name: 'Bird',
     color: AppTheme.colors.lightPink,
-    species: Species.bird,
+    species: Species.BIRD,
   ),
-  Species.pocketPet: PetFilterItemData(
+  Species.POCKET_PET: PetFilterItemData(
+    id: 'POCKET_PET',
     iconAsset: 'assets/icons/pet=pocket.svg',
     name: 'Pocket Pet',
     color: AppTheme.colors.softGreen,
-    species: Species.pocketPet,
+    species: Species.POCKET_PET,
   ),
 };
 
 class PetFilterItem extends StatelessWidget {
-  const PetFilterItem({Key? key, this.selected = false, required this.species, required this.onTap}) : super(key: key);
+  const PetFilterItem(
+      {Key? key,
+      this.selected = false,
+      required this.species,
+      required this.onTap})
+      : super(key: key);
 
   final bool selected;
   final Species species;
@@ -269,7 +357,9 @@ class PetFilterItem extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: selected ? AppTheme.colors.ultraLightGreen : AppTheme.colors.white,
+          color: selected
+              ? AppTheme.colors.ultraLightGreen
+              : AppTheme.colors.white,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
