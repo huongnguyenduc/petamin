@@ -9,7 +9,7 @@ class PetDetailCubit extends Cubit<PetDetailState> {
 
   final PetaminRepository _petaminRepository;
   Future<void> getPetDetail({required String id}) async {
-    debugPrint('call getPetDetail');
+    EasyLoading.show();
     emit(state.copyWith(status: PetDetailStatus.loading));
     try {
       final pet = await _petaminRepository.getPetDetail(id: id);
@@ -17,10 +17,11 @@ class PetDetailCubit extends Cubit<PetDetailState> {
     } catch (e) {
       emit(state.copyWith(pet: Pet.empty, status: PetDetailStatus.failure));
     }
+    EasyLoading.dismiss();
   }
 
   Future<void> updatePet({required Pet pet}) async {
-    debugPrint("Update Pet Cubit");
+    debugPrint('Update Pet Cubit');
     EasyLoading.show(status: 'Loading...');
     emit(state.copyWith(status: PetDetailStatus.loading));
     try {
@@ -33,7 +34,7 @@ class PetDetailCubit extends Cubit<PetDetailState> {
   }
 
   Future<bool> deletePhoto({required String id}) async {
-    debugPrint("Delete Photo Cubit");
+    debugPrint('Delete Photo Cubit');
     EasyLoading.show(status: 'Deleting...');
     emit(state.copyWith(status: PetDetailStatus.loading));
     try {

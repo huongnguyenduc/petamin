@@ -4,6 +4,7 @@ import 'package:Petamin/home/home.dart';
 import 'package:Petamin/landing/landing.dart';
 import 'package:Petamin/profile-info/cubit/profile_info_cubit.dart';
 import 'package:Petamin/search/pet/search_pet.dart';
+import 'package:Petamin/shared/constants.dart';
 import 'package:Petamin/theme/app_theme.dart';
 import 'package:Petamin/theme/text_styles.dart';
 import 'package:Petamin/user_detail/user_detail.dart';
@@ -32,7 +33,7 @@ class LandingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = context.select((ProfileInfoCubit bloc) => bloc.state);
-    debugPrint(user.toString());
+    debugPrint(user.props.toString());
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -43,21 +44,26 @@ class LandingView extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push<void>(
-                          MaterialPageRoute(
-                            builder: (context) => const UserDetailPage(),
-                          ),
-                        );
-                      },
-                      child: Avatar(
-                        size: 28,
-                        photo: user.avatarUrl.length > 0
-                            ? user.avatarUrl
-                            : 'https://petamin.s3.ap-southeast-1.amazonaws.com/3faf67c28e038599927d1d3d09a539b8.png',
-                      ),
-                    ),
+                    BlocBuilder<ProfileInfoCubit, ProfileInfoState>(
+                        buildWhen: (previous, current) =>
+                            previous.name != current.name,
+                        builder: (context, state) {
+                          return GestureDetector(
+                            onTap: () {
+                              // Navigator.of(context).push<void>(
+                              //   MaterialPageRoute(
+                              //     builder: (context) => const UserDetailPage(),
+                              //   ),
+                              // );
+                            },
+                            child: Avatar(
+                              size: 28,
+                              photo: state.avatarUrl.length > 0
+                                  ? state.avatarUrl
+                                  : ANONYMOUS_AVATAR,
+                            ),
+                          );
+                        }),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Column(

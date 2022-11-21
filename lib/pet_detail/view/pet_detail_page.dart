@@ -29,15 +29,16 @@ class PetDetailPage extends StatelessWidget {
                 color: AppTheme.colors.white,
                 child: BlocBuilder<PetDetailCubit, PetDetailState>(
                     buildWhen: (previous, current) =>
-                        previous.status != current.status  ||
+                        previous.status != current.status ||
                         previous.pet.photos != current.pet.photos,
                     builder: (context, state) {
                       final pet = state.pet;
-                      if (state.status == PetDetailStatus.loading) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      } else if (state.status == PetDetailStatus.failure) {
+                      // if (state.status == PetDetailStatus.loading) {
+                      //   return const Center(
+                      //     child: CircularProgressIndicator(),
+                      //   );
+                      // } else
+                      if (state.status == PetDetailStatus.failure) {
                         showToast(msg: 'Can\'t load pet detail!');
                         return const Center();
                       } else {
@@ -159,8 +160,9 @@ class PetDetailPage extends StatelessWidget {
                                   onStretchTrigger: () async => {await 0},
                                   flexibleSpace: FlexibleSpaceBar(
                                     background: Image.network(
-                                      pet.avatarUrl ??
-                                          "https://images.pexels.com/photos/2173872/pexels-photo-2173872.jpeg?auto=compress&cs=tinysrgb&w=750&h=750&dpr=1",
+                                      pet.avatarUrl != null
+                                          ? pet.avatarUrl!
+                                          : 'https://images.pexels.com/photos/2173872/pexels-photo-2173872.jpeg?auto=compress&cs=tinysrgb&w=750&h=750&dpr=1',
                                       width: double.maxFinite,
                                       fit: BoxFit.cover,
                                     ),
@@ -180,7 +182,7 @@ class PetDetailPage extends StatelessWidget {
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
-                                            pet.name ?? "Tyler",
+                                            pet.name ?? 'Tyler',
                                             style: CustomTextTheme.heading3(
                                               context,
                                               textColor:
@@ -201,8 +203,8 @@ class PetDetailPage extends StatelessWidget {
                                                 });
                                               },
                                               child: Container(
-                                                width: 35.0,
-                                                height: 35.0,
+                                                width: 60.0,
+                                                height: 40.0,
                                                 child: Icon(Icons.edit),
                                               ))
                                         ],
@@ -211,7 +213,7 @@ class PetDetailPage extends StatelessWidget {
                                         height: 8,
                                       ),
                                       Text(
-                                        pet.description ?? "My lovely cat <3",
+                                        pet.description ?? 'My lovely cat <3',
                                         style: CustomTextTheme.body2(context,
                                             textColor: AppTheme.colors.grey),
                                       ),
@@ -228,41 +230,41 @@ class PetDetailPage extends StatelessWidget {
                                           children: [
                                             PetProperty(
                                               value:
-                                                  ((pet.gender ?? "") == "MALE")
-                                                      ? "Male"
-                                                      : "Female",
-                                              label: "Sex",
+                                                  ((pet.gender ?? '') == 'MALE')
+                                                      ? 'Male'
+                                                      : 'Female',
+                                              label: 'Sex',
                                             ),
                                             SizedBox(
                                               width: 8.0,
                                             ),
                                             PetProperty(
                                               value:
-                                                  "${pet.year}y${pet.month}m",
-                                              label: "Age",
+                                                  '${pet.year}y${pet.month}m',
+                                              label: 'Age',
                                             ),
                                             SizedBox(
                                               width: 8.0,
                                             ),
                                             PetProperty(
-                                              value: pet.breed ?? "",
-                                              label: "Breed",
+                                              value: pet.breed ?? '',
+                                              label: 'Breed',
                                             ),
                                             SizedBox(
                                               width: 8.0,
                                             ),
                                             PetProperty(
                                               value: (pet.isNeuter ?? false)
-                                                  ? "Yes"
-                                                  : "No",
-                                              label: "Neutered",
+                                                  ? 'Yes'
+                                                  : 'No',
+                                              label: 'Neutered',
                                             ),
                                             SizedBox(
                                               width: 8.0,
                                             ),
                                             PetProperty(
-                                              value: "${pet.weight} kg",
-                                              label: "Weight",
+                                              value: '${pet.weight} kg',
+                                              label: 'Weight',
                                             ),
                                           ],
                                         ),
@@ -335,7 +337,7 @@ class PetDetailPage extends StatelessWidget {
                                               builder: (context) => ImageDialog(
                                                   cubit: cubit,
                                                   petAvatar: pet.avatarUrl!,
-                                                  name: pet.photos![index].id,
+                                                  name: pet.name!,
                                                   image: pet
                                                       .photos![index].imgUrl));
                                         },
@@ -363,12 +365,6 @@ class PetDetailPage extends StatelessWidget {
   }
 }
 
-class PetPhotoItem {
-  final String image;
-  final String name;
-  PetPhotoItem(this.image, this.name);
-}
-
 class PetProperty extends StatelessWidget {
   const PetProperty({
     required this.value,
@@ -392,6 +388,7 @@ class PetProperty extends StatelessWidget {
           children: [
             Text(
               value,
+              overflow: TextOverflow.ellipsis,
               style: CustomTextTheme.caption(context,
                   textColor: AppTheme.colors.green,
                   fontWeight: FontWeight.w500,
@@ -444,13 +441,13 @@ class ImageDialog extends StatelessWidget {
                 CircleAvatar(
                   radius: 15,
                   backgroundImage: NetworkImage(petAvatar ??
-                      "https://images.pexels.com/photos/2173872/pexels-photo-2173872.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=1"),
+                      'https://images.pexels.com/photos/2173872/pexels-photo-2173872.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=1'),
                 ),
                 SizedBox(
                   width: 8.0,
                 ),
                 Text(
-                  name ?? "",
+                  name ?? '',
                   style: CustomTextTheme.caption(context,
                       textColor: AppTheme.colors.white),
                 )
@@ -477,8 +474,8 @@ class ImageDialog extends StatelessWidget {
               children: [
                 InkWell(
                   onTap: () async {
-                   final result = await cubit.deletePhoto(id: name);
-                   if(result) Navigator.pop(context);
+                    final result = await cubit.deletePhoto(id: name);
+                    if (result) Navigator.pop(context);
                   },
                   child: Container(
                     padding: EdgeInsets.all(8.0),

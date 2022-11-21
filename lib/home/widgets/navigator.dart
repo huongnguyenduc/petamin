@@ -25,7 +25,7 @@ class CustomNavigator extends StatelessWidget {
               'assets/icons/home.svg',
               color: AppTheme.colors.pink,
             ),
-            label: "Home"),
+            label: 'Home'),
         BottomNavigationBarItem(
             icon: SvgPicture.asset(
               'assets/icons/compass.svg',
@@ -34,7 +34,7 @@ class CustomNavigator extends StatelessWidget {
               'assets/icons/compass.svg',
               color: AppTheme.colors.pink,
             ),
-            label: "Explore"),
+            label: 'Explore'),
         BottomNavigationBarItem(
             icon: SvgPicture.asset(
               'assets/icons/pet.svg',
@@ -43,7 +43,7 @@ class CustomNavigator extends StatelessWidget {
               'assets/icons/pet.svg',
               color: AppTheme.colors.pink,
             ),
-            label: "Pet"),
+            label: 'Pet'),
         BottomNavigationBarItem(
             icon: SvgPicture.asset(
               'assets/icons/chat.svg',
@@ -52,7 +52,7 @@ class CustomNavigator extends StatelessWidget {
               'assets/icons/chat.svg',
               color: AppTheme.colors.pink,
             ),
-            label: "Chat"),
+            label: 'Chat'),
         BottomNavigationBarItem(
             icon: SvgPicture.asset(
               'assets/icons/user.svg',
@@ -61,7 +61,7 @@ class CustomNavigator extends StatelessWidget {
               'assets/icons/user.svg',
               color: AppTheme.colors.pink,
             ),
-            label: "Profile")
+            label: 'Profile')
       ],
       iconSize: 28,
       selectedItemColor: AppTheme.colors.pink,

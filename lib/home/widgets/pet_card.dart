@@ -57,17 +57,23 @@ class PetCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(data.name, style: CustomTextTheme.body1(context)),
-                    Text('${data.price}\$',
-                        style: CustomTextTheme.body1(context)),
+                    (data.price != -1)
+                        ? Text(
+                            '${data.price.toString().replaceAll(RegExp(r'([.]*0)(?!.*\d)'), '')}\$',
+                            style: CustomTextTheme.body1(context))
+                        : Text(''),
                   ],
                 ),
                 SizedBox(height: 8.0),
                 Row(
                   children: [
-                    Text('Breed: ',
-                        style: CustomTextTheme.body2(context,
-                            textColor: AppTheme.colors.grey)),
-                    Text(data.breed, style: CustomTextTheme.body2(context)),
+                    Flexible(
+                        child: Container(
+                      padding: new EdgeInsets.only(right: 13.0),
+                      child: Text(data.breed,
+                          overflow: TextOverflow.ellipsis,
+                          style: CustomTextTheme.body2(context)),
+                    ))
                   ],
                 ),
                 SizedBox(height: 8.0),

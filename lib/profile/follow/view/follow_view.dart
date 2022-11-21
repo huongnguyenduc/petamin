@@ -1,30 +1,29 @@
 import 'package:Petamin/home/home.dart';
 import 'package:Petamin/profile-info/cubit/profile_info_cubit.dart';
+import 'package:Petamin/profile/follow/cubit/my_follow_cubit.dart';
+import 'package:Petamin/profile/follow/cubit/my_follow_state.dart';
 import 'package:Petamin/shared/constants.dart';
 import 'package:Petamin/theme/theme.dart';
-import 'package:Petamin/user_detail/follow/cubit/follow_cubit.dart';
-import 'package:Petamin/user_detail/follow/cubit/follow_state.dart';
 import 'package:Petamin/user_detail/user_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:petamin_repository/petamin_repository.dart';
 
-class UserFollowView extends StatelessWidget {
-  const UserFollowView({required this.userId, required this.name, Key? key})
-      : super(key: key);
-  final String userId;
-  final String name;
+class FollowView extends StatelessWidget {
+  const FollowView({required this.initIndex, Key? key}) : super(key: key);
+  final int initIndex;
   @override
   Widget build(BuildContext context) {
     final user = context.select((ProfileInfoCubit bloc) => bloc.state);
     return BlocProvider(
-        create: (context) =>
-            FollowCubit(context.read<PetaminRepository>())..getFollows(userId),
+        create: (context) => MyFollowCubit(context.read<PetaminRepository>())
+          ..getFollows(user.userId),
         child: Scaffold(
             appBar: AppBar(
-              title: Text(name),
+              title: Text(user.name),
             ),
             body: DefaultTabController(
+                initialIndex: initIndex,
                 length: 2,
                 child: Column(
                   children: [
@@ -43,7 +42,7 @@ class UserFollowView extends StatelessWidget {
                         ]),
                     Expanded(
                         child: TabBarView(children: [
-                      BlocBuilder<FollowCubit, FollowState>(
+                      BlocBuilder<MyFollowCubit, MyFollowState>(
                           buildWhen: (previous, current) =>
                               previous.status != current.status,
                           builder: (context, state) {
@@ -87,7 +86,7 @@ class UserFollowView extends StatelessWidget {
                                                           .isFollow! ==
                                                       true) {
                                                     context
-                                                        .read<FollowCubit>()
+                                                        .read<MyFollowCubit>()
                                                         .unFollow(
                                                             state
                                                                 .followers[
@@ -96,7 +95,7 @@ class UserFollowView extends StatelessWidget {
                                                             true);
                                                   } else {
                                                     context
-                                                        .read<FollowCubit>()
+                                                        .read<MyFollowCubit>()
                                                         .follow(
                                                             state
                                                                 .followers[
@@ -122,7 +121,7 @@ class UserFollowView extends StatelessWidget {
                                       ));
                                 });
                           }),
-                      BlocBuilder<FollowCubit, FollowState>(
+                      BlocBuilder<MyFollowCubit, MyFollowState>(
                           buildWhen: (previous, current) =>
                               previous.status != current.status,
                           builder: (context, state) {
@@ -164,14 +163,14 @@ class UserFollowView extends StatelessWidget {
                                                         .isFollow! ==
                                                     true) {
                                                   context
-                                                      .read<FollowCubit>()
+                                                      .read<MyFollowCubit>()
                                                       .unFollow(
                                                           state.following[index]
                                                               .userId!,
                                                           false);
                                                 } else {
                                                   context
-                                                      .read<FollowCubit>()
+                                                      .read<MyFollowCubit>()
                                                       .follow(
                                                           state.following[index]
                                                               .userId!,

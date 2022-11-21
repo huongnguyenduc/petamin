@@ -30,7 +30,7 @@ class PetListPage extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    "My pet",
+                    'My pet',
                     style: CustomTextTheme.subtitle(context,
                         textColor: AppTheme.colors.green),
                   ),
@@ -66,7 +66,7 @@ class PetListPage extends StatelessWidget {
                             id: pet.id ?? '',
                             name: pet.name ?? '',
                             photo: pet.avatarUrl ??
-                                "https://images.unsplash.com/photo-1592194996308-7b43878e84a6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
+                                'https://images.unsplash.com/photo-1592194996308-7b43878e84a6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80',
                           );
                         },
                       ));
@@ -129,6 +129,7 @@ class AddPetItem extends StatelessWidget {
     void onGoBack() {
       cubit.getPets();
     }
+
     return Material(
       color: Colors.transparent,
       child: Ink(
@@ -136,9 +137,11 @@ class AddPetItem extends StatelessWidget {
             color: Colors.white, borderRadius: BorderRadius.circular(5.0)),
         child: InkWell(
           onTap: () {
-            Navigator.of(context, rootNavigator: true).push(
-                MaterialPageRoute(builder: (context) => const PetAddPage())).then((_) => onGoBack());
-            debugPrint("Listttt pettttt");
+            Navigator.of(context, rootNavigator: true)
+                .push(
+                    MaterialPageRoute(builder: (context) => const PetAddPage()))
+                .then((_) => onGoBack());
+            debugPrint('Listttt pettttt');
           },
           borderRadius: BorderRadius.circular(10.0),
           splashColor: AppTheme.colors.pink,
@@ -160,7 +163,7 @@ class AddPetItem extends StatelessWidget {
                   height: 4,
                 ),
                 Text(
-                  "Add new",
+                  'Add new',
                   style: CustomTextTheme.label(context),
                 )
               ],

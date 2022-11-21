@@ -1,7 +1,11 @@
+// ignore_for_file: prefer_single_quotes
+
 import 'dart:io';
 
+import 'package:Petamin/shared/constants.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -20,11 +24,13 @@ class ProfileInfoCubit extends Cubit<ProfileInfoState> {
 
   Future<void> getProfile() async {
     emit(state.copyWith(status: ProfileStatus.loading));
+    EasyLoading.show();
     try {
       Profile profile = await _petaminRepository.getUserProfile();
 
       emit(
         state.copyWith(
+          userId: profile.userId,
           status: ProfileStatus.success,
           bio: profile.description,
           address: profile.address,
@@ -35,14 +41,18 @@ class ProfileInfoCubit extends Cubit<ProfileInfoState> {
           avatarUrl: profile.avatar,
           name: profile.name,
           email: profile.email,
+          followers: profile.followers,
+          followings: profile.followings,
+          pets: profile.pets,
         ),
       );
     } on Exception {
       emit(state.copyWith(status: ProfileStatus.failure));
     } catch (e) {
-      print("Get Profile Error: $e");
+      print('Get Profile Error: $e');
       emit(state.copyWith(status: ProfileStatus.failure));
     }
+    EasyLoading.dismiss();
   }
 
   // Update Profile
@@ -56,6 +66,10 @@ class ProfileInfoCubit extends Cubit<ProfileInfoState> {
     EasyLoading.show();
     emit(state.copyWith(submitStatus: ProfileStatus.loading));
     try {
+      debugPrint('name: $name');
+      debugPrint('address: $address');
+      debugPrint('phoneNumber: ${phoneNumber?.length.toString()}');
+      debugPrint('birthday: $dayOfBirth');
       await _petaminRepository.updateUserProfile(
         name: name,
         description: bio,

@@ -1,11 +1,12 @@
 import 'package:Petamin/app/bloc/app_bloc.dart';
 import 'package:Petamin/profile-info/view/profile-info-page.dart';
+import 'package:Petamin/profile/follow/view/follow_view.dart';
 import 'package:Petamin/profile/widgets/widgets.dart';
+import 'package:Petamin/shared/constants.dart';
 import 'package:Petamin/theme/app_theme.dart';
 import 'package:Petamin/theme/text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:petamin_repository/petamin_repository.dart';
 import 'package:Petamin/profile-info/cubit/profile_info_cubit.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -15,11 +16,13 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          ProfileInfoCubit(context.read<PetaminRepository>())..getProfile(),
-      child: ProfileView(),
-    );
+    return
+        // BlocProvider(
+        //   create: (context) =>
+        //       ProfileInfoCubit(context.read<PetaminRepository>())..getProfile(),
+        //   child:
+        ProfileView();
+    //);
   }
 }
 
@@ -30,8 +33,11 @@ class ProfileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.select((ProfileInfoCubit bloc) => bloc.state);
-    debugPrint(user.toString());
+    //   final user = context.select((ProfileInfoCubit bloc) => bloc.state);
+    void onGoBack() {
+      context.read<ProfileInfoCubit>().getProfile();
+    }
+
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -42,7 +48,7 @@ class ProfileView extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                "Profile",
+                'Profile',
                 style: CustomTextTheme.subtitle(context,
                     textColor: AppTheme.colors.green),
               ),
@@ -64,36 +70,39 @@ class ProfileView extends StatelessWidget {
                   height: 16,
                 ),
                 ProfileItem(
-                  title: "Edit Profile",
-                  onTap: () => Navigator.of(context, rootNavigator: true).push(
-                      new MaterialPageRoute(
-                          builder: (context) => new ProfileInfoPage())),
+                  title: 'Edit Profile',
+                  onTap: () => Navigator.of(context, rootNavigator: true)
+                      .push(MaterialPageRoute(
+                          builder: (context) => new ProfileInfoPage()))
+                      .then((_) {
+                    onGoBack();
+                  }),
                 ),
                 SizedBox(
                   height: 8,
                 ),
-                ProfileItem(title: "Favorite List"),
+                ProfileItem(title: 'Favorite List'),
                 SizedBox(
                   height: 8,
                 ),
-                ProfileItem(title: "Order details"),
+                ProfileItem(title: 'Order details'),
                 SizedBox(
                   height: 8,
                 ),
-                ProfileItem(title: "Order tracking"),
+                ProfileItem(title: 'Order tracking'),
                 SizedBox(
                   height: 8,
                 ),
-                ProfileItem(title: "Shipping Address"),
+                ProfileItem(title: 'Shipping Address'),
                 SizedBox(
                   height: 8,
                 ),
-                ProfileItem(title: "Setting"),
+                ProfileItem(title: 'Setting'),
                 SizedBox(
                   height: 8,
                 ),
                 ProfileItem(
-                  title: "Logout",
+                  title: 'Logout',
                   onTap: () {
                     context
                         .read<AppSessionBloc>()
@@ -158,6 +167,7 @@ class UserFollow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.select((ProfileInfoCubit bloc) => bloc.state);
     return Container(
       padding: EdgeInsets.symmetric(vertical: 8.0),
       decoration: BoxDecoration(
@@ -167,17 +177,27 @@ class UserFollow extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           FollowItem(
-            title: "pets",
-            count: 3,
+            title: 'pets',
+            count: user.pets?.length.toString(),
           ),
-          FollowItem(
-            title: "followers",
-            count: 5,
-          ),
-          FollowItem(
-            title: "following",
-            count: 2,
-          )
+          InkWell(
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => FollowView(initIndex: 0)));
+              },
+              child: FollowItem(
+                title: 'followers',
+                count: user.followers,
+              )),
+          InkWell(
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => FollowView(initIndex: 1)));
+              },
+              child: FollowItem(
+                title: 'following',
+                count: user.followings,
+              ))
         ],
       ),
     );
@@ -219,9 +239,7 @@ class UserInfo extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SquaredAvatar(
-          photo: user.avatarUrl.length > 0
-              ? user.avatarUrl
-              : "https://petamin.s3.ap-southeast-1.amazonaws.com/3faf67c28e038599927d1d3d09a539b8.png",
+          photo: user.avatarUrl.length > 0 ? user.avatarUrl : ANONYMOUS_AVATAR,
         ),
         SizedBox(
           width: 20,

@@ -2,6 +2,7 @@ import 'package:Petamin/app/bloc/app_bloc.dart';
 import 'package:Petamin/call/view/call_screen.dart';
 import 'package:Petamin/chat/chat.dart';
 import 'package:Petamin/data/models/call_model.dart';
+import 'package:Petamin/profile-info/cubit/profile_info_cubit.dart';
 import 'package:Petamin/shared/constants.dart';
 import 'package:Petamin/shared/shared_widgets.dart';
 import 'package:Petamin/theme/theme.dart';
@@ -38,24 +39,26 @@ class ChatDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.select((AppSessionBloc bloc) => bloc.state.session);
+    final user = context.select((ProfileInfoCubit bloc) => bloc.state);
+    debugPrint(user.props.toString());
     return BlocListener<ChatDetailCubit, ChatDetailState>(
         listener: (context, state) {
           //FireCall States
-          if (state is ErrorFireVideoCallState) {
-            showToast(msg: 'ErrorFireVideoCallState: ${state.message}');
+          if (state.callVideoStatus ==
+              CallVideoStatus.ErrorFireVideoCallState) {
+            showToast(msg: 'ErrorFireVideoCallState: ${state.errorMessage}');
           }
-          if (state is ErrorPostCallToFirestoreState) {
-            showToast(msg: 'ErrorPostCallToFirestoreState: ${state.message}');
+          if (state.callVideoStatus ==
+              CallVideoStatus.ErrorPostCallToFirestoreState) {
+            showToast(
+                msg: 'ErrorPostCallToFirestoreState: ${state.errorMessage}');
           }
-          if (state is ErrorUpdateUserBusyStatus) {
-            showToast(msg: 'ErrorUpdateUserBusyStatus ${state.message}');
-          }
-          if (state is SuccessFireVideoCallState) {
+          if (state.callVideoStatus ==
+              CallVideoStatus.SuccessFireVideoCallState) {
             Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
                 builder: (context) => CallScreen(
                       isReceiver: false,
-                      callModel: state.callModel,
+                      callModel: state.callModel!,
                     )));
           }
         },
@@ -64,41 +67,51 @@ class ChatDetailPage extends StatelessWidget {
           appBar: PreferredSize(
             preferredSize: Size.fromHeight(72),
             child: BlocBuilder<ChatDetailCubit, ChatDetailState>(
-              buildWhen: (previous, current) => previous.partner != current.partner,
-              builder: (context, state) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: AppBar(
-                  centerTitle: true,
-                  elevation: 0,
-                  actions: [
-                    IconButton(
-                        onPressed: () {
-                          // call video
-                          context.read<ChatDetailCubit>().fireVideoCall(
-                              callModel: CallModel(
-                                  id: 'call_${UniqueKey().hashCode.toString()}',
-                                  callerId: user.userId,
-                                  callerAvatar: 'ưe',
-                                  callerName: 'Huy',
-                                  receiverId: 'da283s4wjweYjuqf3PmlkFvBYss1',
-                                  receiverAvatar: 'ưe',
-                                  receiverName: 'bui',
-                                  status: CallStatus.ringing.name,
-                                  createAt:
-                                      DateTime.now().millisecondsSinceEpoch,
-                                  current: true));
-                        },
-                        icon: Icon(Icons.call))
-                  ],
-                  title: Text(
-                    state.partner?.name ?? "",
-                    style: CustomTextTheme.heading4(context,
-                        textColor: AppTheme.colors.white),
-                  ),
-                ),
-              );
-            }),
+                buildWhen: (previous, current) =>
+                    previous.partner != current.partner,
+                builder: (context, state) {
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: AppBar(
+                      centerTitle: true,
+                      elevation: 0,
+                      actions: [
+                        IconButton(
+                            onPressed: () {
+                              // call video
+                              // debugPrint(
+                              //     'call video: ${state.partner!.avatar!}');
+                              // debugPrint('call video: ${user.avatarUrl}');
+                              context.read<ChatDetailCubit>().fireVideoCall(
+                                  callModel: CallModel(
+                                      id:
+                                          'call_${UniqueKey().hashCode.toString()}',
+                                      callerId: user.userId,
+                                      callerAvatar: user.avatarUrl.isNotEmpty
+                                          ? user.avatarUrl
+                                          : ANONYMOUS_AVATAR,
+                                      callerName: user.name,
+                                      receiverId: state.partner!.userId!,
+                                      receiverAvatar:
+                                          state.partner!.avatar!.isNotEmpty
+                                              ? state.partner!.avatar!
+                                              : ANONYMOUS_AVATAR,
+                                      receiverName: state.partner!.name!,
+                                      status: CallStatus.ringing.name,
+                                      createAt:
+                                          DateTime.now().millisecondsSinceEpoch,
+                                      current: true));
+                            },
+                            icon: Icon(Icons.call))
+                      ],
+                      title: Text(
+                        state.partner?.name ?? '',
+                        style: CustomTextTheme.heading4(context,
+                            textColor: AppTheme.colors.white),
+                      ),
+                    ),
+                  );
+                }),
           ),
           body: Container(
             padding: EdgeInsets.symmetric(horizontal: 20.0),
