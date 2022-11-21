@@ -1,4 +1,5 @@
 import 'package:Petamin/chat/chat.dart';
+import 'package:Petamin/shared/constants.dart';
 import 'package:Petamin/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -56,7 +57,10 @@ class ChatListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: [IconButton(onPressed: () {}, icon: SvgPicture.asset('assets/icons/bell.svg'))],
+        actions: [
+          IconButton(
+              onPressed: () {}, icon: SvgPicture.asset('assets/icons/bell.svg'))
+        ],
         backgroundColor: AppTheme.colors.white,
         elevation: 0,
       ),
@@ -98,18 +102,20 @@ class SearchBar extends StatelessWidget {
     return Padding(
         padding: const EdgeInsets.all(15.0),
         child: Ink(
-            decoration:
-                BoxDecoration(color: AppTheme.colors.superLightPurple, borderRadius: BorderRadius.circular(5.0)),
+            decoration: BoxDecoration(
+                color: AppTheme.colors.superLightPurple,
+                borderRadius: BorderRadius.circular(5.0)),
             child: InkWell(
               onTap: () => {
-                Navigator.of(context, rootNavigator: true)
-                    .push(MaterialPageRoute(builder: (context) =>  ChatSearchPage()))
+                Navigator.of(context, rootNavigator: true).push(
+                    MaterialPageRoute(builder: (context) => ChatSearchPage()))
               },
               borderRadius: BorderRadius.circular(10.0),
               splashColor: AppTheme.colors.lightPurple,
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 20.0),
-                decoration: BoxDecoration(borderRadius: BorderRadius.circular(25.0)),
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(25.0)),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -123,7 +129,8 @@ class SearchBar extends StatelessWidget {
                     ),
                     Text(
                       "Search",
-                      style: CustomTextTheme.label(context, textColor: AppTheme.colors.grey),
+                      style: CustomTextTheme.label(context,
+                          textColor: AppTheme.colors.grey),
                     ),
                   ],
                 ),
@@ -143,8 +150,9 @@ class ChatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Navigator.of(context, rootNavigator: true)
-          .push(MaterialPageRoute(builder: (context) => ChatPage(conversationId: chat.id))),
+      onTap: () => Navigator.of(context, rootNavigator: true).push(
+          MaterialPageRoute(
+              builder: (context) => ChatPage(conversationId: chat.id))),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 30.0),
         child: Row(
@@ -154,7 +162,9 @@ class ChatCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 30.0,
-                  backgroundImage: AssetImage('assets/images/cat.png'),
+                  backgroundImage: NetworkImage(chat.partner.avatar!.length > 0
+                      ? chat.partner.avatar!
+                      : ANONYMOUS_AVATAR),
                 ),
                 Positioned(
                   right: -4.0,
@@ -162,12 +172,15 @@ class ChatCard extends StatelessWidget {
                   child: Container(
                     width: 24.0,
                     height: 24.0,
-                    decoration: BoxDecoration(color: AppTheme.colors.pink, borderRadius: BorderRadius.circular(12.0)),
+                    decoration: BoxDecoration(
+                        color: AppTheme.colors.pink,
+                        borderRadius: BorderRadius.circular(12.0)),
                     child: Center(
                       child: Text(
                         "1",
                         style: CustomTextTheme.caption(context,
-                            textColor: AppTheme.colors.white, fontWeight: FontWeight.bold),
+                            textColor: AppTheme.colors.white,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -192,7 +205,8 @@ class ChatCard extends StatelessWidget {
                     ),
                     Text(
                       chat.lastMessage.message,
-                      style: CustomTextTheme.label(context, textColor: AppTheme.colors.solidGrey),
+                      style: CustomTextTheme.label(context,
+                          textColor: AppTheme.colors.solidGrey),
                     ),
                   ],
                 ),
@@ -200,7 +214,8 @@ class ChatCard extends StatelessWidget {
             ),
             Text(
               chat.lastMessage.isMe ? "You" : chat.partner.name ?? "",
-              style: CustomTextTheme.caption(context, textColor: AppTheme.colors.grey),
+              style: CustomTextTheme.caption(context,
+                  textColor: AppTheme.colors.grey),
             ),
           ],
         ),

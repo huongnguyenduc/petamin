@@ -10,19 +10,22 @@ extension ProfileStatusX on ProfileStatus {
 }
 
 class ProfileInfoState extends Equatable {
-  const ProfileInfoState({
-    this.name = "",
-    this.phoneNumber = "",
+  ProfileInfoState({
+    this.userId = '',
+    this.name = '',
+    this.phoneNumber = '',
     this.status = ProfileStatus.initial,
     this.submitStatus = ProfileStatus.initial,
-    this.address = "",
-    this.email = "",
+    this.address = '',
+    this.email = '',
     this.dayOfBirth = '2022-10-20 20:18:04Z',
-    this.id = "",
-    this.avatarUrl =
-        "https://petamin.s3.ap-southeast-1.amazonaws.com/3faf67c28e038599927d1d3d09a539b8.png",
+    this.id = '',
+    this.avatarUrl = ANONYMOUS_AVATAR,
     this.avatar,
-    this.bio = "",
+    this.bio = '',
+    this.followers = 0,
+    this.followings = 0,
+    this.pets = const [],
   });
 
   final String name;
@@ -34,8 +37,12 @@ class ProfileInfoState extends Equatable {
   final ProfileStatus status;
   final ProfileStatus submitStatus;
   final String id;
+  final String userId;
   final String avatarUrl;
   final File? avatar;
+  int? followers;
+  int? followings;
+  List<Pet>? pets;
   @override
   List<Object?> get props => [
         name,
@@ -47,7 +54,11 @@ class ProfileInfoState extends Equatable {
         status,
         id,
         avatarUrl,
-        avatar
+        avatar,
+        userId,
+        followers,
+        followings,
+        pets,
       ];
 
   ProfileInfoState copyWith({
@@ -69,6 +80,9 @@ class ProfileInfoState extends Equatable {
     ProfileStatus? submitStatus,
     String? avatarUrl,
     File? avatar,
+    int? followers,
+    int? followings,
+    List<Pet>? pets,
   }) {
     return ProfileInfoState(
       name: name ?? this.name,
@@ -82,6 +96,10 @@ class ProfileInfoState extends Equatable {
       avatar: avatar ?? this.avatar,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       submitStatus: submitStatus ?? this.submitStatus,
+      userId: userId ?? this.userId,
+      followers: followers ?? this.followers,
+      followings: followings ?? this.followings,
+      pets: pets ?? this.pets,
     );
   }
 }

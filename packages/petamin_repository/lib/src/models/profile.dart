@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:petamin_repository/petamin_repository.dart';
 
 part 'profile.g.dart';
 
@@ -7,7 +8,8 @@ part 'profile.g.dart';
 class Profile extends Equatable {
   Profile(
       {this.name,
-      this.avatar,
+      this.avatar =
+          'https://petamin.s3.ap-southeast-1.amazonaws.com/3faf67c28e038599927d1d3d09a539b8.png',
       this.address,
       this.phone,
       this.description,
@@ -15,7 +17,12 @@ class Profile extends Equatable {
       this.birthday,
       this.email,
       this.userId,
-      this.profileId});
+      this.profileId,
+      this.followers,
+      this.followings,
+      this.isFollow = false,
+      this.pets = const [],
+      this.adoptions = const []});
 
   String? email;
   String? name;
@@ -27,10 +34,14 @@ class Profile extends Equatable {
   String? birthday;
   String? userId;
   String? profileId;
-
+  int? followers;
+  int? followings;
+  bool? isFollow;
+  List<Pet>? pets;
+  List<Adopt>? adoptions;
   // empty profile
   Profile.empty()
-      :  this(
+      : this(
             name: '',
             avatar: '',
             address: '',
@@ -40,7 +51,12 @@ class Profile extends Equatable {
             birthday: '',
             email: '',
             userId: '',
-            profileId: '');
+            profileId: '',
+            followers: 0,
+            followings: 0,
+            isFollow: false,
+            pets: const [],
+            adoptions: const []);
   @override
   List<Object?> get props => [
         avatar,
@@ -51,7 +67,12 @@ class Profile extends Equatable {
         name,
         birthday,
         userId,
-        profileId
+        profileId,
+        followers,
+        followings,
+        isFollow,
+        pets,
+        adoptions
       ];
 
   Profile copyWith({
@@ -65,6 +86,11 @@ class Profile extends Equatable {
     String? name,
     String? email,
     String? profileId,
+    int? followers,
+    int? followings,
+    bool? isFollow,
+    List<Pet>? pets,
+    List<Adopt>? adoptions,
   }) =>
       Profile(
         name: name ?? this.name,
@@ -77,6 +103,11 @@ class Profile extends Equatable {
         email: email ?? this.email,
         userId: userId ?? this.userId,
         profileId: profileId ?? this.profileId,
+        followers: followers ?? this.followers,
+        followings: followings ?? this.followings,
+        isFollow: isFollow ?? this.isFollow,
+        pets: pets ?? this.pets,
+        adoptions: adoptions ?? this.adoptions,
       );
 
   factory Profile.fromJson(Map<String, dynamic> json) =>

@@ -32,7 +32,6 @@ class _CallScreenState extends State<CallScreen> {
   @override
   void initState() {
     super.initState();
-    debugPrint('call screeeeeeeeeeeeen');
     _callCubit = CallCubit.get(context);
     rePermission();
     _callCubit.listenToCallStatus(
@@ -137,7 +136,7 @@ class _CallScreenState extends State<CallScreen> {
                   cubit.remoteUid == null
                       ? !widget.isReceiver
                           ? Container(
-                              color: Colors.red,
+                              color: Colors.black,
                               child: const RtcLocalView.SurfaceView())
                           : Container(
                               //res
@@ -146,7 +145,7 @@ class _CallScreenState extends State<CallScreen> {
                                   image:
                                       widget.callModel.callerAvatar!.isNotEmpty
                                           ? NetworkImage(
-                                              'https://picsum.photos/200/300',
+                                              widget.callModel.callerAvatar!,
                                             )
                                           : const NetworkImage(
                                               'https://picsum.photos/200/300',
@@ -184,12 +183,18 @@ class _CallScreenState extends State<CallScreen> {
                         !widget.isReceiver
                             ? UserInfoHeader(
                                 //Caller -> Show Receiver INFO
-                                avatar: 'https://picsum.photos/200/300',
+                                avatar:
+                                    widget.callModel.receiverAvatar!.isNotEmpty
+                                        ? widget.callModel.receiverAvatar!
+                                        : ANONYMOUS_AVATAR,
                                 name: widget.callModel.receiverName!,
                               )
                             : UserInfoHeader(
                                 //Receiver -> Show Caller INFO
-                                avatar: 'https://picsum.photos/200/300',
+                                avatar:
+                                    widget.callModel.callerAvatar!.isNotEmpty
+                                        ? widget.callModel.callerAvatar!
+                                        : ANONYMOUS_AVATAR,
                                 name: widget.callModel.callerName!,
                               ),
                         const SizedBox(
@@ -257,7 +262,7 @@ class _CallScreenState extends State<CallScreen> {
                                   Expanded(
                                     child: InkWell(
                                       onTap: () {
-                                        Navigator.pop(context);
+                                        // Navigator.pop(context);
                                         if (widget.isReceiver) {
                                           //receiverRejectVideoChat
                                           _callCubit.updateCallStatusToReject(
@@ -363,7 +368,7 @@ class _CallScreenState extends State<CallScreen> {
   Widget _remoteVideo({required int remoteUserId}) {
     return RtcRemoteView.SurfaceView(
       uid: remoteUserId,
-      channelId: widget.callModel.channelName! ,
+      channelId: widget.callModel.channelName!,
     );
   }
 }

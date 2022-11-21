@@ -35,6 +35,81 @@ class PetaminApiClient {
         });
   }
 
+  Future<String> getAgoraToken(
+      {required String accessToken, required String channelName}) async {
+    final response = await NetworkService.sendRequest(
+        requestType: RequestType.get,
+        baseUrl: _baseUrl,
+        endPoint: '/agora/token',
+        accessToken: accessToken,
+        queryParam: {
+          'channelName': channelName,
+        });
+    debugPrint('Response ${response?.statusCode} ${response?.body}');
+    return await NetworkHelper.filterResponse(
+        response: response,
+        parameterName: CallBackParameterName.all,
+        callBack: (json) => json['token'],
+        onFailureCallBackWithMessage: (errorType, msg) {
+          debugPrint('Error type-$errorType - Message $msg');
+          return null;
+        });
+  }
+
+  // Post  follow user
+  Future<bool> followUser(
+      {required String accessToken, required String userId}) async {
+    debugPrint('$_baseUrl/follows/$userId/follow');
+    final response = await NetworkService.sendRequest(
+        requestType: RequestType.post,
+        baseUrl: _baseUrl,
+        endPoint: '/follows/$userId/follow',
+        body: {},
+        accessToken: accessToken);
+    debugPrint('Response ${response?.statusCode} ${response?.body}');
+    if (response?.statusCode == 201) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // Post  unfollow user
+  Future<bool> unFollowUser(
+      {required String accessToken, required String userId}) async {
+    debugPrint('/follows/$userId/unfollow');
+    final response = await NetworkService.sendRequest(
+        requestType: RequestType.post,
+        baseUrl: _baseUrl,
+        endPoint: '/follows/$userId/unfollow',
+        body: {},
+        accessToken: accessToken);
+    debugPrint('Response ${response?.statusCode} ${response?.body}');
+    if (response?.statusCode == 201) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<User> getUserProfileWithId(
+      {required String userId, required String accessToken}) async {
+    final response = await NetworkService.sendRequest(
+        requestType: RequestType.get,
+        baseUrl: _baseUrl,
+        endPoint: '/profile/$userId',
+        accessToken: accessToken);
+    debugPrint('Response ${response?.statusCode} ${response?.body}');
+    return await NetworkHelper.filterResponse(
+        response: response,
+        parameterName: CallBackParameterName.all,
+        callBack: (json) => User.fromJson(json),
+        onFailureCallBackWithMessage: (errorType, msg) {
+          debugPrint('Error type-$errorType - Message $msg');
+          return null;
+        });
+  }
+
   Future<bool> checkToken({required String accessToken}) async {
     final response = await NetworkService.sendRequest(
         requestType: RequestType.get,
@@ -67,7 +142,7 @@ class PetaminApiClient {
         endPoint: '/profile',
         body: {
           'address': address,
-          'phone': phone,
+          if (phone!.isNotEmpty) 'phone': phone,
           'bio': bio,
           'birthday': birthday,
           'name': name,
@@ -156,6 +231,46 @@ class PetaminApiClient {
         parameterName: CallBackParameterName.all,
         callBack: (json) =>
             (json as List<dynamic>).map((pet) => PetRes.fromJson(pet)).toList(),
+        onFailureCallBackWithMessage: (errorType, msg) {
+          debugPrint('Error type-$errorType - Message $msg');
+          return null;
+        });
+  }
+
+  Future<List<User>> getFollowers(
+      {required String accessToken, required String userId}) async {
+    final response = await NetworkService.sendRequest(
+      requestType: RequestType.get,
+      baseUrl: _baseUrl,
+      endPoint: '/follows/$userId/followers',
+      accessToken: accessToken,
+    );
+    debugPrint('Response ${response?.body}');
+    return await NetworkHelper.filterResponse(
+        response: response,
+        parameterName: CallBackParameterName.all,
+        callBack: (json) =>
+            (json as List<dynamic>).map((user) => User.fromJson(user)).toList(),
+        onFailureCallBackWithMessage: (errorType, msg) {
+          debugPrint('Error type-$errorType - Message $msg');
+          return null;
+        });
+  }
+
+  Future<List<User>> getFollowing(
+      {required String accessToken, required String userId}) async {
+    final response = await NetworkService.sendRequest(
+      requestType: RequestType.get,
+      baseUrl: _baseUrl,
+      endPoint: '/follows/$userId/followings',
+      accessToken: accessToken,
+    );
+    debugPrint('Response ${response?.body}');
+    return await NetworkHelper.filterResponse(
+        response: response,
+        parameterName: CallBackParameterName.all,
+        callBack: (json) =>
+            (json as List<dynamic>).map((user) => User.fromJson(user)).toList(),
         onFailureCallBackWithMessage: (errorType, msg) {
           debugPrint('Error type-$errorType - Message $msg');
           return null;

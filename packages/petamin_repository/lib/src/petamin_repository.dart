@@ -196,6 +196,17 @@ class PetaminRepository {
     }
   }
 
+  Future<String> getAgoraToken(String channelName) async {
+    try {
+      final session = await currentSession;
+      final agoraToken = await _petaminApiClient.getAgoraToken(
+          accessToken: session.accessToken, channelName: channelName);
+      return agoraToken;
+    } catch (_) {
+      throw const LogOutFailure();
+    }
+  }
+
   /// Get user profile
   Future<Profile> getUserProfile() async {
     try {
@@ -203,14 +214,120 @@ class PetaminRepository {
       final profile = await _petaminApiClient.getUserProfile(
           accessToken: session.accessToken);
       return Profile(
-          name: profile.name,
-          avatar: profile.avatar,
-          address: profile.address,
-          phone: profile.phone,
-          description: profile.bio,
-          birthday: profile.birthday,
-          gender: profile.gender,
-          email: profile.email);
+        userId: profile.userId,
+        name: profile.name,
+        avatar: profile.avatar,
+        address: profile.address,
+        phone: profile.phone,
+        description: profile.bio,
+        birthday: profile.birthday,
+        gender: profile.gender,
+        email: profile.email,
+        followers: profile.totalFollowers,
+        followings: profile.totalFollowings,
+        pets: profile.pets
+            ?.map((e) => Pet(
+                  id: e.id,
+                  avatarUrl: e.avatarUrl,
+                  name: e.name,
+                  year: e.year,
+                  month: e.month,
+                  gender: e.gender,
+                  breed: e.breed,
+                  isNeuter: e.isNeuter,
+                  weight: e.weight,
+                  description: e.description,
+                  species: e.species,
+                  isAdopting: e.isAdopting,
+                ))
+            .toList(),
+      );
+    } catch (_) {
+      throw const CallApiFailure();
+    }
+  }
+
+  Future<bool> followUser(String userId) async {
+    try {
+      final session = await currentSession;
+      final result = await _petaminApiClient.followUser(
+          userId: userId, accessToken: session.accessToken);
+      return result;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<bool> unFollowUser(String userId) async {
+    try {
+      final session = await currentSession;
+      final result = await _petaminApiClient.unFollowUser(
+          userId: userId, accessToken: session.accessToken);
+      return result;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  // Get User Profile With UserId
+  Future<Profile> getUserProfileWithId(String userId) async {
+    try {
+      final session = await currentSession;
+      final profile = await _petaminApiClient.getUserProfileWithId(
+          userId: userId, accessToken: session.accessToken);
+      return Profile(
+        userId: profile.userId,
+        name: profile.name,
+        avatar: profile.avatar,
+        address: profile.address,
+        phone: profile.phone,
+        description: profile.bio,
+        birthday: profile.birthday,
+        gender: profile.gender,
+        email: profile.email,
+        followers: profile.totalFollowers,
+        followings: profile.totalFollowings,
+        isFollow: profile.isFollow,
+        pets: profile.pets
+            ?.map((e) => Pet(
+                  id: e.id,
+                  avatarUrl: e.avatarUrl,
+                  name: e.name,
+                  year: e.year,
+                  month: e.month,
+                  gender: e.gender,
+                  breed: e.breed,
+                  isNeuter: e.isNeuter,
+                  weight: e.weight,
+                  description: e.description,
+                  species: e.species,
+                  isAdopting: e.isAdopting,
+                ))
+            .toList(),
+        adoptions: profile.adoptions
+            ?.map((e) => models.Adopt(
+                petId: e.petId,
+                userId: e.userId,
+                id: e.id,
+                price: e.price,
+                description: e.description,
+                status: e.status,
+                pet: models.Pet(
+                  id: e.pet?.id,
+                  avatarUrl: e.pet?.avatarUrl,
+                  name: e.pet?.name,
+                  year: e.pet?.year,
+                  month: e.pet?.month,
+                  gender: e.pet?.gender,
+                  breed: e.pet?.breed,
+                  isNeuter: e.pet?.isNeuter,
+                  weight: e.pet?.weight,
+                  description: e.pet?.description,
+                  species: e.pet?.species,
+                  isAdopting: e.pet?.isAdopting,
+                )))
+            .toList(),
+      );
     } catch (_) {
       throw const CallApiFailure();
     }
@@ -270,6 +387,45 @@ class PetaminRepository {
               : LastMessage.empty(),
         );
       }).toList();
+    } catch (_) {
+      throw const CallApiFailure();
+    }
+  }
+
+  Future<List<Profile>> getFollowers({required String userId}) async {
+    try {
+      debugPrint("call get follwer");
+      final session = await currentSession;
+      final result = await _petaminApiClient.getFollowers(
+          accessToken: session.accessToken, userId: userId);
+      return result
+          .map((user) => Profile(
+              userId: user.userId,
+              avatar: user.avatar,
+              description: user.bio,
+              name: user.name,
+              email: user.email,
+              isFollow: user.isFollow))
+          .toList();
+    } catch (_) {
+      throw const CallApiFailure();
+    }
+  }
+
+  Future<List<Profile>> getFollowing({required String userId}) async {
+    try {
+      debugPrint("call get follwing");
+      final session = await currentSession;
+      final result = await _petaminApiClient.getFollowing(
+          accessToken: session.accessToken, userId: userId);
+      return result
+          .map((user) => Profile(
+              userId: user.userId,
+              avatar: user.avatar,
+              name: user.name,
+              email: user.email,
+              isFollow: user.isFollow))
+          .toList();
     } catch (_) {
       throw const CallApiFailure();
     }
