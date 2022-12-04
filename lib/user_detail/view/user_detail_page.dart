@@ -1,6 +1,5 @@
 import 'package:Petamin/chat/chat.dart';
 import 'package:Petamin/home/home.dart';
-import 'package:Petamin/landing/cubit/landing_cubit.dart';
 import 'package:Petamin/shared/shared_widgets.dart';
 import 'package:Petamin/theme/app_theme.dart';
 import 'package:Petamin/theme/text_styles.dart';
@@ -14,11 +13,11 @@ import 'package:petamin_repository/petamin_repository.dart';
 class UserDetailPage extends StatelessWidget {
   const UserDetailPage({required this.userId, Key? key}) : super(key: key);
   final String userId;
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => UserDetailCubit(context.read<PetaminRepository>())
-        ..getUserprofile(userId),
+      create: (context) => UserDetailCubit(context.read<PetaminRepository>())..getUserprofile(userId),
       child: UserDetailView(),
     );
   }
@@ -50,8 +49,7 @@ class UserDetailView extends StatelessWidget {
                       ),
                       Column(
                         children: [
-                          Text('${user.adoptList.length}',
-                              style: CustomTextTheme.label(context)),
+                          Text('${user.adoptList.length}', style: CustomTextTheme.label(context)),
                           Text(
                             'Posts',
                             style: CustomTextTheme.body2(context),
@@ -61,13 +59,11 @@ class UserDetailView extends StatelessWidget {
                       InkWell(
                         onTap: () {
                           Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => UserFollowView(
-                                  userId: user.userId, name: user.name)));
+                              builder: (context) => UserFollowView(userId: user.userId, name: user.name)));
                         },
                         child: Column(
                           children: [
-                            Text('${user.countFollowers}',
-                                style: CustomTextTheme.label(context)),
+                            Text('${user.countFollowers}', style: CustomTextTheme.label(context)),
                             Text(
                               'Followers',
                               style: CustomTextTheme.body2(context),
@@ -77,8 +73,7 @@ class UserDetailView extends StatelessWidget {
                       ),
                       Column(
                         children: [
-                          Text('${user.countFollowings}',
-                              style: CustomTextTheme.label(context)),
+                          Text('${user.countFollowings}', style: CustomTextTheme.label(context)),
                           Text(
                             'Following',
                             style: CustomTextTheme.body2(context),
@@ -99,8 +94,7 @@ class UserDetailView extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
                 child: Row(
                   children: [
                     Flexible(
@@ -115,8 +109,7 @@ class UserDetailView extends StatelessWidget {
                 ),
               ),
               Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
                   child: Row(children: [
                     Expanded(
                         child: ElevatedButton(
@@ -126,8 +119,7 @@ class UserDetailView extends StatelessWidget {
                       child: Text('${user.isFollow ? 'Following' : 'Follow'}'),
                       style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.symmetric(vertical: 2.0),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16.0)),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
                           backgroundColor: AppTheme.colors.green,
                           foregroundColor: AppTheme.colors.white),
                     )),
@@ -135,22 +127,17 @@ class UserDetailView extends StatelessWidget {
                     Expanded(
                         child: ElevatedButton(
                       onPressed: () async {
-                        final conversationId = await context
-                            .read<UserDetailCubit>()
-                            .createConversations(user.userId);
+                        final conversationId = await context.read<UserDetailCubit>().createConversations(user.userId);
                         if (conversationId.length >= 0) {
-                          Navigator.of(context, rootNavigator: true).push(
-                              MaterialPageRoute(
-                                  builder: (context) => ChatPage(
-                                      conversationId: conversationId)));
+                          Navigator.of(context, rootNavigator: true)
+                              .push(MaterialPageRoute(builder: (context) => ChatPage(conversationId: conversationId)));
                         } else {
                           showToast(msg: 'User is locked!');
                         }
                       },
                       child: Text('Message'),
                       style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16.0)),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
                           padding: EdgeInsets.symmetric(vertical: 2.0),
                           backgroundColor: AppTheme.colors.white,
                           foregroundColor: AppTheme.colors.green),
@@ -159,8 +146,7 @@ class UserDetailView extends StatelessWidget {
               TabBar(
                 indicatorColor: AppTheme.colors.green,
                 indicator: UnderlineTabIndicator(
-                  borderSide:
-                      BorderSide(color: AppTheme.colors.green, width: 2.0),
+                  borderSide: BorderSide(color: AppTheme.colors.green, width: 2.0),
                   // insets: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 50.0)
                 ),
                 labelColor: Colors.black,
@@ -183,13 +169,11 @@ class UserDetailView extends StatelessWidget {
                 child: TabBarView(
                   children: [
                     BlocBuilder<UserDetailCubit, UserDetailState>(
-                        buildWhen: (previous, current) =>
-                            previous.petList != current.petList,
+                        buildWhen: (previous, current) => previous.petList != current.petList,
                         builder: (context, state) {
                           return GridView.builder(
                             padding: const EdgeInsets.all(16.0),
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
                               crossAxisSpacing: 18,
                               mainAxisSpacing: 18,
@@ -198,6 +182,7 @@ class UserDetailView extends StatelessWidget {
                             itemBuilder: (context, index) {
                               return PetCard(
                                 data: PetCardData(
+                                  petId: user.petList[index].id!,
                                   age: user.petList[index].year.toString(),
                                   name: user.petList[index].name!,
                                   photo: user.petList[index].avatarUrl!,
@@ -208,18 +193,15 @@ class UserDetailView extends StatelessWidget {
                                 // user.petList[index], // TODO: Change to real data
                               );
                             },
-                            itemCount: user
-                                .petList.length, // TODO: Change to real data
+                            itemCount: user.petList.length, // TODO: Change to real data
                           );
                         }),
                     BlocBuilder<UserDetailCubit, UserDetailState>(
-                        buildWhen: (previous, current) =>
-                            previous.adoptList != current.adoptList,
+                        buildWhen: (previous, current) => previous.adoptList != current.adoptList,
                         builder: (context, state) {
                           return GridView.builder(
                             padding: const EdgeInsets.all(16.0),
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
                               crossAxisSpacing: 18,
                               mainAxisSpacing: 18,
@@ -228,8 +210,9 @@ class UserDetailView extends StatelessWidget {
                             itemBuilder: (context, index) {
                               return PetCard(
                                 data: PetCardData(
-                                  age: user.adoptList[index].pet!.year
-                                      .toString(),
+                                  petId: user.adoptList[index].petId!,
+                                  adoptId: user.adoptList[index].id!,
+                                  age: user.adoptList[index].pet!.year.toString(),
                                   name: user.adoptList[index].pet!.name!,
                                   photo: user.adoptList[index].pet!.avatarUrl!,
                                   breed: user.adoptList[index].pet!.breed!,
@@ -238,8 +221,7 @@ class UserDetailView extends StatelessWidget {
                                 ),
                               );
                             },
-                            itemCount: user
-                                .adoptList.length, // TODO: Change to real data
+                            itemCount: user.adoptList.length, // TODO: Change to real data
                           );
                         }),
                   ],

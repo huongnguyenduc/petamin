@@ -6,10 +6,9 @@ part 'profile.g.dart';
 
 @JsonSerializable()
 class Profile extends Equatable {
-  Profile(
+  const Profile(
       {this.name,
-      this.avatar =
-          'https://petamin.s3.ap-southeast-1.amazonaws.com/3faf67c28e038599927d1d3d09a539b8.png',
+      this.avatar = 'https://petamin.s3.ap-southeast-1.amazonaws.com/3faf67c28e038599927d1d3d09a539b8.png',
       this.address,
       this.phone,
       this.description,
@@ -24,39 +23,39 @@ class Profile extends Equatable {
       this.pets = const [],
       this.adoptions = const []});
 
-  String? email;
-  String? name;
-  String? avatar;
-  String? address;
-  String? phone;
-  String? description;
-  String? gender;
-  String? birthday;
-  String? userId;
-  String? profileId;
-  int? followers;
-  int? followings;
-  bool? isFollow;
-  List<Pet>? pets;
-  List<Adopt>? adoptions;
-  // empty profile
-  Profile.empty()
-      : this(
-            name: '',
-            avatar: '',
-            address: '',
-            phone: '',
-            description: '',
-            gender: '',
-            birthday: '',
-            email: '',
-            userId: '',
-            profileId: '',
-            followers: 0,
-            followings: 0,
-            isFollow: false,
-            pets: const [],
-            adoptions: const []);
+  final String? email;
+  final String? name;
+  final String? avatar;
+  final String? address;
+  final String? phone;
+  final String? description;
+  final String? gender;
+  final String? birthday;
+  final String? userId;
+  final String? profileId;
+  final int? followers;
+  final int? followings;
+  final bool? isFollow;
+  final List<Pet>? pets;
+  final List<Adopt>? adoptions;
+
+  static const empty = Profile(
+      name: '',
+      avatar: '',
+      address: '',
+      phone: '',
+      description: '',
+      gender: '',
+      birthday: '',
+      email: '',
+      userId: '',
+      profileId: '',
+      followers: 0,
+      followings: 0,
+      isFollow: false,
+      pets: [],
+      adoptions: []);
+
   @override
   List<Object?> get props => [
         avatar,
@@ -110,8 +109,7 @@ class Profile extends Equatable {
         adoptions: adoptions ?? this.adoptions,
       );
 
-  factory Profile.fromJson(Map<String, dynamic> json) =>
-      _$ProfileFromJson(json);
+  factory Profile.fromJson(Map<String, dynamic> json) => _$ProfileFromJson(json);
 
   Map<String, dynamic> toJson() => _$ProfileToJson(this);
 }

@@ -6,6 +6,7 @@ part 'petRes.g.dart';
 class PetRes {
   PetRes(
       {this.id,
+      this.userId,
       this.name,
       this.month,
       this.year,
@@ -20,6 +21,7 @@ class PetRes {
       this.isAdopting});
 
   String? id;
+  String? userId;
   String? name;
   int? month;
   int? year;
@@ -32,9 +34,11 @@ class PetRes {
   final String? species;
   List<Images>? photos;
   bool? isAdopting;
+
   @override
   List<Object?> get props => [
         id,
+        userId,
         name,
         month,
         species,

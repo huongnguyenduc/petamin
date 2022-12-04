@@ -4,14 +4,14 @@ import 'package:petamin_repository/petamin_repository.dart';
 
 @JsonSerializable()
 class Adopt extends Equatable {
-  const Adopt(
-      {required this.petId,
-      required this.userId,
-      required this.id,
-      required this.price,
-      required this.description,
-      required this.status,
-      this.pet});
+  const Adopt({required this.petId,
+    required this.userId,
+    required this.id,
+    required this.price,
+    required this.description,
+    required this.status,
+    this.pet});
+
   final String? id;
   final String? petId;
   final String? userId;
@@ -19,7 +19,18 @@ class Adopt extends Equatable {
   final String? description;
   final String? status;
   final Pet? pet;
+
   @override
   List<Object?> get props =>
       [id, price, description, status, pet?.props.toString()];
+
+  // Emtpty adopt
+  static const empty = Adopt(
+      id: '',
+      petId: '',
+      userId: '',
+      price: 0,
+      description: '',
+      status: '',
+      pet: Pet.empty);
 }

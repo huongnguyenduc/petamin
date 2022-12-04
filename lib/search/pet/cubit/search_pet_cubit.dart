@@ -25,19 +25,13 @@ class SearchPetCubit extends Cubit<SearchPetState> {
   }
 
   SearchPetCubit(this._petaminRepository, {this.initSelectedSpecies})
-      : super(SearchPetState(
-            selectedSpecies:
-                initSelectedSpecies != null ? [initSelectedSpecies] : []));
+      : super(SearchPetState(selectedSpecies: initSelectedSpecies != null ? [initSelectedSpecies] : []));
 
   void selectSpecies(Species species) async {
     if (isSpeciesSelected(species)) {
-      emit(state.copyWith(
-          selectedSpecies: state.selectedSpecies
-              .where((element) => element != species)
-              .toList()));
+      emit(state.copyWith(selectedSpecies: state.selectedSpecies.where((element) => element != species).toList()));
     } else {
-      emit(
-          state.copyWith(selectedSpecies: [...state.selectedSpecies, species]));
+      emit(state.copyWith(selectedSpecies: [...state.selectedSpecies, species]));
     }
     await searchAdoption(state.searchQuery, true);
   }
@@ -65,8 +59,7 @@ class SearchPetCubit extends Cubit<SearchPetState> {
 
   void showFilterBottomSheet({context, isDelay = false}) {
     isDelay
-        ? Future.delayed(
-            Duration(milliseconds: 500), () => _showFilterBottomSheet(context))
+        ? Future.delayed(Duration(milliseconds: 500), () => _showFilterBottomSheet(context))
         : _showFilterBottomSheet(context);
   }
 
@@ -82,27 +75,21 @@ class SearchPetCubit extends Cubit<SearchPetState> {
     }
     bool isFirstSearch = state.status == SearchPetStatus.initial;
     bool isNewQuery = state.status == SearchPetStatus.newQuery;
-    if (!isFirstSearch &&
-        !isNewQuery &&
-        state.paginationData.currentPage == state.paginationData.totalPages) {
+    if (!isFirstSearch && !isNewQuery && state.paginationData.currentPage == state.paginationData.totalPages) {
       debugPrint('${state.paginationData.currentPage}');
       debugPrint('${state.paginationData.totalPages}');
       return;
     }
     emit(state.copyWith(status: SearchPetStatus.searching));
     EasyLoading.show();
-    debugPrint([state.minPrice.toString(), state.maxPrice.toString()]
-        .toList()
-        .toString());
+    debugPrint([state.minPrice.toString(), state.maxPrice.toString()].toList().toString());
     try {
       if (query != state.searchQuery || newQuery == true) {
         final searchResults = await _petaminRepository.getAdoptPagination(
           page: 1,
           limit: 10,
           species: state.selectedSpecies.length > 0
-              ? state.selectedSpecies
-                  .map((e) => e.toString().split('.').last)
-                  .toList()
+              ? state.selectedSpecies.map((e) => e.toString().split('.').last).toList()
               : null,
           prices: [
             state.minPrice != '0' ? state.minPrice.toString() : '0',
@@ -120,9 +107,7 @@ class SearchPetCubit extends Cubit<SearchPetState> {
           page: isFirstSearch ? 1 : state.paginationData.currentPage + 1,
           limit: 10,
           species: state.selectedSpecies.length > 0
-              ? state.selectedSpecies
-                  .map((e) => e.toString().split('.').last)
-                  .toList()
+              ? state.selectedSpecies.map((e) => e.toString().split('.').last).toList()
               : null,
           prices: [
             state.minPrice != '0' ? state.minPrice.toString() : '0',
@@ -155,175 +140,162 @@ class SearchPetCubit extends Cubit<SearchPetState> {
         builder: (BuildContext btsContext) {
           return StatefulBuilder(
             builder: (context, setState) {
-              return Container(
-                height: 300,
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                decoration: BoxDecoration(
-                  color: AppTheme.colors.superLightPurple,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Filter',
-                          style: CustomTextTheme.subtitle(btsContext),
-                        ),
-                        TextButton(
-                            onPressed: () {
-                              resetFilter();
-                              setState(() {});
-                              Navigator.pop(context);
-                            },
-                            child: Text('Reset',
-                                style: CustomTextTheme.subtitle(btsContext,
-                                    textColor: AppTheme.colors.pink))),
-                      ],
+              return SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                  child: Container(
+                    height: 300,
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    decoration: BoxDecoration(
+                      color: AppTheme.colors.superLightPurple,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16),
+                      ),
                     ),
-                    SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Column(
                       children: [
-                        Text(
-                          'Categories',
-                          style: CustomTextTheme.subtitle(btsContext),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Filter',
+                              style: CustomTextTheme.subtitle(btsContext),
+                            ),
+                            TextButton(
+                                onPressed: () {
+                                  resetFilter();
+                                  setState(() {});
+                                  Navigator.pop(context);
+                                },
+                                child: Text('Reset',
+                                    style: CustomTextTheme.subtitle(btsContext, textColor: AppTheme.colors.pink))),
+                          ],
                         ),
-                      ],
-                    ),
-                    SizedBox(height: 8),
-                    SizedBox(
-                        height: 30,
-                        child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (contextLV, index) {
-                            final species =
-                                speciesData.entries.elementAt(index).key;
-                            return PetFilterItem(
-                              species: species,
-                              selected: isSpeciesSelected(species),
-                              onTap: () {
-                                selectSpecies(species);
-                                setState(() {});
+                        SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Categories',
+                              style: CustomTextTheme.subtitle(btsContext),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 8),
+                        SizedBox(
+                            height: 30,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (contextLV, index) {
+                                final species = speciesData.entries.elementAt(index).key;
+                                return PetFilterItem(
+                                  species: species,
+                                  selected: isSpeciesSelected(species),
+                                  onTap: () {
+                                    selectSpecies(species);
+                                    setState(() {});
+                                  },
+                                );
                               },
-                            );
-                          },
-                          separatorBuilder: (context, index) {
-                            return SizedBox(
-                              width: 8.0,
-                            );
-                          },
-                          itemCount: speciesData.length,
-                        )),
-                    SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Price',
-                          style: CustomTextTheme.subtitle(btsContext),
+                              separatorBuilder: (context, index) {
+                                return SizedBox(
+                                  width: 8.0,
+                                );
+                              },
+                              itemCount: speciesData.length,
+                            )),
+                        SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Price',
+                              style: CustomTextTheme.subtitle(btsContext),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                initialValue: state.minPrice,
+                                onChanged: (value) {
+                                  if (_debounce?.isActive ?? false) _debounce?.cancel();
+                                  _debounce = Timer(const Duration(milliseconds: 800), () {
+                                    // do something with query
+                                    print('Searching............');
+                                    if (value.isNotEmpty) {
+                                      print('called');
+                                      setMinPrice(value);
+                                      setState(() {});
+                                    }
+                                  });
+                                },
+                                maxLength: 7,
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                                ],
+                                decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: AppTheme.colors.white, width: 0.0),
+                                      borderRadius: const BorderRadius.all(Radius.circular(16.0))),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: AppTheme.colors.white, width: 0.0),
+                                      borderRadius: const BorderRadius.all(Radius.circular(16.0))),
+                                  hintText: '0\$',
+                                  hintStyle: TextStyle(color: Colors.grey),
+                                  border: InputBorder.none,
+                                  fillColor: AppTheme.colors.white,
+                                  filled: true,
+                                  helperText: 'Min',
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 16.0),
+                            Expanded(
+                              child: TextFormField(
+                                onChanged: (value) {
+                                  if (_debounce?.isActive ?? false) _debounce?.cancel();
+                                  _debounce = Timer(const Duration(milliseconds: 800), () {
+                                    // do something with query
+                                    print('Searching............');
+                                    if (value.isNotEmpty) {
+                                      setMaxPrice(value);
+                                      setState(() {});
+                                    }
+                                  });
+                                },
+                                maxLength: 7,
+                                initialValue: state.maxPrice,
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                                ],
+                                decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: AppTheme.colors.white, width: 0.0),
+                                      borderRadius: const BorderRadius.all(Radius.circular(16.0))),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: AppTheme.colors.white, width: 0.0),
+                                      borderRadius: const BorderRadius.all(Radius.circular(16.0))),
+                                  hintText: '0\$',
+                                  hintStyle: TextStyle(color: Colors.grey),
+                                  border: InputBorder.none,
+                                  fillColor: AppTheme.colors.white,
+                                  filled: true,
+                                  helperText: 'Max',
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                    SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            initialValue: state.minPrice,
-                            onChanged: (value) {
-                              if (_debounce?.isActive ?? false)
-                                _debounce?.cancel();
-                              _debounce =
-                                  Timer(const Duration(milliseconds: 800), () {
-                                // do something with query
-                                print('Searching............');
-                                if (value.isNotEmpty) {
-                                  print('called');
-                                  setMinPrice(value);
-                                  setState(() {});
-                                }
-                              });
-                            },
-                            maxLength: 7,
-                            inputFormatters: <TextInputFormatter>[
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'[0-9]')),
-                            ],
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 8),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: AppTheme.colors.white, width: 0.0),
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(16.0))),
-                              enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: AppTheme.colors.white, width: 0.0),
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(16.0))),
-                              hintText: '0\$',
-                              hintStyle: TextStyle(color: Colors.grey),
-                              border: InputBorder.none,
-                              fillColor: AppTheme.colors.white,
-                              filled: true,
-                              helperText: 'Min',
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 16.0),
-                        Expanded(
-                          child: TextFormField(
-                            onChanged: (value) {
-                              if (_debounce?.isActive ?? false)
-                                _debounce?.cancel();
-                              _debounce =
-                                  Timer(const Duration(milliseconds: 800), () {
-                                // do something with query
-                                print('Searching............');
-                                if (value.isNotEmpty) {
-                                  setMaxPrice(value);
-                                  setState(() {});
-                                }
-                              });
-                            },
-                            maxLength: 7,
-                            initialValue: state.maxPrice,
-                            inputFormatters: <TextInputFormatter>[
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'[0-9]')),
-                            ],
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 8),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: AppTheme.colors.white, width: 0.0),
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(16.0))),
-                              enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: AppTheme.colors.white, width: 0.0),
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(16.0))),
-                              hintText: '0\$',
-                              hintStyle: TextStyle(color: Colors.grey),
-                              border: InputBorder.none,
-                              fillColor: AppTheme.colors.white,
-                              filled: true,
-                              helperText: 'Max',
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                  ),
                 ),
               );
             },

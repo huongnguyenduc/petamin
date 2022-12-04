@@ -8,6 +8,7 @@ part of 'pet.dart';
 
 Pet _$PetFromJson(Map<String, dynamic> json) => Pet(
       id: json['id'] as String?,
+      userId: json['userId'] as String?,
       name: json['name'] as String?,
       month: json['month'] as int?,
       year: json['year'] as int?,
@@ -26,6 +27,7 @@ Pet _$PetFromJson(Map<String, dynamic> json) => Pet(
 
 Map<String, dynamic> _$PetToJson(Pet instance) => <String, dynamic>{
       'id': instance.id,
+      'userId': instance.userId,
       'name': instance.name,
       'month': instance.month,
       'year': instance.year,
@@ -37,4 +39,5 @@ Map<String, dynamic> _$PetToJson(Pet instance) => <String, dynamic>{
       'description': instance.description,
       'species': instance.species,
       'photos': instance.photos,
+      'isAdopting': instance.isAdopting,
     };
