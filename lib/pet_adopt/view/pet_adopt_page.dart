@@ -1,7 +1,5 @@
 import 'package:Petamin/app/app.dart';
-import 'package:Petamin/pet-info/pet-info.dart';
-import 'package:Petamin/pet_detail/cubit/pet_detail_cubit.dart';
-import 'package:Petamin/pet_detail/cubit/pet_detail_state.dart';
+import 'package:Petamin/pet_adopt/pet_adopt.dart';
 import 'package:Petamin/pet_post/pet_post.dart';
 import 'package:Petamin/shared/shared_widgets.dart';
 import 'package:Petamin/theme/theme.dart';
@@ -11,13 +9,13 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:petamin_repository/petamin_repository.dart';
 
-class PetDetailPage extends StatelessWidget {
-  const PetDetailPage({Key? key, required this.id}) : super(key: key);
+class PetAdoptPage extends StatelessWidget {
+  const PetAdoptPage({Key? key, required this.id}) : super(key: key);
   final String id;
 
   @override
   Widget build(BuildContext context) {
-    final cubit = PetDetailCubit(context.read<PetaminRepository>());
+    final cubit = PetAdoptCubit(context.read<PetaminRepository>());
     final userId = context.read<AppSessionBloc>().state.session.userId;
     void onGoBack() {
       cubit..getPetDetail(id: id, userId: userId);
@@ -29,81 +27,99 @@ class PetDetailPage extends StatelessWidget {
             length: 2,
             child: Container(
                 color: AppTheme.colors.white,
-                child: BlocBuilder<PetDetailCubit, PetDetailState>(
+                child: BlocBuilder<PetAdoptCubit, PetAdoptState>(
                     buildWhen: (previous, current) =>
                         previous.status != current.status || previous.pet.photos != current.pet.photos,
                     builder: (context, state) {
                       final pet = state.pet;
-                      // if (state.status == PetDetailStatus.loading) {
-                      //   return const Center(
-                      //     child: CircularProgressIndicator(),
-                      //   );
-                      // } else
+                      final adopt = state.adoptInfo;
+                      final user = state.profile;
                       if (state.status == PetDetailStatus.failure) {
                         showToast(msg: 'Can\'t load pet detail!');
                         return const Center();
                       } else {
                         return Scaffold(
                             backgroundColor: AppTheme.colors.white,
-                            floatingActionButton: SpeedDial(
-                              animatedIcon: AnimatedIcons.menu_close,
-                              animatedIconTheme: IconThemeData(size: 22.0),
-                              backgroundColor: AppTheme.colors.green,
-                              visible: true,
-                              curve: Curves.bounceIn,
-                              overlayOpacity: 0.4,
-                              children: [
-                                SpeedDialChild(
-                                    child: SvgPicture.asset(
-                                      'assets/icons/send.svg',
-                                      width: 16.0,
-                                      height: 16.0,
-                                    ),
+                            floatingActionButton: (state.view == PetAdoptView.owner)
+                                ? SpeedDial(
+                                    animatedIcon: AnimatedIcons.menu_close,
+                                    animatedIconTheme: IconThemeData(size: 22.0),
                                     backgroundColor: AppTheme.colors.green,
-                                    label: 'Transfer',
-                                    labelStyle: TextStyle(fontSize: 18.0),
-                                    onTap: () => Navigator.of(context, rootNavigator: true)
-                                        .push(MaterialPageRoute(builder: (context) => const PetTransfer()))),
-                                SpeedDialChild(
-                                    child: SvgPicture.asset(
-                                      'assets/icons/home_heart.svg',
-                                      width: 24.0,
-                                      height: 24.0,
-                                    ),
-                                    backgroundColor: AppTheme.colors.green,
-                                    label: pet.isAdopting == false ? 'Post Adopt' : 'Edit Adopt',
-                                    labelStyle: TextStyle(fontSize: 18.0),
-                                    onTap: () => Navigator.of(context, rootNavigator: true)
-                                            .push(MaterialPageRoute(
-                                                builder: (context) => pet.isAdopting == false
-                                                    ? PetCreatePost(
-                                                        petId: pet.id!, petImage: pet.avatarUrl!, petName: pet.name!)
-                                                    : PetEditPost(
-                                                        petId: pet.id!,
-                                                        petName: pet.name!,
-                                                        petImage: pet.avatarUrl!,
-                                                      )))
-                                            .then((_) {
-                                          onGoBack();
-                                        })),
-                                SpeedDialChild(
-                                    child: Icon(
-                                      Icons.delete,
-                                      color: AppTheme.colors.white,
-                                    ),
-                                    backgroundColor: AppTheme.colors.green,
-                                    label: 'Delete',
-                                    labelStyle: TextStyle(fontSize: 18.0),
-                                    onTap: () => print('Delete')),
-                              ],
-                            ),
+                                    visible: true,
+                                    curve: Curves.bounceIn,
+                                    overlayOpacity: 0.4,
+                                    children: [
+                                      SpeedDialChild(
+                                          child: SvgPicture.asset(
+                                            'assets/icons/send.svg',
+                                            width: 16.0,
+                                            height: 16.0,
+                                          ),
+                                          backgroundColor: AppTheme.colors.green,
+                                          label: 'Transfer',
+                                          labelStyle: TextStyle(fontSize: 18.0),
+                                          onTap: () => Navigator.of(context, rootNavigator: true)
+                                              .push(MaterialPageRoute(builder: (context) => const PetTransfer()))),
+                                      SpeedDialChild(
+                                          child: SvgPicture.asset(
+                                            'assets/icons/home_heart.svg',
+                                            width: 24.0,
+                                            height: 24.0,
+                                          ),
+                                          backgroundColor: AppTheme.colors.green,
+                                          label: pet.isAdopting == false ? 'Post Adopt' : 'Edit Adopt',
+                                          labelStyle: TextStyle(fontSize: 18.0),
+                                          onTap: () => Navigator.of(context, rootNavigator: true)
+                                                  .push(MaterialPageRoute(
+                                                      builder: (context) => pet.isAdopting == false
+                                                          ? PetCreatePost(
+                                                              petId: pet.id!,
+                                                              petImage: pet.avatarUrl!,
+                                                              petName: pet.name!)
+                                                          : PetEditPost(
+                                                              petId: pet.id!,
+                                                              petName: pet.name!,
+                                                              petImage: pet.avatarUrl!,
+                                                            )))
+                                                  .then((_) {
+                                                onGoBack();
+                                              })),
+                                      SpeedDialChild(
+                                          child: Icon(
+                                            Icons.delete,
+                                            color: AppTheme.colors.white,
+                                          ),
+                                          backgroundColor: AppTheme.colors.green,
+                                          label: 'Delete Post',
+                                          labelStyle: TextStyle(fontSize: 18.0),
+                                          onTap: () => showDialog(
+                                              context: context,
+                                              builder: (_context) => AlertDialog(
+                                                    title: const Text('Delete Pet Post'),
+                                                    content: const Text('Are you sure want to delete this post?'),
+                                                    actions: [
+                                                      TextButton(
+                                                          onPressed: () => Navigator.of(_context).pop(),
+                                                          child: const Text('Cancel')),
+                                                      TextButton(
+                                                          onPressed: () {
+                                                            context
+                                                                .read<PetAdoptCubit>()
+                                                                .deleteAdoptPost(id: pet.id!, context: context);
+                                                          },
+                                                          child: const Text('Delete'))
+                                                    ],
+                                                  ))),
+                                    ],
+                                  )
+                                : null,
                             body: CustomScrollView(
                               physics: AlwaysScrollableScrollPhysics(),
                               slivers: [
                                 SliverAppBar(
                                   automaticallyImplyLeading: false,
                                   title: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: <Widget>[
                                       InkWell(
@@ -122,6 +138,16 @@ class PetDetailPage extends StatelessWidget {
                                             )),
                                       ),
                                       // Your widgets here
+                                      if (state.view == PetAdoptView.owner)
+                                        Switch(
+                                          // This bool value toggles the switch.
+                                          value: state.availability == PetAdoptAvailability.show,
+                                          activeColor: AppTheme.colors.pink,
+                                          onChanged: (bool value) {
+                                            // This is called when the user toggles the switch.
+                                            context.read<PetAdoptCubit>().toggleAdoptPet();
+                                          },
+                                        )
                                     ],
                                   ),
                                   bottom: PreferredSize(
@@ -173,22 +199,30 @@ class PetDetailPage extends StatelessWidget {
                                               textColor: AppTheme.colors.solidGrey,
                                             ),
                                           ),
-                                          GestureDetector(
-                                              onTap: () {
-                                                Navigator.of(context, rootNavigator: true)
-                                                    .push(MaterialPageRoute(
-                                                        builder: (context) => PetInfoPage(
-                                                              pet: pet,
-                                                            )))
-                                                    .then((_) {
-                                                  onGoBack();
-                                                });
-                                              },
-                                              child: Container(
-                                                width: 60.0,
-                                                height: 40.0,
-                                                child: Icon(Icons.edit),
-                                              ))
+                                          if (adopt.price != null)
+                                            Text(
+                                              '${adopt.price} \$',
+                                              style: CustomTextTheme.heading3(
+                                                context,
+                                                textColor: AppTheme.colors.solidGrey,
+                                              ),
+                                            ),
+                                          // GestureDetector(
+                                          //     onTap: () {
+                                          //       Navigator.of(context, rootNavigator: true)
+                                          //           .push(MaterialPageRoute(
+                                          //               builder: (context) => PetInfoPage(
+                                          //                     pet: pet,
+                                          //                   )))
+                                          //           .then((_) {
+                                          //         onGoBack();
+                                          //       });
+                                          //     },
+                                          //     child: Container(
+                                          //       width: 60.0,
+                                          //       height: 40.0,
+                                          //       child: Icon(Icons.edit),
+                                          //     ))
                                         ],
                                       ),
                                       SizedBox(
@@ -243,6 +277,67 @@ class PetDetailPage extends StatelessWidget {
                                           ],
                                         ),
                                       ),
+                                      SizedBox(
+                                        height: 8.0,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              CircleAvatar(
+                                                radius: 20.0,
+                                                backgroundImage: NetworkImage(
+                                                  user.avatar ?? 'https://i.pravatar.cc/300',
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 8.0,
+                                              ),
+                                              Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    'Owner by:',
+                                                    style: CustomTextTheme.caption(context,
+                                                        textColor: AppTheme.colors.grey),
+                                                  ),
+                                                  Text(
+                                                    user.name ?? 'Tyler',
+                                                    style: CustomTextTheme.body2(context,
+                                                        textColor: AppTheme.colors.solidGrey),
+                                                  ),
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                          Row(children: [
+                                            IconButton(
+                                              onPressed: () {},
+                                              icon: Icon(Icons.call),
+                                              color: AppTheme.colors.pink,
+                                            ),
+                                            IconButton(
+                                                onPressed: () {},
+                                                icon: Icon(Icons.messenger_outline),
+                                                color: AppTheme.colors.pink),
+                                          ])
+                                        ],
+                                      ),
+
+                                      if (adopt.description != null)
+                                        SizedBox(
+                                          height: 24.0,
+                                        ),
+                                      if (adopt.description != null)
+                                        Text(
+                                          adopt.description ?? 'My lovely cat <3',
+                                          style: CustomTextTheme.body2(context, textColor: AppTheme.colors.grey),
+                                        ),
+                                      if (adopt.description != null)
+                                        SizedBox(
+                                          height: 8.0,
+                                        ),
                                       // SizedBox(
                                       //   height: 10.0,
                                       // )
@@ -386,7 +481,7 @@ class ImageDialog extends StatelessWidget {
   final String image;
   final String name;
   final String petAvatar;
-  final PetDetailCubit cubit;
+  final PetAdoptCubit cubit;
 
   @override
   Widget build(BuildContext context) {

@@ -19,6 +19,18 @@ class LandingState extends Equatable {
 
 List<PetCardData> petsMock = [
   PetCardData(
+      petId: '1',
+      adoptId: '1',
+      name: 'Huy',
+      photo:
+          "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80",
+      breed: "Persian",
+      age: '1',
+      sex: "Female",
+      price: 1),
+  PetCardData(
+      petId: '2',
+      adoptId: '2',
       name: "Huy",
       photo:
           "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80",
@@ -27,19 +39,13 @@ List<PetCardData> petsMock = [
       sex: "Female",
       price: 1),
   PetCardData(
-      name: "Huy",
+      petId: '3',
+      adoptId: '3',
+      name: 'Huy',
       photo:
-          "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80",
-      breed: "Persian",
+          'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80',
+      breed: 'Persian',
       age: '1',
-      sex: "Female",
-      price: 1),
-  PetCardData(
-      name: "Huy",
-      photo:
-          "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80",
-      breed: "Persian",
-      age: '1',
-      sex: "Female",
+      sex: 'Female',
       price: 1),
 ];
