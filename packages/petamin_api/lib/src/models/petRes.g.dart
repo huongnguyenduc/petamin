@@ -8,6 +8,7 @@ part of 'petRes.dart';
 
 PetRes _$PetResFromJson(Map<String, dynamic> json) => PetRes(
       id: json['id'] as String?,
+      userId: json['userId'] as String?,
       name: json['name'] as String?,
       month: json['month'] as int?,
       year: json['year'] as int?,
@@ -26,6 +27,7 @@ PetRes _$PetResFromJson(Map<String, dynamic> json) => PetRes(
 
 Map<String, dynamic> _$PetResToJson(PetRes instance) => <String, dynamic>{
       'id': instance.id,
+      'userId': instance.userId,
       'name': instance.name,
       'month': instance.month,
       'year': instance.year,
@@ -36,6 +38,6 @@ Map<String, dynamic> _$PetResToJson(PetRes instance) => <String, dynamic>{
       'weight': instance.weight,
       'description': instance.description,
       'species': instance.species,
-      //'photos': instance.photos,
-      //'isAdopting': instance.isAdopting,
+      'photos': instance.photos,
+      'isAdopting': instance.isAdopting,
     };

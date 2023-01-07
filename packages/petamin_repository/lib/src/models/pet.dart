@@ -1,4 +1,4 @@
-import 'dart:ffi';
+import 'dart:io';
 
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -9,6 +9,7 @@ part 'pet.g.dart';
 class Pet extends Equatable {
   const Pet({
     this.id,
+    this.userId,
     this.name,
     this.month,
     this.year,
@@ -16,6 +17,7 @@ class Pet extends Equatable {
     this.breed,
     this.isNeuter,
     this.avatarUrl,
+    this.avatar,
     this.weight,
     this.description,
     this.photos,
@@ -24,6 +26,7 @@ class Pet extends Equatable {
   });
 
   final String? id;
+  final String? userId;
   final String? name;
   final int? month;
   final int? year;
@@ -31,6 +34,8 @@ class Pet extends Equatable {
   final String? breed;
   final bool? isNeuter;
   final String? avatarUrl;
+
+  final File? avatar;
   final double? weight;
   final String? description;
   final String? species;
@@ -38,6 +43,7 @@ class Pet extends Equatable {
   final bool? isAdopting;
   static const empty = Pet(
       id: '',
+      userId: '',
       name: '',
       month: 0,
       year: 0,
@@ -52,21 +58,12 @@ class Pet extends Equatable {
       isAdopting: false);
 
   @override
-  List<Object?> get props => [
-        id,
-        name,
-        month,
-        year,
-        gender,
-        breed,
-        isNeuter,
-        avatarUrl,
-        weight,
-        description
-      ];
+  List<Object?> get props =>
+      [id, userId, name, month, year, gender, avatar, breed, isNeuter, avatarUrl, weight, description];
 
   Pet copyWith({
     String? id,
+    String? userId,
     String? name,
     int? month,
     int? year,
@@ -74,6 +71,7 @@ class Pet extends Equatable {
     String? breed,
     bool? isNeuter,
     String? avatarUrl,
+    File? avatar,
     double? weight,
     String? description,
     String? species,
@@ -81,7 +79,8 @@ class Pet extends Equatable {
     bool? isAdopting,
   }) =>
       Pet(
-          id: name ?? this.name,
+          id: id ?? this.id,
+          userId: userId ?? this.userId,
           name: name ?? this.name,
           month: month ?? this.month,
           year: year ?? this.year,
@@ -89,11 +88,13 @@ class Pet extends Equatable {
           breed: breed ?? this.breed,
           isNeuter: isNeuter ?? this.isNeuter,
           avatarUrl: avatarUrl ?? this.avatarUrl,
+          avatar: avatar ?? this.avatar,
           weight: weight ?? this.weight,
           description: description ?? this.description,
           species: species ?? this.species,
           photos: photos ?? this.photos,
           isAdopting: isAdopting ?? this.isAdopting);
+
   factory Pet.fromJson(Map<String, dynamic> json) => _$PetFromJson(json);
 
   Map<String, dynamic> toJson() => _$PetToJson(this);

@@ -6,6 +6,7 @@ import 'package:petamin_repository/petamin_repository.dart';
 class MyFollowCubit extends Cubit<MyFollowState> {
   MyFollowCubit(this._petaminRepository) : super(MyFollowState());
   final PetaminRepository _petaminRepository;
+
   Future<void> getFollows(String userId) async {
     EasyLoading.show();
     emit(state.copyWith(status: FollowStatus.loading));
@@ -35,18 +36,14 @@ class MyFollowCubit extends Cubit<MyFollowState> {
       if (result) {
         if (isFollower) {
           final newFollowers = state.followers;
-          newFollowers
-              .firstWhere((element) => element.userId == userId)
-              .isFollow = true;
+          newFollowers.firstWhere((element) => element.userId == userId).copyWith(isFollow: true);
           emit(state.copyWith(
             status: FollowStatus.success,
             followers: newFollowers,
           ));
         } else {
           final newFollowings = state.following;
-          newFollowings
-              .firstWhere((element) => element.userId == userId)
-              .isFollow = true;
+          newFollowings.firstWhere((element) => element.userId == userId).copyWith(isFollow: true);
           emit(state.copyWith(
             status: FollowStatus.success,
             following: newFollowings,
@@ -71,18 +68,14 @@ class MyFollowCubit extends Cubit<MyFollowState> {
       if (result) {
         if (isFollower) {
           final newFollowers = state.followers;
-          newFollowers
-              .firstWhere((element) => element.userId == userId)
-              .isFollow = false;
+          newFollowers.firstWhere((element) => element.userId == userId).copyWith(isFollow: false);
           emit(state.copyWith(
             status: FollowStatus.success,
             followers: newFollowers,
           ));
         } else {
           final newFollowings = state.following;
-          newFollowings
-              .firstWhere((element) => element.userId == userId)
-              .isFollow = false;
+          newFollowings.firstWhere((element) => element.userId == userId).copyWith(isFollow: false);
           emit(state.copyWith(
             status: FollowStatus.success,
             following: newFollowings,

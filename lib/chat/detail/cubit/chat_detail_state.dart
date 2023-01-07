@@ -19,7 +19,7 @@ class ChatDetailState extends Equatable {
       this.status = ChatDetailStatus.initial,
       this.callVideoStatus = CallVideoStatus.Initial,
       this.errorMessage = '',
-      this.partner,
+      this.partner = Profile.empty,
       this.callModel});
 
   final List<Message> messages;
@@ -28,17 +28,10 @@ class ChatDetailState extends Equatable {
   final CallVideoStatus callVideoStatus;
   final String errorMessage;
   CallModel? callModel;
-  Profile? partner = Profile.empty();
+  Profile? partner;
+
   @override
-  List<Object?> get props => [
-        messages,
-        chatMessage,
-        status,
-        partner,
-        callModel,
-        callVideoStatus,
-        errorMessage
-      ];
+  List<Object?> get props => [messages, chatMessage, status, partner, callModel, callVideoStatus, errorMessage];
 
   ChatDetailState copyWith({
     List<Message>? messages,

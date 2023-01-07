@@ -1,20 +1,19 @@
-import 'package:Petamin/pet_add/pet_add.dart';
 import 'package:Petamin/pet_add/widgets/pet_species_step.dart';
 import 'package:Petamin/pet_detail/cubit/pet_detail_cubit.dart';
 import 'package:Petamin/pet_detail/cubit/pet_detail_state.dart';
-import 'package:Petamin/profile-info/cubit/profile_info_cubit.dart';
 import 'package:Petamin/profile/widgets/widgets.dart';
 import 'package:Petamin/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:petamin_repository/petamin_repository.dart'
-    as petamin_repository;
+import 'package:image_picker/image_picker.dart';
+import 'package:petamin_repository/petamin_repository.dart' as petamin_repository;
 import 'package:petamin_repository/petamin_repository.dart';
 
 class PetInfoPage extends StatelessWidget {
   const PetInfoPage({required this.pet, Key? key}) : super(key: key);
   final petamin_repository.Pet pet;
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -41,7 +40,8 @@ class _PetInfoViewState extends State<PetInfoView> {
   TextEditingController nameController = TextEditingController();
   TextEditingController bioController = TextEditingController();
   TextEditingController breedController = TextEditingController();
-   TextEditingController weightController = TextEditingController();
+  TextEditingController weightController = TextEditingController();
+
   void initState() {
     super.initState();
     nameController.text = widget.pet.name!;
@@ -63,32 +63,55 @@ class _PetInfoViewState extends State<PetInfoView> {
         backgroundColor: AppTheme.colors.mediumGrey,
         appBar: AppBar(
           title: Text('Pet Information'),
-          
         ),
         body: Container(
           padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 32.0),
           height: MediaQuery.of(context).size.height * 0.9,
           child: DefaultTextStyle(
               style: Theme.of(context).textTheme.bodyText2!,
-              child: LayoutBuilder(builder:
-                  (BuildContext context, BoxConstraints viewportConstraints) {
+              child: LayoutBuilder(builder: (BuildContext context, BoxConstraints viewportConstraints) {
                 return SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                        minHeight: viewportConstraints.maxHeight),
+                    constraints: BoxConstraints(minHeight: viewportConstraints.maxHeight),
                     child: IntrinsicHeight(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         mainAxisSize: MainAxisSize.max,
                         children: [
                           Column(children: [
-                            SquaredAvatar(
-                              photo: widget.pet.avatarUrl ??
-                                  "https://images.pexels.com/photos/7752793/pexels-photo-7752793.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
+                            BlocBuilder<PetDetailCubit, PetDetailState>(
+                              builder: (context, state) {
+                                return GestureDetector(
+                                  onTap: () => context.read<PetDetailCubit>().selectPetImage(ImageSource.gallery),
+                                  child: state.pet.avatar != null
+                                      ? Container(
+                                          height: 102.0,
+                                          width: 102.0,
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.rectangle,
+                                              borderRadius: BorderRadius.circular(10.0),
+                                              image: DecorationImage(
+                                                  image: FileImage(state.pet.avatar!), fit: BoxFit.cover)),
+                                        )
+                                      : widget.pet.avatarUrl != null
+                                          ? SquaredAvatar(photo: widget.pet.avatarUrl)
+                                          : Container(
+                                              height: 130.0,
+                                              width: 130.0,
+                                              decoration: BoxDecoration(
+                                                  shape: BoxShape.circle, color: AppTheme.colors.lightPink),
+                                              child: Icon(
+                                                Icons.camera_alt,
+                                                color: AppTheme.colors.pink,
+                                                size: 28.0,
+                                              ),
+                                            ),
+                                );
+                              },
                             ),
                             SizedBox(
-                              height: 4.0,
+                              height: 16.0,
                             ),
                             TextFormField(
                               controller: nameController,
@@ -96,24 +119,16 @@ class _PetInfoViewState extends State<PetInfoView> {
                               decoration: InputDecoration(
                                 fillColor: AppTheme.colors.white,
                                 filled: true,
-                                contentPadding: EdgeInsets.symmetric(
-                                    horizontal: 15, vertical: 10),
+                                contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                                 focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: AppTheme.colors.pink,
-                                        width: 2.0),
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(16.0))),
+                                    borderSide: BorderSide(color: AppTheme.colors.pink, width: 2.0),
+                                    borderRadius: const BorderRadius.all(Radius.circular(16.0))),
                                 enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: AppTheme.colors.lightPurple,
-                                        width: 2.0),
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(16.0))),
+                                    borderSide: BorderSide(color: AppTheme.colors.lightPurple, width: 2.0),
+                                    borderRadius: const BorderRadius.all(Radius.circular(16.0))),
                                 helperText: '',
                                 labelText: 'Name',
-                                labelStyle: CustomTextTheme.body2(context,
-                                    textColor: AppTheme.colors.lightGreen),
+                                labelStyle: CustomTextTheme.body2(context, textColor: AppTheme.colors.lightGreen),
                               ),
                             ),
                             SizedBox(
@@ -125,24 +140,16 @@ class _PetInfoViewState extends State<PetInfoView> {
                               decoration: InputDecoration(
                                 fillColor: AppTheme.colors.white,
                                 filled: true,
-                                contentPadding: EdgeInsets.symmetric(
-                                    horizontal: 15, vertical: 10),
+                                contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                                 focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: AppTheme.colors.pink,
-                                        width: 2.0),
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(16.0))),
+                                    borderSide: BorderSide(color: AppTheme.colors.pink, width: 2.0),
+                                    borderRadius: const BorderRadius.all(Radius.circular(16.0))),
                                 enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: AppTheme.colors.lightPurple,
-                                        width: 2.0),
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(16.0))),
+                                    borderSide: BorderSide(color: AppTheme.colors.lightPurple, width: 2.0),
+                                    borderRadius: const BorderRadius.all(Radius.circular(16.0))),
                                 helperText: '',
                                 labelText: 'Bio',
-                                labelStyle: CustomTextTheme.body2(context,
-                                    textColor: AppTheme.colors.lightGreen),
+                                labelStyle: CustomTextTheme.body2(context, textColor: AppTheme.colors.lightGreen),
                               ),
                             ),
                             SizedBox(
@@ -152,30 +159,21 @@ class _PetInfoViewState extends State<PetInfoView> {
                               decoration: InputDecoration(
                                 fillColor: AppTheme.colors.white,
                                 filled: true,
-                                contentPadding: EdgeInsets.symmetric(
-                                    horizontal: 15, vertical: 10),
+                                contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                                 focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: AppTheme.colors.pink,
-                                        width: 2.0),
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(16.0))),
+                                    borderSide: BorderSide(color: AppTheme.colors.pink, width: 2.0),
+                                    borderRadius: const BorderRadius.all(Radius.circular(16.0))),
                                 enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: AppTheme.colors.lightPurple,
-                                        width: 2.0),
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(16.0))),
+                                    borderSide: BorderSide(color: AppTheme.colors.lightPurple, width: 2.0),
+                                    borderRadius: const BorderRadius.all(Radius.circular(16.0))),
                                 helperText: '',
                                 labelText: 'Species',
-                                labelStyle: CustomTextTheme.body2(context,
-                                    textColor: AppTheme.colors.lightGreen),
+                                labelStyle: CustomTextTheme.body2(context, textColor: AppTheme.colors.lightGreen),
                               ),
                               style: CustomTextTheme.body2(context),
                               items: species
-                                  .map((SpeciesDetail speciesDetail) =>
-                                      DropdownMenuItem<String>(
-                                        value:  speciesDetail.id,
+                                  .map((SpeciesDetail speciesDetail) => DropdownMenuItem<String>(
+                                        value: speciesDetail.id,
                                         child: Text(speciesDetail.name),
                                       ))
                                   .toList(),
@@ -193,24 +191,16 @@ class _PetInfoViewState extends State<PetInfoView> {
                               decoration: InputDecoration(
                                 fillColor: AppTheme.colors.white,
                                 filled: true,
-                                contentPadding: EdgeInsets.symmetric(
-                                    horizontal: 15, vertical: 10),
+                                contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                                 focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: AppTheme.colors.pink,
-                                        width: 2.0),
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(16.0))),
+                                    borderSide: BorderSide(color: AppTheme.colors.pink, width: 2.0),
+                                    borderRadius: const BorderRadius.all(Radius.circular(16.0))),
                                 enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: AppTheme.colors.lightPurple,
-                                        width: 2.0),
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(16.0))),
+                                    borderSide: BorderSide(color: AppTheme.colors.lightPurple, width: 2.0),
+                                    borderRadius: const BorderRadius.all(Radius.circular(16.0))),
                                 helperText: '',
                                 labelText: 'Breed',
-                                labelStyle: CustomTextTheme.body2(context,
-                                    textColor: AppTheme.colors.lightGreen),
+                                labelStyle: CustomTextTheme.body2(context, textColor: AppTheme.colors.lightGreen),
                               ),
                             ),
                             SizedBox(
@@ -225,26 +215,16 @@ class _PetInfoViewState extends State<PetInfoView> {
                                     decoration: InputDecoration(
                                       fillColor: AppTheme.colors.white,
                                       filled: true,
-                                      contentPadding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 10),
+                                      contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                                       focusedBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: AppTheme.colors.pink,
-                                              width: 2.0),
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(16.0))),
+                                          borderSide: BorderSide(color: AppTheme.colors.pink, width: 2.0),
+                                          borderRadius: const BorderRadius.all(Radius.circular(16.0))),
                                       enabledBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color:
-                                                  AppTheme.colors.lightPurple,
-                                              width: 2.0),
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(16.0))),
+                                          borderSide: BorderSide(color: AppTheme.colors.lightPurple, width: 2.0),
+                                          borderRadius: const BorderRadius.all(Radius.circular(16.0))),
                                       helperText: '',
                                       labelText: 'Gender',
-                                      labelStyle: CustomTextTheme.body2(context,
-                                          textColor:
-                                              AppTheme.colors.lightGreen),
+                                      labelStyle: CustomTextTheme.body2(context, textColor: AppTheme.colors.lightGreen),
                                     ),
                                     style: CustomTextTheme.body2(context),
                                     items: [
@@ -262,8 +242,7 @@ class _PetInfoViewState extends State<PetInfoView> {
                                       ),
                                     ].toList(),
                                     value: widget.pet.gender,
-                                    onChanged: (selectedGender) =>
-                                        {genderController = selectedGender!},
+                                    onChanged: (selectedGender) => {genderController = selectedGender!},
                                     //   );
                                     // },
                                   ),
@@ -277,26 +256,16 @@ class _PetInfoViewState extends State<PetInfoView> {
                                     decoration: InputDecoration(
                                       fillColor: AppTheme.colors.white,
                                       filled: true,
-                                      contentPadding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 10),
+                                      contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                                       focusedBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: AppTheme.colors.pink,
-                                              width: 2.0),
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(16.0))),
+                                          borderSide: BorderSide(color: AppTheme.colors.pink, width: 2.0),
+                                          borderRadius: const BorderRadius.all(Radius.circular(16.0))),
                                       enabledBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color:
-                                                  AppTheme.colors.lightPurple,
-                                              width: 2.0),
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(16.0))),
+                                          borderSide: BorderSide(color: AppTheme.colors.lightPurple, width: 2.0),
+                                          borderRadius: const BorderRadius.all(Radius.circular(16.0))),
                                       helperText: '',
                                       labelText: 'Neutered',
-                                      labelStyle: CustomTextTheme.body2(context,
-                                          textColor:
-                                              AppTheme.colors.lightGreen),
+                                      labelStyle: CustomTextTheme.body2(context, textColor: AppTheme.colors.lightGreen),
                                     ),
                                     style: CustomTextTheme.body2(context),
                                     items: [
@@ -310,8 +279,7 @@ class _PetInfoViewState extends State<PetInfoView> {
                                       )
                                     ].toList(),
                                     value: widget.pet.isNeuter ?? false,
-                                    onChanged: (selectedNeuter) =>
-                                        {neuteredController = selectedNeuter!},
+                                    onChanged: (selectedNeuter) => {neuteredController = selectedNeuter!},
                                   ),
                                 ),
                               ],
@@ -328,37 +296,24 @@ class _PetInfoViewState extends State<PetInfoView> {
                                     decoration: InputDecoration(
                                       fillColor: AppTheme.colors.white,
                                       filled: true,
-                                      contentPadding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 10),
+                                      contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                                       focusedBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: AppTheme.colors.pink,
-                                              width: 2.0),
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(16.0))),
+                                          borderSide: BorderSide(color: AppTheme.colors.pink, width: 2.0),
+                                          borderRadius: const BorderRadius.all(Radius.circular(16.0))),
                                       enabledBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color:
-                                                  AppTheme.colors.lightPurple,
-                                              width: 2.0),
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(16.0))),
+                                          borderSide: BorderSide(color: AppTheme.colors.lightPurple, width: 2.0),
+                                          borderRadius: const BorderRadius.all(Radius.circular(16.0))),
                                       helperText: '',
                                       labelText: 'Year',
-                                      labelStyle: CustomTextTheme.body2(context,
-                                          textColor:
-                                              AppTheme.colors.lightGreen),
+                                      labelStyle: CustomTextTheme.body2(context, textColor: AppTheme.colors.lightGreen),
                                     ),
                                     style: CustomTextTheme.body2(context),
                                     menuMaxHeight: 200.0,
                                     items: numberRangeYear
-                                        .map((year) => DropdownMenuItem<int>(
-                                            value: year,
-                                            child: Text(year.toString())))
+                                        .map((year) => DropdownMenuItem<int>(value: year, child: Text(year.toString())))
                                         .toList(),
                                     value: widget.pet.year,
-                                    onChanged: (year) =>
-                                        {yearController = year!},
+                                    onChanged: (year) => {yearController = year!},
                                   ),
                                 ),
                                 SizedBox(
@@ -370,37 +325,25 @@ class _PetInfoViewState extends State<PetInfoView> {
                                     decoration: InputDecoration(
                                       fillColor: AppTheme.colors.white,
                                       filled: true,
-                                      contentPadding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 10),
+                                      contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                                       focusedBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: AppTheme.colors.pink,
-                                              width: 2.0),
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(16.0))),
+                                          borderSide: BorderSide(color: AppTheme.colors.pink, width: 2.0),
+                                          borderRadius: const BorderRadius.all(Radius.circular(16.0))),
                                       enabledBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color:
-                                                  AppTheme.colors.lightPurple,
-                                              width: 2.0),
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(16.0))),
+                                          borderSide: BorderSide(color: AppTheme.colors.lightPurple, width: 2.0),
+                                          borderRadius: const BorderRadius.all(Radius.circular(16.0))),
                                       helperText: '',
                                       labelText: 'Month',
-                                      labelStyle: CustomTextTheme.body2(context,
-                                          textColor:
-                                              AppTheme.colors.lightGreen),
+                                      labelStyle: CustomTextTheme.body2(context, textColor: AppTheme.colors.lightGreen),
                                     ),
                                     style: CustomTextTheme.body2(context),
                                     menuMaxHeight: 200.0,
                                     items: numberRangeMonth
-                                        .map((month) => DropdownMenuItem<int>(
-                                            value: month,
-                                            child: Text(month.toString())))
+                                        .map((month) =>
+                                            DropdownMenuItem<int>(value: month, child: Text(month.toString())))
                                         .toList(),
                                     value: widget.pet.month,
-                                    onChanged: (month) =>
-                                        {monthController = month!},
+                                    onChanged: (month) => {monthController = month!},
                                   ),
                                 ),
                               ],
@@ -410,39 +353,29 @@ class _PetInfoViewState extends State<PetInfoView> {
                               style: CustomTextTheme.body2(context),
                               keyboardType: TextInputType.number,
                               inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                    RegExp(r'[0-9.]')),
+                                FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
                               ],
                               decoration: InputDecoration(
                                 fillColor: AppTheme.colors.white,
                                 filled: true,
-                                contentPadding: EdgeInsets.symmetric(
-                                    horizontal: 15, vertical: 10),
+                                contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                                 focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: AppTheme.colors.pink,
-                                        width: 2.0),
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(16.0))),
+                                    borderSide: BorderSide(color: AppTheme.colors.pink, width: 2.0),
+                                    borderRadius: const BorderRadius.all(Radius.circular(16.0))),
                                 enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: AppTheme.colors.lightPurple,
-                                        width: 2.0),
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(16.0))),
+                                    borderSide: BorderSide(color: AppTheme.colors.lightPurple, width: 2.0),
+                                    borderRadius: const BorderRadius.all(Radius.circular(16.0))),
                                 helperText: '',
                                 labelText: 'Weight (Kg)',
-                                labelStyle: CustomTextTheme.body2(context,
-                                    textColor: AppTheme.colors.lightGreen),
+                                labelStyle: CustomTextTheme.body2(context, textColor: AppTheme.colors.lightGreen),
                               ),
                             ),
                           ]),
-                          BlocBuilder<ProfileInfoCubit, ProfileInfoState>(
+                          BlocBuilder<PetDetailCubit, PetDetailState>(
                             // buildWhen: (previous, current) => previous.status != current.status,
                             builder: (context, state) {
                               return ElevatedButton(
-                                key: const Key(
-                                    'loginForm_continue_raisedButton'),
+                                key: const Key('loginForm_continue_raisedButton'),
                                 style: ElevatedButton.styleFrom(
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
@@ -452,25 +385,26 @@ class _PetInfoViewState extends State<PetInfoView> {
                                     primary: AppTheme.colors.pink,
                                     onSurface: AppTheme.colors.pink),
                                 onPressed: () => {
-          
-                                   context.read<PetDetailCubit>().updatePet(pet: 
-                                   Pet(
-                                    id: widget.pet.id.toString(),
-                                    name: nameController.text,
-                                    description: bioController.text,
-                                    species: speciesController.toString(),
-                                    gender: genderController,
-                                    breed: breedController.text,
-                                    month: monthController,
-                                    year: yearController,
-                                    isNeuter: neuteredController,
-                                    isAdopting: widget.pet.isAdopting,
-                                    photos: [],
-                                    weight: weightController.text.length > 0 ? double.tryParse(weightController.text) : 0,
-                                    avatarUrl: widget.pet.avatarUrl, )) 
+                                  context.read<PetDetailCubit>().updatePet(
+                                      pet: Pet(
+                                          id: widget.pet.id.toString(),
+                                          name: nameController.text,
+                                          description: bioController.text,
+                                          species: speciesController.toString(),
+                                          gender: genderController,
+                                          breed: breedController.text,
+                                          month: monthController,
+                                          year: yearController,
+                                          isNeuter: neuteredController,
+                                          isAdopting: widget.pet.isAdopting,
+                                          photos: [],
+                                          weight: weightController.text.length > 0
+                                              ? double.tryParse(weightController.text)
+                                              : 0,
+                                          avatarUrl: widget.pet.avatarUrl,
+                                          avatar: state.pet.avatar))
                                 },
-                                child: Text('Save',
-                                    style: CustomTextTheme.label(context)),
+                                child: Text('Save', style: CustomTextTheme.label(context)),
                               );
                             },
                           )
