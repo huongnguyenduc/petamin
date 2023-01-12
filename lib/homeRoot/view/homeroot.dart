@@ -4,6 +4,7 @@ import 'package:Petamin/data/models/call_model.dart';
 import 'package:Petamin/home/view/home_page.dart';
 import 'package:Petamin/homeRoot/cubit/home_root_cubit.dart';
 import 'package:Petamin/homeRoot/cubit/home_root_state.dart';
+import 'package:Petamin/profile-info/cubit/profile_info_cubit.dart';
 import 'package:Petamin/shared/network/cache_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,14 +47,25 @@ class _HomeRootScreenState extends State<HomeRootScreen> {
   Widget build(BuildContext context) {
     final user = context.select((AppSessionBloc bloc) => bloc.state.session);
     debugPrint('UserIdIs: ${user.userId}');
-    return BlocProvider(
-      create: (context) => HomeRootCubit(context.read<PetaminRepository>())
-        ..checkSession()
-        ..updateFcmToken(uId: user.userId)
-        ..listenToInComingCalls(uId: user.userId),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<ProfileInfoCubit>(
+          create: (context) =>
+              ProfileInfoCubit(context.read<PetaminRepository>())
+                ..checkSession()
+                ..getProfile(),
+        ),
+        BlocProvider<HomeRootCubit>(
+          create: (context) => HomeRootCubit(context.read<PetaminRepository>())
+            ..checkSession()
+            ..updateFcmToken(uId: user.userId)
+            ..listenToInComingCalls(uId: user.userId),
+        )
+      ],
       child: Scaffold(
           resizeToAvoidBottomInset: false,
-          body: BlocConsumer<HomeRootCubit, HomeRootState>(listener: (context, state) {
+          body: BlocConsumer<HomeRootCubit, HomeRootState>(
+              listener: (context, state) {
             //Receiver Call States
             if (state is SuccessInComingCallState) {
               Navigator.of(context).push(MaterialPageRoute(

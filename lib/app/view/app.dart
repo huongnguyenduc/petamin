@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:petamin_repository/petamin_repository.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+
 class App extends StatelessWidget {
   const App({
     super.key,
@@ -33,11 +34,9 @@ class App extends StatelessWidget {
                   )),
           BlocProvider(
             create: (context) =>
-                ProfileInfoCubit(context.read<PetaminRepository>())..checkSession()
-                  ..getProfile(),
-          ),
-          BlocProvider(
-            create: (context) => HomeRootCubit(context.read<PetaminRepository>())..checkSession()..initFcm(context),
+                HomeRootCubit(context.read<PetaminRepository>())
+                  ..checkSession()
+                  ..initFcm(context),
           ),
           BlocProvider(
             create: (_) => HomeCubit(),
@@ -58,7 +57,8 @@ class AppView extends StatelessWidget {
     return MaterialApp(
       theme: AppTheme.define(),
       home: FlowBuilder<SessionStatus>(
-        state: context.select((AppSessionBloc bloc) => bloc.state.sessionStatus),
+        state:
+            context.select((AppSessionBloc bloc) => bloc.state.sessionStatus),
         onGeneratePages: onGenerateAppViewPages,
       ),
       debugShowCheckedModeBanner: false,

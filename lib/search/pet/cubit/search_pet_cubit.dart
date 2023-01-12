@@ -25,13 +25,19 @@ class SearchPetCubit extends Cubit<SearchPetState> {
   }
 
   SearchPetCubit(this._petaminRepository, {this.initSelectedSpecies})
-      : super(SearchPetState(selectedSpecies: initSelectedSpecies != null ? [initSelectedSpecies] : []));
+      : super(SearchPetState(
+            selectedSpecies:
+                initSelectedSpecies != null ? [initSelectedSpecies] : []));
 
   void selectSpecies(Species species) async {
     if (isSpeciesSelected(species)) {
-      emit(state.copyWith(selectedSpecies: state.selectedSpecies.where((element) => element != species).toList()));
+      emit(state.copyWith(
+          selectedSpecies: state.selectedSpecies
+              .where((element) => element != species)
+              .toList()));
     } else {
-      emit(state.copyWith(selectedSpecies: [...state.selectedSpecies, species]));
+      emit(
+          state.copyWith(selectedSpecies: [...state.selectedSpecies, species]));
     }
     await searchAdoption(state.searchQuery, true);
   }
@@ -59,7 +65,8 @@ class SearchPetCubit extends Cubit<SearchPetState> {
 
   void showFilterBottomSheet({context, isDelay = false}) {
     isDelay
-        ? Future.delayed(Duration(milliseconds: 500), () => _showFilterBottomSheet(context))
+        ? Future.delayed(
+            Duration(milliseconds: 500), () => _showFilterBottomSheet(context))
         : _showFilterBottomSheet(context);
   }
 
@@ -75,21 +82,27 @@ class SearchPetCubit extends Cubit<SearchPetState> {
     }
     bool isFirstSearch = state.status == SearchPetStatus.initial;
     bool isNewQuery = state.status == SearchPetStatus.newQuery;
-    if (!isFirstSearch && !isNewQuery && state.paginationData.currentPage == state.paginationData.totalPages) {
+    if (!isFirstSearch &&
+        !isNewQuery &&
+        state.paginationData.currentPage == state.paginationData.totalPages) {
       debugPrint('${state.paginationData.currentPage}');
       debugPrint('${state.paginationData.totalPages}');
       return;
     }
     emit(state.copyWith(status: SearchPetStatus.searching));
     EasyLoading.show();
-    debugPrint([state.minPrice.toString(), state.maxPrice.toString()].toList().toString());
+    debugPrint([state.minPrice.toString(), state.maxPrice.toString()]
+        .toList()
+        .toString());
     try {
       if (query != state.searchQuery || newQuery == true) {
         final searchResults = await _petaminRepository.getAdoptPagination(
           page: 1,
           limit: 10,
           species: state.selectedSpecies.length > 0
-              ? state.selectedSpecies.map((e) => e.toString().split('.').last).toList()
+              ? state.selectedSpecies
+                  .map((e) => e.toString().split('.').last)
+                  .toList()
               : null,
           prices: [
             state.minPrice != '0' ? state.minPrice.toString() : '0',
@@ -107,7 +120,9 @@ class SearchPetCubit extends Cubit<SearchPetState> {
           page: isFirstSearch ? 1 : state.paginationData.currentPage + 1,
           limit: 10,
           species: state.selectedSpecies.length > 0
-              ? state.selectedSpecies.map((e) => e.toString().split('.').last).toList()
+              ? state.selectedSpecies
+                  .map((e) => e.toString().split('.').last)
+                  .toList()
               : null,
           prices: [
             state.minPrice != '0' ? state.minPrice.toString() : '0',
@@ -142,7 +157,8 @@ class SearchPetCubit extends Cubit<SearchPetState> {
             builder: (context, setState) {
               return SingleChildScrollView(
                 child: Padding(
-                  padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                  padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom),
                   child: Container(
                     height: 300,
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -169,7 +185,8 @@ class SearchPetCubit extends Cubit<SearchPetState> {
                                   Navigator.pop(context);
                                 },
                                 child: Text('Reset',
-                                    style: CustomTextTheme.subtitle(btsContext, textColor: AppTheme.colors.pink))),
+                                    style: CustomTextTheme.subtitle(btsContext,
+                                        textColor: AppTheme.colors.pink))),
                           ],
                         ),
                         SizedBox(height: 8),
@@ -188,7 +205,8 @@ class SearchPetCubit extends Cubit<SearchPetState> {
                             child: ListView.separated(
                               scrollDirection: Axis.horizontal,
                               itemBuilder: (contextLV, index) {
-                                final species = speciesData.entries.elementAt(index).key;
+                                final species =
+                                    speciesData.entries.elementAt(index).key;
                                 return PetFilterItem(
                                   species: species,
                                   selected: isSpeciesSelected(species),
@@ -223,8 +241,10 @@ class SearchPetCubit extends Cubit<SearchPetState> {
                               child: TextFormField(
                                 initialValue: state.minPrice,
                                 onChanged: (value) {
-                                  if (_debounce?.isActive ?? false) _debounce?.cancel();
-                                  _debounce = Timer(const Duration(milliseconds: 800), () {
+                                  if (_debounce?.isActive ?? false)
+                                    _debounce?.cancel();
+                                  _debounce = Timer(
+                                      const Duration(milliseconds: 800), () {
                                     // do something with query
                                     print('Searching............');
                                     if (value.isNotEmpty) {
@@ -236,16 +256,24 @@ class SearchPetCubit extends Cubit<SearchPetState> {
                                 },
                                 maxLength: 7,
                                 inputFormatters: <TextInputFormatter>[
-                                  FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'[0-9]')),
                                 ],
                                 decoration: InputDecoration(
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                  contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 8),
                                   focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: AppTheme.colors.white, width: 0.0),
-                                      borderRadius: const BorderRadius.all(Radius.circular(16.0))),
+                                      borderSide: BorderSide(
+                                          color: AppTheme.colors.white,
+                                          width: 0.0),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(16.0))),
                                   enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: AppTheme.colors.white, width: 0.0),
-                                      borderRadius: const BorderRadius.all(Radius.circular(16.0))),
+                                      borderSide: BorderSide(
+                                          color: AppTheme.colors.white,
+                                          width: 0.0),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(16.0))),
                                   hintText: '0\$',
                                   hintStyle: TextStyle(color: Colors.grey),
                                   border: InputBorder.none,
@@ -259,8 +287,10 @@ class SearchPetCubit extends Cubit<SearchPetState> {
                             Expanded(
                               child: TextFormField(
                                 onChanged: (value) {
-                                  if (_debounce?.isActive ?? false) _debounce?.cancel();
-                                  _debounce = Timer(const Duration(milliseconds: 800), () {
+                                  if (_debounce?.isActive ?? false)
+                                    _debounce?.cancel();
+                                  _debounce = Timer(
+                                      const Duration(milliseconds: 800), () {
                                     // do something with query
                                     print('Searching............');
                                     if (value.isNotEmpty) {
@@ -272,16 +302,24 @@ class SearchPetCubit extends Cubit<SearchPetState> {
                                 maxLength: 7,
                                 initialValue: state.maxPrice,
                                 inputFormatters: <TextInputFormatter>[
-                                  FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'[0-9]')),
                                 ],
                                 decoration: InputDecoration(
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                  contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 8),
                                   focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: AppTheme.colors.white, width: 0.0),
-                                      borderRadius: const BorderRadius.all(Radius.circular(16.0))),
+                                      borderSide: BorderSide(
+                                          color: AppTheme.colors.white,
+                                          width: 0.0),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(16.0))),
                                   enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: AppTheme.colors.white, width: 0.0),
-                                      borderRadius: const BorderRadius.all(Radius.circular(16.0))),
+                                      borderSide: BorderSide(
+                                          color: AppTheme.colors.white,
+                                          width: 0.0),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(16.0))),
                                   hintText: '0\$',
                                   hintStyle: TextStyle(color: Colors.grey),
                                   border: InputBorder.none,
