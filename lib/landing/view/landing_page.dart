@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
+import 'package:petamin_repository/petamin_repository.dart';
 
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});
@@ -20,8 +21,16 @@ class LandingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => LandingCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<LandingCubit>(
+          create: (_) => LandingCubit(),
+        ),
+        BlocProvider<SearchPetCubit>(
+          create: (_) => SearchPetCubit(context.read<PetaminRepository>())
+            ..searchAdoption('i', true),
+        ),
+      ],
       child: const LandingView(),
     );
   }
@@ -33,7 +42,6 @@ class LandingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = context.select((ProfileInfoCubit bloc) => bloc.state);
-    debugPrint(user.props.toString());
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -49,13 +57,6 @@ class LandingView extends StatelessWidget {
                             previous.name != current.name,
                         builder: (context, state) {
                           return GestureDetector(
-                            onTap: () {
-                              // Navigator.of(context).push<void>(
-                              //   MaterialPageRoute(
-                              //     builder: (context) => const UserDetailPage(),
-                              //   ),
-                              // );
-                            },
                             child: Avatar(
                               size: 28,
                               photo: state.avatarUrl.length > 0
@@ -84,9 +85,7 @@ class LandingView extends StatelessWidget {
                                 size: 16,
                               ),
                               Text(
-                                user.address.length > 0
-                                    ? user.address
-                                    : 'Your address',
+                                user.address.length > 0 ? user.address : '',
                                 style: CustomTextTheme.body2(context),
                               ),
                             ],
@@ -217,24 +216,56 @@ class LandingView extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: 8.0),
-                SizedBox(
-                  height: 220,
-                  child: ListView.separated(
-                    // Scroll horizontally
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) {
-                      return PetCard(
-                          data: petsMock[index]); // TODO: use real data
-                    },
-                    separatorBuilder: (context, index) {
+                BlocBuilder<SearchPetCubit, SearchPetState>(
+                    buildWhen: (previous, current) =>
+                        previous.status != current.status ||
+                        previous.selectedSpecies != current.selectedSpecies,
+                    builder: (context, state) {
                       return SizedBox(
-                        width: 20.0,
+                        height: 230,
+                        child: ListView.separated(
+                          // Scroll horizontally
+                          padding: EdgeInsets.symmetric(horizontal: 18),
+
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            final pet = context
+                                .read<SearchPetCubit>()
+                                .state
+                                .searchResults[index];
+                            return PetCard(
+                                data: PetCardData(
+                              petId: pet.petId ?? '',
+                              adoptId: pet.id ?? '',
+                              age: '${pet.pet?.year ?? '0'}',
+                              name: pet.pet?.name ?? '',
+                              photo: pet.pet?.avatarUrl ?? '',
+                              breed: pet.pet?.breed ?? '',
+                              sex: pet.pet?.gender ?? 'unknown',
+                              price: pet.price ?? 0,
+                              // ignore: todo
+                            )); // TODO: use real data
+                          },
+                          separatorBuilder: (context, index) {
+                            return SizedBox(
+                              width: 20.0,
+                            );
+                          },
+                          itemCount: context
+                                      .read<SearchPetCubit>()
+                                      .state
+                                      .searchResults
+                                      .length >
+                                  5
+                              ? 5
+                              : context
+                                  .read<SearchPetCubit>()
+                                  .state
+                                  .searchResults
+                                  .length,
+                        ),
                       );
-                    },
-                    itemCount: petsMock.length,
-                    // TODO: use real data
-                  ),
-                ),
+                    })
               ],
             ),
           ),
