@@ -131,7 +131,6 @@ class ExplorePage extends StatelessWidget {
                               ),
                               title: Text(chat.name ?? ''),
                               subtitle: Text(chat.address ?? ''),
-                              trailing: Text('12:00'),
                             ),
                           );
                         },

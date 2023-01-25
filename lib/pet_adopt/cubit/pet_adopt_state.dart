@@ -2,7 +2,7 @@ part of 'pet_adopt_cubit.dart';
 
 enum PetAdoptView { owner, viewer }
 
-enum PetAdoptAvailability { show, hide }
+enum PetAdoptAvailability { SHOW, HIDE }
 
 class PetAdoptState extends Equatable {
   PetAdoptState({
@@ -11,7 +11,7 @@ class PetAdoptState extends Equatable {
     this.adoptInfo = Adopt.empty,
     this.status = PetDetailStatus.initial,
     this.view = PetAdoptView.viewer,
-    this.availability = PetAdoptAvailability.show,
+    this.availability = PetAdoptAvailability.SHOW,
   });
 
   final Pet pet;

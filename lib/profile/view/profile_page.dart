@@ -255,7 +255,7 @@ class UserInfo extends StatelessWidget {
               height: 8,
             ),
             Text(
-              user.address.length > 0 ? user.address : 'Your address',
+              user.address.length > 0 ? user.address : '',
               style: CustomTextTheme.caption(context,
                   textColor: AppTheme.colors.grey),
             ),
@@ -263,7 +263,7 @@ class UserInfo extends StatelessWidget {
               height: 8,
             ),
             Text(
-              user.bio.length > 0 ? user.bio : 'Your bio',
+              user.bio.length > 0 ? user.bio : '',
               style: CustomTextTheme.caption(context),
             )
           ],

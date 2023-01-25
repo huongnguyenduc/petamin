@@ -30,8 +30,8 @@ class PetAdoptCubit extends Cubit<PetAdoptState> {
       final view =
           pet.userId == userId ? PetAdoptView.owner : PetAdoptView.viewer;
       final availability = adopt.status == 'SHOW'
-          ? PetAdoptAvailability.show
-          : PetAdoptAvailability.hide;
+          ? PetAdoptAvailability.SHOW
+          : PetAdoptAvailability.HIDE;
 
       emit(state.copyWith(
           pet: pet,
@@ -65,14 +65,14 @@ class PetAdoptCubit extends Cubit<PetAdoptState> {
   Future<void> toggleAdoptPet() async {
     debugPrint('Update Pet Cubit');
     EasyLoading.show(status: 'Loading...');
-    final currentAvailability = state.availability == PetAdoptAvailability.show
-        ? PetAdoptAvailability.show
-        : PetAdoptAvailability.hide;
-    final newAvailability = currentAvailability == PetAdoptAvailability.show
-        ? PetAdoptAvailability.hide
-        : PetAdoptAvailability.show;
+    final currentAvailability = state.availability == PetAdoptAvailability.SHOW
+        ? PetAdoptAvailability.SHOW
+        : PetAdoptAvailability.HIDE;
+    final newAvailability = currentAvailability == PetAdoptAvailability.SHOW
+        ? PetAdoptAvailability.HIDE
+        : PetAdoptAvailability.SHOW;
     final newAvailablityString =
-        newAvailability == PetAdoptAvailability.show ? 'SHOW' : 'HIDE';
+        newAvailability == PetAdoptAvailability.SHOW ? 'SHOW' : 'HIDE';
     emit(state.copyWith(
         status: PetDetailStatus.loading, availability: newAvailability));
     try {
@@ -125,10 +125,8 @@ class PetAdoptCubit extends Cubit<PetAdoptState> {
       final result = await _petaminRepository.deleteAdoptPost(adoptId: id);
       if (result) {
         EasyLoading.showSuccess('Delete success');
-        Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
-            builder: (context) => PetDetailPage(
-                  id: state.pet.id!,
-                )));
+        Navigator.of(context).pop(); // pop dialog
+        Navigator.of(context).pop(); // pop adopt detail -> change to adopt list
       } else {
         EasyLoading.showError('Delete failed');
       }

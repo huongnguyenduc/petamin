@@ -12,7 +12,8 @@ class PetDetailCubit extends Cubit<PetDetailState> {
 
   final PetaminRepository _petaminRepository;
 
-  Future<void> getPetDetail({required String id, required String userId}) async {
+  Future<void> getPetDetail(
+      {required String id, required String userId}) async {
     EasyLoading.show();
     emit(state.copyWith(status: PetDetailStatus.loading));
     try {
@@ -45,7 +46,8 @@ class PetDetailCubit extends Cubit<PetDetailState> {
   void selectPetImage(ImageSource imageSource) async {
     XFile? pickedFile = await ImagePicker().pickImage(source: imageSource);
     if (pickedFile != null) {
-      emit(state.copyWith(pet: state.pet.copyWith(avatar: File(pickedFile.path))));
+      emit(state.copyWith(
+          pet: state.pet.copyWith(avatar: File(pickedFile.path))));
     }
   }
 
@@ -54,12 +56,35 @@ class PetDetailCubit extends Cubit<PetDetailState> {
     EasyLoading.show(status: 'Deleting...');
     emit(state.copyWith(status: PetDetailStatus.loading));
     try {
-      final result = await _petaminRepository.deletePhotos(photoId: id, petId: state.pet.id!);
+      final result = await _petaminRepository.deletePhotos(
+          photoId: id, petId: state.pet.id!);
       if (result) {
         final pet = state.pet;
         pet.photos!.removeWhere((element) => element.id == id);
         emit(state.copyWith(pet: pet, status: PetDetailStatus.success));
         EasyLoading.showSuccess('Delete success');
+      } else {
+        EasyLoading.showError('Delete failed');
+      }
+      return result;
+    } catch (e) {
+      emit(state.copyWith(pet: Pet.empty, status: PetDetailStatus.failure));
+    }
+    EasyLoading.dismiss();
+    return false;
+  }
+
+  Future<bool> deletePet(
+      {required String id, required BuildContext context}) async {
+    EasyLoading.show(status: 'Deleting...');
+    emit(state.copyWith(status: PetDetailStatus.loading));
+    try {
+      final result = await _petaminRepository.deletePet(petId: id);
+      if (result) {
+        emit(state.copyWith(status: PetDetailStatus.success));
+        EasyLoading.showSuccess('Delete success');
+        Navigator.of(context).pop(); // Pop delete dialog
+        Navigator.of(context).pop(); // Pop pet detail page -> back to pet list
       } else {
         EasyLoading.showError('Delete failed');
       }

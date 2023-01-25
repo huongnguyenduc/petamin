@@ -36,7 +36,7 @@ class PetAdoptPage extends StatelessWidget {
                       final adopt = state.adoptInfo;
                       final owner = state.profile;
                       if (state.status == PetDetailStatus.failure) {
-                        showToast(msg: 'Can\'t load pet detail!');
+                        showToast(msg: 'Can\'t load adopt detail!');
                         return const Center();
                       } else {
                         return Scaffold(
@@ -132,7 +132,8 @@ class PetAdoptPage extends StatelessWidget {
                                                                 .read<
                                                                     PetAdoptCubit>()
                                                                 .deleteAdoptPost(
-                                                                    id: pet.id!,
+                                                                    id: adopt
+                                                                        .id!,
                                                                     context:
                                                                         context);
                                                           },
@@ -176,7 +177,7 @@ class PetAdoptPage extends StatelessWidget {
                                         Switch(
                                           // This bool value toggles the switch.
                                           value: state.availability ==
-                                              PetAdoptAvailability.show,
+                                              PetAdoptAvailability.SHOW,
                                           activeColor: AppTheme.colors.pink,
                                           onChanged: (bool value) {
                                             // This is called when the user toggles the switch.
@@ -442,20 +443,13 @@ class PetAdoptPage extends StatelessWidget {
                                             Icons.grid_3x3_outlined,
                                             // color: Colors.black,
                                           )),
-                                          Tab(
-                                            icon: Icon(
-                                              Icons.pets,
-                                              // color: Colors.black,
-                                            ),
-                                          )
                                         ],
                                       ),
                                     ),
                                   ),
                                 ),
                                 SliverFillRemaining(
-                                    child: TabBarView(children: [
-                                  GridView.builder(
+                                  child: GridView.builder(
                                     physics: NeverScrollableScrollPhysics(),
                                     gridDelegate:
                                         SliverGridDelegateWithFixedCrossAxisCount(
@@ -489,11 +483,7 @@ class PetAdoptPage extends StatelessWidget {
                                       );
                                     },
                                   ),
-                                  Icon(
-                                    Icons.pets,
-                                    color: Colors.red,
-                                  )
-                                ]))
+                                )
                               ],
                             ));
                       }

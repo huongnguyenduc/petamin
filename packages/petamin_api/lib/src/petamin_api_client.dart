@@ -453,6 +453,23 @@ class PetaminApiClient {
     }
   }
 
+  Future<bool> deletePet(
+      {required String adoptId, required String accessToken}) async {
+    debugPrint("Delete Pet API");
+    final response = await NetworkService.sendRequest(
+      requestType: RequestType.delete,
+      baseUrl: _baseUrl,
+      endPoint: '/pets/$adoptId',
+      accessToken: accessToken,
+    );
+    debugPrint('Response ${response?.body}');
+    if (response!.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   Future<String> uploadFile({
     required String accessToken,
     File? file,

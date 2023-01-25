@@ -780,6 +780,16 @@ class PetaminRepository {
     }
   }
 
+  Future<bool> deletePet({required String petId}) async {
+    try {
+      final session = await currentSession;
+      return await _petaminApiClient.deletePet(
+          adoptId: petId, accessToken: session.accessToken);
+    } catch (_) {
+      throw const CallApiFailure();
+    }
+  }
+
   Future<bool> createPet({required Pet pet, required File? avatar}) async {
     try {
       debugPrint("Create Pet");
