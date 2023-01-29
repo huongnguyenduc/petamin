@@ -49,6 +49,30 @@ class PetDetailCubit extends Cubit<PetDetailState> {
     }
   }
 
+  void selectMultipleImages() async {
+    List<XFile>? pickedFiles = await ImagePicker().pickMultiImage();
+
+    if (pickedFiles != null) {
+      EasyLoading.show(status: 'Uploading...');
+      print('Picked files: $pickedFiles');
+      try {
+        emit(state.copyWith(status: PetDetailStatus.loading));
+        final List<File> files = pickedFiles.map((e) => File(e.path)).toList();
+        await _petaminRepository.addPhotos(files: files, petId: state.pet.id!);
+        final pet = await _petaminRepository.getPetDetail(id: state.pet.id!);
+        emit(state.copyWith(
+          pet: pet,
+          status: PetDetailStatus.success,
+        ));
+      } catch (e) {
+        print('Error upload image: $e');
+        emit(state.copyWith(status: PetDetailStatus.failure));
+      } finally {
+        EasyLoading.dismiss();
+      }
+    }
+  }
+
   Future<bool> deletePhoto({required String id}) async {
     debugPrint('Delete Photo Cubit');
     EasyLoading.show(status: 'Deleting...');

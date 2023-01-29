@@ -31,7 +31,7 @@ Future<void> main() async {
 
   final petaminRepository = await PetaminRepository.create();
 
-  runApp(App(petaminRepository: petaminRepository));
+  runApp(AppRoot(petaminRepository: petaminRepository));
 }
 
 Future<void> _backgroundHandler(RemoteMessage message) async {

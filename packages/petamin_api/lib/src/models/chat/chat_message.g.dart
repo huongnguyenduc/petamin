@@ -8,10 +8,7 @@ part of 'chat_message.dart';
 
 ChatMessage _$ChatMessageFromJson(Map<String, dynamic> json) => ChatMessage(
       id: json['id'] as String?,
-      createdAt: json['createdAt'] == null
-          ? null
-          : DateTime.parse(json['createdAt'] as String),
-      status: json['status'] as bool?,
+      createdAt: json['createdAt'] == null ? null : DateTime.parse(json['createdAt'] as String),
       message: json['message'] as String?,
       type: json['type'] as String?,
       userId: json['userId'] as String?,
@@ -29,7 +26,6 @@ Map<String, dynamic> _$ChatMessageToJson(ChatMessage instance) {
 
   writeNotNull('id', instance.id);
   writeNotNull('createdAt', instance.createdAt?.toIso8601String());
-  writeNotNull('status', instance.status);
   writeNotNull('message', instance.message);
   writeNotNull('type', instance.type);
   writeNotNull('userId', instance.userId);

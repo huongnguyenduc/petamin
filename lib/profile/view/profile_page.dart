@@ -1,4 +1,5 @@
 import 'package:Petamin/app/bloc/app_bloc.dart';
+import 'package:Petamin/profile-info/cubit/profile_info_cubit.dart';
 import 'package:Petamin/profile-info/view/profile-info-page.dart';
 import 'package:Petamin/profile/follow/view/follow_view.dart';
 import 'package:Petamin/profile/widgets/widgets.dart';
@@ -7,7 +8,6 @@ import 'package:Petamin/theme/app_theme.dart';
 import 'package:Petamin/theme/text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:Petamin/profile-info/cubit/profile_info_cubit.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -49,8 +49,7 @@ class ProfileView extends StatelessWidget {
             children: [
               Text(
                 'Profile',
-                style: CustomTextTheme.subtitle(context,
-                    textColor: AppTheme.colors.green),
+                style: CustomTextTheme.subtitle(context, textColor: AppTheme.colors.green),
               ),
             ],
           ),
@@ -72,8 +71,7 @@ class ProfileView extends StatelessWidget {
                 ProfileItem(
                   title: 'Edit Profile',
                   onTap: () => Navigator.of(context, rootNavigator: true)
-                      .push(MaterialPageRoute(
-                          builder: (context) => new ProfileInfoPage()))
+                      .push(MaterialPageRoute(builder: (context) => new ProfileInfoPage()))
                       .then((_) {
                     onGoBack();
                   }),
@@ -104,12 +102,8 @@ class ProfileView extends StatelessWidget {
                 ProfileItem(
                   title: 'Logout',
                   onTap: () {
-                    context
-                        .read<AppSessionBloc>()
-                        .add(AppLogoutSessionRequested());
-                    context
-                        .read<AppSessionBloc>()
-                        .add(AppLogoutSessionRequested());
+                    context.read<AppSessionBloc>().add(AppLogoutSessionRequested());
+                    // context.read<SocketIoCubit>().closeSocket();
                   },
                 )
               ],
@@ -120,17 +114,16 @@ class ProfileView extends StatelessWidget {
 }
 
 class ProfileItem extends StatelessWidget {
-  const ProfileItem({Key? key, required this.title, this.onTap})
-      : super(key: key);
+  const ProfileItem({Key? key, required this.title, this.onTap}) : super(key: key);
   final String title;
   final onTap;
+
   @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
       child: Ink(
-        decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(10.0)),
+        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10.0)),
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(10.0),
@@ -138,8 +131,7 @@ class ProfileItem extends StatelessWidget {
           splashColor: AppTheme.colors.pink,
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 18.0),
-            decoration:
-                BoxDecoration(borderRadius: BorderRadius.circular(10.0)),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0)),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -170,9 +162,8 @@ class UserFollow extends StatelessWidget {
     final user = context.select((ProfileInfoCubit bloc) => bloc.state);
     return Container(
       padding: EdgeInsets.symmetric(vertical: 8.0),
-      decoration: BoxDecoration(
-          border: Border.symmetric(
-              horizontal: BorderSide(color: AppTheme.colors.grey, width: 0.3))),
+      decoration:
+          BoxDecoration(border: Border.symmetric(horizontal: BorderSide(color: AppTheme.colors.grey, width: 0.2))),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -182,8 +173,7 @@ class UserFollow extends StatelessWidget {
           ),
           InkWell(
               onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => FollowView(initIndex: 0)));
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => FollowView(initIndex: 0)));
               },
               child: FollowItem(
                 title: 'followers',
@@ -191,8 +181,7 @@ class UserFollow extends StatelessWidget {
               )),
           InkWell(
               onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => FollowView(initIndex: 1)));
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => FollowView(initIndex: 1)));
               },
               child: FollowItem(
                 title: 'following',
@@ -208,6 +197,7 @@ class FollowItem extends StatelessWidget {
   const FollowItem({Key? key, this.count, this.title}) : super(key: key);
   final count;
   final title;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -218,8 +208,7 @@ class FollowItem extends StatelessWidget {
         ),
         Text(
           title.toString(),
-          style: CustomTextTheme.caption(context,
-              textColor: AppTheme.colors.solidGrey),
+          style: CustomTextTheme.caption(context, textColor: AppTheme.colors.solidGrey),
         )
       ],
     );
@@ -244,29 +233,33 @@ class UserInfo extends StatelessWidget {
         SizedBox(
           width: 20,
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              user.name.length > 0 ? user.name : 'Unknown',
-              style: CustomTextTheme.label(context),
-            ),
-            SizedBox(
-              height: 8,
-            ),
-            Text(
-              user.address.length > 0 ? user.address : 'Your address',
-              style: CustomTextTheme.caption(context,
-                  textColor: AppTheme.colors.grey),
-            ),
-            SizedBox(
-              height: 8,
-            ),
-            Text(
-              user.bio.length > 0 ? user.bio : 'Your bio',
-              style: CustomTextTheme.caption(context),
-            )
-          ],
+        Flexible(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                user.name.length > 0 ? user.name : 'Unknown',
+                style: CustomTextTheme.label(context),
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              Text(
+                user.address.length > 0 ? user.address : 'Your address',
+                style: CustomTextTheme.caption(context, textColor: AppTheme.colors.grey),
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              Text(
+                user.bio.length > 0 ? user.bio : 'Your bio',
+                style: CustomTextTheme.caption(context),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 4,
+                softWrap: true,
+              )
+            ],
+          ),
         )
       ],
     );

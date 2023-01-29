@@ -20,6 +20,9 @@ class ChatDetailState extends Equatable {
       this.callVideoStatus = CallVideoStatus.Initial,
       this.errorMessage = '',
       this.partner = Profile.empty,
+      this.isPartnerOnline = false,
+      this.isTyping = false,
+      this.isSendingTyping = false,
       this.callModel});
 
   final List<Message> messages;
@@ -27,11 +30,25 @@ class ChatDetailState extends Equatable {
   final ChatDetailStatus status;
   final CallVideoStatus callVideoStatus;
   final String errorMessage;
-  CallModel? callModel;
-  Profile? partner;
+  final CallModel? callModel;
+  final Profile? partner;
+  final bool isPartnerOnline;
+  final bool isTyping;
+  final bool isSendingTyping;
 
   @override
-  List<Object?> get props => [messages, chatMessage, status, partner, callModel, callVideoStatus, errorMessage];
+  List<Object?> get props => [
+        messages,
+        chatMessage,
+        status,
+        partner,
+        callModel,
+        callVideoStatus,
+        errorMessage,
+        isPartnerOnline,
+        isTyping,
+        isSendingTyping
+      ];
 
   ChatDetailState copyWith({
     List<Message>? messages,
@@ -41,6 +58,9 @@ class ChatDetailState extends Equatable {
     CallModel? callModel,
     String? errorMessage,
     CallVideoStatus? callVideoStatus,
+    bool? isPartnerOnline,
+    bool? isTyping,
+    bool? isSendingTyping,
   }) {
     return ChatDetailState(
       messages: messages ?? this.messages,
@@ -50,6 +70,9 @@ class ChatDetailState extends Equatable {
       callModel: callModel ?? this.callModel,
       errorMessage: errorMessage ?? this.errorMessage,
       callVideoStatus: callVideoStatus ?? this.callVideoStatus,
+      isPartnerOnline: isPartnerOnline ?? this.isPartnerOnline,
+      isTyping: isTyping ?? this.isTyping,
+      isSendingTyping: isSendingTyping ?? this.isSendingTyping,
     );
   }
 }

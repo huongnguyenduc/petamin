@@ -30,12 +30,15 @@ class _HomeRootScreenState extends State<HomeRootScreen> {
   }
 
   checkInComingTerminatedCall() async {
-    if (CacheHelper.getString(key: 'terminateIncomingCallData').isNotEmpty) {
+    if (CacheHelper
+        .getString(key: 'terminateIncomingCallData')
+        .isNotEmpty) {
       //if there is a terminated call
       // Map<String, dynamic> callMap = jsonDecode(CacheHelper.getString(key: 'terminateIncomingCallData'));
       await CacheHelper.removeData(key: 'terminateIncomingCallData');
       Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => CallScreen(
+          builder: (context) =>
+              CallScreen(
                 isReceiver: true,
                 callModel: CallModel.clone(),
               )));
@@ -51,25 +54,27 @@ class _HomeRootScreenState extends State<HomeRootScreen> {
       providers: [
         BlocProvider<ProfileInfoCubit>(
           create: (context) =>
-              ProfileInfoCubit(context.read<PetaminRepository>())
-                ..checkSession()
-                ..getProfile(),
+          ProfileInfoCubit(context.read<PetaminRepository>())
+            ..checkSession()
+            ..getProfile(),
         ),
         BlocProvider<HomeRootCubit>(
-          create: (context) => HomeRootCubit(context.read<PetaminRepository>())
+          create: (context) =>
+          HomeRootCubit(context.read<PetaminRepository>())
             ..checkSession()
             ..updateFcmToken(uId: user.userId)
             ..listenToInComingCalls(uId: user.userId),
-        )
+        ),
+
       ],
       child: Scaffold(
           resizeToAvoidBottomInset: false,
-          body: BlocConsumer<HomeRootCubit, HomeRootState>(
-              listener: (context, state) {
+          body: BlocConsumer<HomeRootCubit, HomeRootState>(listener: (context, state) {
             //Receiver Call States
             if (state is SuccessInComingCallState) {
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => CallScreen(
+                  builder: (context) =>
+                      CallScreen(
                         isReceiver: true,
                         callModel: state.callModel,
                       )));
