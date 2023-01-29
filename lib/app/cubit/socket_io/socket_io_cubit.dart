@@ -48,13 +48,18 @@ class SocketIoCubit extends Cubit<SocketIoState> {
     print('Socket user id: ${appSessionBloc.state.session.userId}');
     accessToken = appSessionBloc.state.session.accessToken;
     final apiLink = dotenv.env['API_LINK'];
+
     socket = IO.io(apiLink, <String, dynamic>{
-      'autoConnect': true,
+      // 'autoConnect': true,
       'transports': ['websocket'],
       'extraHeaders': {
         'Authorization': 'Bearer ${appSessionBloc.state.session.accessToken}',
       },
     });
+
+    socket?.io.options['extraHeaders'] = {
+      'Authorization': 'Bearer ${appSessionBloc.state.session.accessToken}',
+    };
 
     socket?.connect();
     socket?.onConnect((_) {
@@ -121,6 +126,23 @@ class SocketIoCubit extends Cubit<SocketIoState> {
       TypingMessage typingMessage = TypingMessage(conversationId: data['conversationId'], isTyping: data['isTyping']);
       typingStream.add(typingMessage);
     });
+
+    socket?.on('need-join', (data) {
+      checkSocket();
+      if (isClosed) {
+        print('Socket io join has been closed');
+      }
+      print('socket received join from client ${data}');
+      socket?.emit('need-join', {'conversationId': data['conversationId']});
+    });
+
+    socket?.on('exception', (data) {
+      checkSocket();
+      if (isClosed) {
+        print('Socket io exception has been closed');
+      }
+      print('socket received exception from client ${data}');
+    });
   }
 
   StreamController<Message> get messageStream {
@@ -182,6 +204,22 @@ class SocketIoCubit extends Cubit<SocketIoState> {
       });
     } else {
       print('Socket io send typing has not been connected');
+    }
+  }
+
+  void joinRoom({required String conversationId, required String friendId}) {
+    checkSocket();
+    if (isClosed) {
+      print('Socket io join room has been closed');
+    }
+    if (socket != null && socket?.connected == true) {
+      print('Socket io join room $conversationId with $friendId');
+      socket?.emit('join', {
+        'conversationId': conversationId,
+        'friendId': friendId,
+      });
+    } else {
+      print('Socket io join has not been connected');
     }
   }
 

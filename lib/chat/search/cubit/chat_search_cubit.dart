@@ -1,3 +1,4 @@
+import 'package:Petamin/app/cubit/socket_io/socket_io_cubit.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
@@ -6,9 +7,10 @@ import 'package:petamin_repository/petamin_repository.dart';
 part 'chat_search_state.dart';
 
 class ChatSearchCubit extends Cubit<ChatSearchState> {
-  ChatSearchCubit(this._petaminRepository) : super(ChatSearchState());
+  ChatSearchCubit(this._petaminRepository, this._socketIoCubit) : super(ChatSearchState());
 
   final PetaminRepository _petaminRepository;
+  final SocketIoCubit _socketIoCubit;
 
   void search(String query) async {
     debugPrint('call_cubit: $query');
@@ -24,9 +26,7 @@ class ChatSearchCubit extends Cubit<ChatSearchState> {
     }
     bool isFirstSearch = state.status == ChatSearchStatus.initial;
     bool isNewQuery = state.status == ChatSearchStatus.newQuery;
-    if (!isFirstSearch &&
-        !isNewQuery &&
-        state.paginationData.currentPage == state.paginationData.totalPages) {
+    if (!isFirstSearch && !isNewQuery && state.paginationData.currentPage == state.paginationData.totalPages) {
       debugPrint('${state.paginationData.currentPage}');
       debugPrint('${state.paginationData.totalPages}');
       return;
@@ -36,8 +36,7 @@ class ChatSearchCubit extends Cubit<ChatSearchState> {
     debugPrint('searching: $query');
     try {
       if (query != state.searchQuery) {
-        final searchResults = await _petaminRepository.getUserPagination(
-            query: query, limit: 10, page: 1);
+        final searchResults = await _petaminRepository.getUserPagination(query: query, limit: 10, page: 1);
         emit(state.copyWith(
           searchQuery: query,
           searchResults: searchResults.users,
@@ -47,9 +46,7 @@ class ChatSearchCubit extends Cubit<ChatSearchState> {
       } else {
         debugPrint('current query: $query');
         final searchResults = await _petaminRepository.getUserPagination(
-            query: query,
-            limit: 10,
-            page: isFirstSearch ? 1 : state.paginationData.currentPage + 1);
+            query: query, limit: 10, page: isFirstSearch ? 1 : state.paginationData.currentPage + 1);
         emit(state.copyWith(
           searchQuery: query,
           searchResults: [...state.searchResults, ...searchResults.users],
@@ -64,8 +61,8 @@ class ChatSearchCubit extends Cubit<ChatSearchState> {
 
   Future<String> createConversations(String userId) async {
     debugPrint('call_cubit: $userId');
-    final result =
-        await _petaminRepository.postUserDetailConversation(userId: userId);
+    final result = await _petaminRepository.postUserDetailConversation(userId: userId);
+    _socketIoCubit.joinRoom(conversationId: result.conversationId, friendId: userId);
     return result.conversationId;
   }
 }
