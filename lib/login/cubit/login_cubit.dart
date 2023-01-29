@@ -1,3 +1,5 @@
+import 'package:Petamin/data/api/auth_api.dart';
+import 'package:Petamin/data/models/user_model.dart';
 import 'package:petamin_repository/petamin_repository.dart';
 import 'package:Petamin/shared/network/cache_helper.dart';
 import 'package:bloc/bloc.dart';
@@ -8,11 +10,10 @@ import 'package:formz/formz.dart';
 part 'login_state.dart';
 
 class LoginCubit extends Cubit<LoginState> {
-  LoginCubit(this._petaminRepository) : 
-  super(const LoginState());
+  LoginCubit(this._petaminRepository) : super(const LoginState());
 
   final PetaminRepository _petaminRepository;
-
+  final _authApi = AuthApi();
   void emailChanged(String value) {
     final email = Email.dirty(value);
     emit(
@@ -33,6 +34,17 @@ class LoginCubit extends Cubit<LoginState> {
     );
   }
 
+  void createUser(
+      {required String name, required String email, required String uId}) {
+    UserModel user = UserModel.resister(
+        name: name,
+        id: uId,
+        email: email,
+        avatar: 'https://i.pravatar.cc/300',
+        busy: false);
+    _authApi.createUser(user: user).then((value) {}).catchError((onError) {});
+  }
+
   Future<void> logInWithCredentials() async {
     if (!state.status.isValidated) return;
     emit(state.copyWith(status: FormzStatus.submissionInProgress));
@@ -41,6 +53,9 @@ class LoginCubit extends Cubit<LoginState> {
         email: state.email.value,
         password: state.password.value,
       );
+      Profile profile = await _petaminRepository.getUserProfile();
+      createUser(
+          name: profile.name!, email: profile.email!, uId: profile.userId!);
       //get profile
       CacheHelper.saveData(key: 'uId', value: 'da283s4wjweYjuqf3PmlkFvBYss1');
       emit(state.copyWith(status: FormzStatus.submissionSuccess));

@@ -20,9 +20,8 @@ class AuthApi {
   //   );
   // }
 
-  Future<void> createUser(
-      {required UserModel user}) {
-   return FirebaseFirestore.instance
+  Future<void> createUser({required UserModel user}) {
+    return FirebaseFirestore.instance
         .collection(userCollection)
         .doc(user.id)
         .set(user.toMap());

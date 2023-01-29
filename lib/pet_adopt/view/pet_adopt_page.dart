@@ -1,28 +1,51 @@
 import 'package:Petamin/app/app.dart';
+import 'package:Petamin/call/view/call_screen.dart';
+import 'package:Petamin/chat/detail/cubit/chat_detail_cubit.dart';
+import 'package:Petamin/chat/detail/view/chat_detail_page.dart';
+import 'package:Petamin/chat/search/cubit/chat_search_cubit.dart';
 import 'package:Petamin/pet_adopt/pet_adopt.dart';
 import 'package:Petamin/pet_post/pet_post.dart';
+import 'package:Petamin/profile-info/cubit/profile_info_cubit.dart';
+import 'package:Petamin/shared/constants.dart';
 import 'package:Petamin/shared/shared_widgets.dart';
 import 'package:Petamin/theme/theme.dart';
+import 'package:Petamin/user_detail/cubit/user_detail_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:petamin_repository/petamin_repository.dart';
 
+import '../../data/models/call_model.dart';
+
 class PetAdoptPage extends StatelessWidget {
   const PetAdoptPage({Key? key, required this.id}) : super(key: key);
+  final String id;
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(providers: [
+      BlocProvider<UserDetailCubit>(
+          create: (_) => UserDetailCubit(context.read<PetaminRepository>())
+            ..getMyUserprofile())
+    ], child: PetAdoptDetailPage(id: id));
+  }
+}
+
+class PetAdoptDetailPage extends StatelessWidget {
+  const PetAdoptDetailPage({Key? key, required this.id}) : super(key: key);
   final String id;
 
   @override
   Widget build(BuildContext context) {
     final cubit = PetAdoptCubit(context.read<PetaminRepository>());
-    final userId = context.read<AppSessionBloc>().state.session.userId;
+    final user = context.select((ProfileInfoCubit bloc) => bloc.state);
     void onGoBack() {
-      cubit..getPetDetail(id: id, userId: userId);
+      cubit..getPetDetail(id: id, userId: user.userId);
     }
 
     return BlocProvider(
-        create: (_) => cubit..getPetDetail(id: id, userId: userId),
+        //userId of viewer for check if viewer is owner of pet
+        create: (_) => cubit..getPetDetail(id: id, userId: user.userId),
         child: DefaultTabController(
             length: 2,
             child: Container(
@@ -35,6 +58,11 @@ class PetAdoptPage extends StatelessWidget {
                       final pet = state.pet;
                       final adopt = state.adoptInfo;
                       final owner = state.profile;
+                      final session =
+                          context.read<AppSessionBloc>().state.session;
+                      final conversationId =
+                          ChatSearchCubit(context.read<PetaminRepository>())
+                              .createConversations(owner.userId!);
                       if (state.status == PetDetailStatus.failure) {
                         showToast(msg: 'Can\'t load adopt detail!');
                         return const Center();
@@ -341,8 +369,9 @@ class PetAdoptPage extends StatelessWidget {
                                               CircleAvatar(
                                                 radius: 20.0,
                                                 backgroundImage: NetworkImage(
-                                                  owner.avatar ??
-                                                      'https://i.pravatar.cc/300',
+                                                  owner.avatar!.length > 0
+                                                      ? owner.avatar!
+                                                      : ANONYMOUS_AVATAR,
                                                 ),
                                               ),
                                               SizedBox(
@@ -373,16 +402,123 @@ class PetAdoptPage extends StatelessWidget {
                                               )
                                             ],
                                           ),
-                                          userId == owner.userId
+                                          user.userId == owner.userId
                                               ? Container()
                                               : Row(children: [
+                                                  BlocProvider(
+                                                      create: (context) =>
+                                                          ChatDetailCubit(
+                                                              conversationId,
+                                                              session
+                                                                  .accessToken,
+                                                              context.read<
+                                                                  PetaminRepository>()),
+                                                      child: BlocListener<
+                                                              ChatDetailCubit,
+                                                              ChatDetailState>(
+                                                          listener:
+                                                              (context, state) {
+                                                            //FireCall States
+                                                            if (state
+                                                                    .callVideoStatus ==
+                                                                CallVideoStatus
+                                                                    .ErrorFireVideoCallState) {
+                                                              showToast(
+                                                                  msg:
+                                                                      'ErrorFireVideoCallState: ${state.errorMessage}');
+                                                            }
+                                                            if (state
+                                                                    .callVideoStatus ==
+                                                                CallVideoStatus
+                                                                    .ErrorPostCallToFirestoreState) {
+                                                              showToast(
+                                                                  msg:
+                                                                      'ErrorPostCallToFirestoreState: ${state.errorMessage}');
+                                                            }
+                                                            if (state
+                                                                    .callVideoStatus ==
+                                                                CallVideoStatus
+                                                                    .SuccessFireVideoCallState) {
+                                                              Navigator.of(
+                                                                      context,
+                                                                      rootNavigator:
+                                                                          true)
+                                                                  .push(MaterialPageRoute(
+                                                                      builder: (context) => CallScreen(
+                                                                            isReceiver:
+                                                                                false,
+                                                                            callModel:
+                                                                                state.callModel!,
+                                                                          )));
+                                                            }
+                                                          },
+                                                          child: IconButton(
+                                                            onPressed: () {
+                                                              context.read<ChatDetailCubit>().fireVideoCall(
+                                                                  callModel: CallModel(
+                                                                      id:
+                                                                          'call_${UniqueKey().hashCode.toString()}',
+                                                                      callerId:
+                                                                          user
+                                                                              .userId,
+                                                                      callerAvatar: user
+                                                                              .avatarUrl.isNotEmpty
+                                                                          ? user
+                                                                              .avatarUrl
+                                                                          : ANONYMOUS_AVATAR,
+                                                                      callerName: user
+                                                                          .name,
+                                                                      receiverId:
+                                                                          owner
+                                                                              .userId,
+                                                                      receiverAvatar: owner
+                                                                              .avatar!.isNotEmpty
+                                                                          ? owner
+                                                                              .avatar!
+                                                                          : ANONYMOUS_AVATAR,
+                                                                      receiverName:
+                                                                          owner
+                                                                              .name!,
+                                                                      status: CallStatus
+                                                                          .ringing
+                                                                          .name,
+                                                                      createAt:
+                                                                          DateTime.now()
+                                                                              .millisecondsSinceEpoch,
+                                                                      current:
+                                                                          true));
+                                                            },
+                                                            icon: Icon(
+                                                                Icons.call),
+                                                            color: AppTheme
+                                                                .colors.pink,
+                                                          ))),
                                                   IconButton(
-                                                    onPressed: () {},
-                                                    icon: Icon(Icons.call),
-                                                    color: AppTheme.colors.pink,
-                                                  ),
-                                                  IconButton(
-                                                      onPressed: () {},
+                                                      onPressed: () async {
+                                                        final conversationId =
+                                                            await context
+                                                                .read<
+                                                                    UserDetailCubit>()
+                                                                .createConversations(
+                                                                    owner
+                                                                        .userId!);
+                                                        if (conversationId
+                                                                .length >=
+                                                            0) {
+                                                          Navigator.of(context,
+                                                                  rootNavigator:
+                                                                      true)
+                                                              .push(MaterialPageRoute(
+                                                                  builder: (context) =>
+                                                                      ChatPage(
+                                                                          conversationId:
+                                                                              conversationId)));
+                                                        } else {
+                                                          showToast(
+                                                              msg:
+                                                                  'User is locked!');
+                                                        }
+                                                      },
                                                       icon: Icon(Icons
                                                           .messenger_outline),
                                                       color:

@@ -78,6 +78,8 @@ class PetAdoptCubit extends Cubit<PetAdoptState> {
     try {
       await _petaminRepository.toggleAdoptPost(
           state.adoptInfo.id!, newAvailablityString);
+      emit(state.copyWith(
+          status: PetDetailStatus.success, availability: newAvailability));
     } catch (e) {
       emit(state.copyWith(
           status: PetDetailStatus.loading, availability: currentAvailability));

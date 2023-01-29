@@ -21,12 +21,21 @@ class ChatPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Get session from app bloc
     final session = context.read<AppSessionBloc>().state.session;
-    return BlocProvider(
-      create: (_) => ChatDetailCubit(conversationId, session.accessToken,
-          context.read<PetaminRepository>())
-        ..initSocket()
-        ..getUserDetailConversation()
-        ..getMessages(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<ChatDetailCubit>(
+            create: (_) => ChatDetailCubit(conversationId, session.accessToken,
+                context.read<PetaminRepository>())
+              ..initSocket()
+              ..getUserDetailConversation()
+              ..getMessages()),
+        BlocProvider<ProfileInfoCubit>(
+          create: (context) =>
+              ProfileInfoCubit(context.read<PetaminRepository>())
+                ..checkSession()
+                ..getProfile(),
+        ),
+      ],
       child: ChatDetailPage(),
     );
   }

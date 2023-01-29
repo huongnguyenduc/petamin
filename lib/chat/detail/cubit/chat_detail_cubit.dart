@@ -175,6 +175,7 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
         .doc(callModel.receiverId)
         .get()
         .then((value) {
+      debugPrint('cccccc');
       if (value.exists) {
         Map<String, dynamic> bodyMap = {
           'type': 'call',

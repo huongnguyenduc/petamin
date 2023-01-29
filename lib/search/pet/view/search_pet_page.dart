@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:Petamin/home/home.dart';
 import 'package:Petamin/pet_add/pet_add.dart';
+import 'package:Petamin/pet_adopt/view/pet_adopt_page.dart';
 import 'package:Petamin/search/search.dart';
 import 'package:Petamin/theme/theme.dart';
 import 'package:flutter/material.dart';
@@ -277,19 +278,27 @@ class SearchPetView extends StatelessWidget {
                       ),
                       itemBuilder: (context, index) {
                         final pet = state.searchResults[index];
-                        return PetCard(
-                          data: PetCardData(
-                            petId: pet.petId ?? '',
-                            adoptId: pet.id ?? '',
-                            age: '${pet.pet?.year ?? '0'}',
-                            name: pet.pet?.name ?? '',
-                            photo: pet.pet?.avatarUrl ?? '',
-                            breed: pet.pet?.breed ?? '',
-                            sex: pet.pet?.gender ?? 'unknown',
-                            price: pet.price ?? 0,
-                            // ignore: todo
-                          ), // TODO: Change to real data
-                        );
+                        return InkWell(
+                            onTap: () => {
+                                  Navigator.of(context, rootNavigator: true)
+                                      .push(MaterialPageRoute(
+                                          builder: (context) => PetAdoptPage(
+                                                id: pet.petId ?? '',
+                                              )))
+                                },
+                            child: PetCard(
+                              data: PetCardData(
+                                petId: pet.petId ?? '',
+                                adoptId: pet.id ?? '',
+                                age: '${pet.pet?.year ?? '0'}',
+                                name: pet.pet?.name ?? '',
+                                photo: pet.pet?.avatarUrl ?? '',
+                                breed: pet.pet?.breed ?? '',
+                                sex: pet.pet?.gender ?? 'unknown',
+                                price: pet.price ?? 0,
+                                // ignore: todo
+                              ), // TODO: Change to real data
+                            ));
                       },
                       itemCount: state.searchResults.length,
                     );

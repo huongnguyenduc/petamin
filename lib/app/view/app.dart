@@ -38,6 +38,12 @@ class App extends StatelessWidget {
                   ..checkSession()
                   ..initFcm(context),
           ),
+          BlocProvider<ProfileInfoCubit>(
+            create: (context) =>
+                ProfileInfoCubit(context.read<PetaminRepository>())
+                  ..checkSession()
+                  ..getProfile(),
+          ),
           BlocProvider(
             create: (_) => HomeCubit(),
           ),

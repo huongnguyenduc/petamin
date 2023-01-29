@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:Petamin/home/home.dart';
 import 'package:Petamin/landing/landing.dart';
+import 'package:Petamin/pet_adopt/view/pet_adopt_page.dart';
 import 'package:Petamin/profile-info/cubit/profile_info_cubit.dart';
 import 'package:Petamin/search/pet/search_pet.dart';
 import 'package:Petamin/shared/constants.dart';
@@ -233,18 +234,27 @@ class LandingView extends StatelessWidget {
                                 .read<SearchPetCubit>()
                                 .state
                                 .searchResults[index];
-                            return PetCard(
-                                data: PetCardData(
-                              petId: pet.petId ?? '',
-                              adoptId: pet.id ?? '',
-                              age: '${pet.pet?.year ?? '0'}',
-                              name: pet.pet?.name ?? '',
-                              photo: pet.pet?.avatarUrl ?? '',
-                              breed: pet.pet?.breed ?? '',
-                              sex: pet.pet?.gender ?? 'unknown',
-                              price: pet.price ?? 0,
-                              // ignore: todo
-                            )); // TODO: use real data
+                            return InkWell(
+                                onTap: () => {
+                                      Navigator.of(context, rootNavigator: true)
+                                          .push(MaterialPageRoute(
+                                              builder: (context) =>
+                                                  PetAdoptPage(
+                                                    id: pet.petId ?? '',
+                                                  )))
+                                    },
+                                child: PetCard(
+                                    data: PetCardData(
+                                  petId: pet.petId ?? '',
+                                  adoptId: pet.id ?? '',
+                                  age: '${pet.pet?.year ?? '0'}',
+                                  name: pet.pet?.name ?? '',
+                                  photo: pet.pet?.avatarUrl ?? '',
+                                  breed: pet.pet?.breed ?? '',
+                                  sex: pet.pet?.gender ?? 'unknown',
+                                  price: pet.price ?? 0,
+                                  // ignore: todo
+                                ))); // TODO: use real data
                           },
                           separatorBuilder: (context, index) {
                             return SizedBox(
