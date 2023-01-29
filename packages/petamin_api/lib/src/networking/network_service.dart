@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
+
 import 'package:http/http.dart' as http;
-import 'network_helper.dart';
 import 'package:http_parser/http_parser.dart';
+
+import 'network_helper.dart';
+
 enum RequestType { get, put, post, delete, patch }
 
 class NetworkService {
@@ -19,6 +21,7 @@ class NetworkService {
     required Uri uri,
     Map<String, String>? headers,
     Map<String, dynamic>? body,
+    String? encodedBody,
   }) {
     switch (requestType) {
       case RequestType.get:
@@ -27,13 +30,13 @@ class NetworkService {
           headers: headers,
         );
       case RequestType.put:
-        return http.put(uri, headers: headers, body: jsonEncode(body));
+        return http.put(uri, headers: headers, body: encodedBody ?? jsonEncode(body));
       case RequestType.post:
-        return http.post(uri, headers: headers, body: jsonEncode(body));
+        return http.post(uri, headers: headers, body: encodedBody ?? jsonEncode(body));
       case RequestType.delete:
         return http.delete(uri, headers: headers);
       case RequestType.patch:
-        return http.patch(uri, headers: headers, body: jsonEncode(body));
+        return http.patch(uri, headers: headers, body: encodedBody ?? jsonEncode(body));
       default:
         return null;
     }
@@ -47,6 +50,8 @@ class NetworkService {
     Map<String, dynamic>? body,
     Map<String, String>? queryParam,
     Map<String, File?>? files,
+    Map<String, List<File>?>? multipleFiles,
+    String? encodedBody,
   }) async {
     /// Remove null values from body
     if (body != null) {
@@ -55,6 +60,10 @@ class NetworkService {
     // Remove null values from files
     if (files != null) {
       files.removeWhere((key, value) => value == null);
+    }
+    // Remove null values from multipleFiles
+    if (multipleFiles != null) {
+      multipleFiles.removeWhere((key, value) => value == null);
     }
     try {
       final header = _getHeaders(accessToken);
@@ -77,15 +86,36 @@ class NetworkService {
             ),
           ),
         );
-        return await request
-            .send()
-            .then((response) => http.Response.fromStream(response));
+        return await request.send().then((response) => http.Response.fromStream(response));
+      } else if (multipleFiles != null && multipleFiles.isNotEmpty) {
+        final request = http.MultipartRequest(
+          requestType.toString().split('.').last,
+          Uri.parse(url),
+        );
+        request.headers.addAll(header);
+        request.fields.addAll(body as Map<String, String>? ?? {});
+        multipleFiles.forEach((key, value) {
+          if (value != null) {
+            request.files.addAll(
+              value.map(
+                (e) => http.MultipartFile.fromBytes(
+                  key,
+                  e.readAsBytesSync(),
+                  filename: e.path.split('/').last,
+                  contentType: MediaType('image', 'jpeg'),
+                ),
+              ),
+            );
+          }
+        });
+        return await request.send().then((response) => http.Response.fromStream(response));
       } else {
         return await _createRequest(
           requestType: requestType,
           uri: Uri.parse(url),
           headers: header,
           body: body,
+          encodedBody: encodedBody,
         );
       }
     } catch (e) {

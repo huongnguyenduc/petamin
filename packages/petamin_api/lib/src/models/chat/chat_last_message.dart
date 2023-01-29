@@ -6,15 +6,17 @@ part 'chat_last_message.g.dart';
 class ChatLastMessage {
   ChatLastMessage({
     this.id = "",
-    this.status = false,
     this.message = "",
     this.userId = "",
+    this.createdAt,
+    this.type = "",
   });
 
   String? id;
-  bool? status;
   String? message;
   String? userId;
+  DateTime? createdAt;
+  String? type;
 
   factory ChatLastMessage.fromJson(Map<String, dynamic> json) => _$ChatLastMessageFromJson(json);
 
