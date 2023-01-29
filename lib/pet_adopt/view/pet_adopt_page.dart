@@ -19,22 +19,36 @@ import 'package:petamin_repository/petamin_repository.dart';
 import '../../data/models/call_model.dart';
 
 class PetAdoptPage extends StatelessWidget {
-  const PetAdoptPage({Key? key, required this.id}) : super(key: key);
+  const PetAdoptPage({Key? key, required this.id, required this.ownerId})
+      : super(key: key);
   final String id;
+  final String ownerId;
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(providers: [
-      BlocProvider<UserDetailCubit>(
-          create: (_) => UserDetailCubit(context.read<PetaminRepository>())
-            ..getMyUserprofile())
-    ], child: PetAdoptDetailPage(id: id));
+    final session = context.read<AppSessionBloc>().state.session;
+    final conversationId = ChatSearchCubit(context.read<PetaminRepository>())
+        .createConversations(ownerId);
+    return MultiBlocProvider(
+        providers: [
+          BlocProvider<UserDetailCubit>(
+              create: (_) => UserDetailCubit(context.read<PetaminRepository>())
+                ..getMyUserprofile()),
+          BlocProvider<ChatDetailCubit>(
+              create: (_) => ChatDetailCubit(conversationId,
+                  session.accessToken, context.read<PetaminRepository>())),
+        ],
+        child: PetAdoptDetailPage(
+          id: id,
+          ownerId: ownerId,
+        ));
   }
 }
 
 class PetAdoptDetailPage extends StatelessWidget {
-  const PetAdoptDetailPage({Key? key, required this.id}) : super(key: key);
+  const PetAdoptDetailPage({Key? key, required this.id, required this.ownerId})
+      : super(key: key);
   final String id;
-
+  final String ownerId;
   @override
   Widget build(BuildContext context) {
     final cubit = PetAdoptCubit(context.read<PetaminRepository>());
@@ -58,11 +72,7 @@ class PetAdoptDetailPage extends StatelessWidget {
                       final pet = state.pet;
                       final adopt = state.adoptInfo;
                       final owner = state.profile;
-                      final session =
-                          context.read<AppSessionBloc>().state.session;
-                      final conversationId =
-                          ChatSearchCubit(context.read<PetaminRepository>())
-                              .createConversations(owner.userId!);
+
                       if (state.status == PetDetailStatus.failure) {
                         showToast(msg: 'Can\'t load adopt detail!');
                         return const Center();
@@ -405,94 +415,87 @@ class PetAdoptDetailPage extends StatelessWidget {
                                           user.userId == owner.userId
                                               ? Container()
                                               : Row(children: [
-                                                  BlocProvider(
-                                                      create: (context) =>
-                                                          ChatDetailCubit(
-                                                              conversationId,
-                                                              session
-                                                                  .accessToken,
-                                                              context.read<
-                                                                  PetaminRepository>()),
-                                                      child: BlocListener<
-                                                              ChatDetailCubit,
-                                                              ChatDetailState>(
-                                                          listener:
-                                                              (context, state) {
-                                                            //FireCall States
-                                                            if (state
-                                                                    .callVideoStatus ==
-                                                                CallVideoStatus
-                                                                    .ErrorFireVideoCallState) {
-                                                              showToast(
-                                                                  msg:
-                                                                      'ErrorFireVideoCallState: ${state.errorMessage}');
-                                                            }
-                                                            if (state
-                                                                    .callVideoStatus ==
-                                                                CallVideoStatus
-                                                                    .ErrorPostCallToFirestoreState) {
-                                                              showToast(
-                                                                  msg:
-                                                                      'ErrorPostCallToFirestoreState: ${state.errorMessage}');
-                                                            }
-                                                            if (state
-                                                                    .callVideoStatus ==
-                                                                CallVideoStatus
-                                                                    .SuccessFireVideoCallState) {
-                                                              Navigator.of(
-                                                                      context,
-                                                                      rootNavigator:
-                                                                          true)
-                                                                  .push(MaterialPageRoute(
-                                                                      builder: (context) => CallScreen(
+                                                  BlocListener<ChatDetailCubit,
+                                                          ChatDetailState>(
+                                                      listener:
+                                                          (context, state) {
+                                                        //FireCall States
+                                                        if (state
+                                                                .callVideoStatus ==
+                                                            CallVideoStatus
+                                                                .ErrorFireVideoCallState) {
+                                                          showToast(
+                                                              msg:
+                                                                  'ErrorFireVideoCallState: ${state.errorMessage}');
+                                                        }
+                                                        if (state
+                                                                .callVideoStatus ==
+                                                            CallVideoStatus
+                                                                .ErrorPostCallToFirestoreState) {
+                                                          showToast(
+                                                              msg:
+                                                                  'ErrorPostCallToFirestoreState: ${state.errorMessage}');
+                                                        }
+                                                        if (state
+                                                                .callVideoStatus ==
+                                                            CallVideoStatus
+                                                                .SuccessFireVideoCallState) {
+                                                          Navigator.of(context,
+                                                                  rootNavigator:
+                                                                      true)
+                                                              .push(
+                                                                  MaterialPageRoute(
+                                                                      builder: (context) =>
+                                                                          CallScreen(
                                                                             isReceiver:
                                                                                 false,
                                                                             callModel:
                                                                                 state.callModel!,
                                                                           )));
-                                                            }
-                                                          },
-                                                          child: IconButton(
-                                                            onPressed: () {
-                                                              context.read<ChatDetailCubit>().fireVideoCall(
-                                                                  callModel: CallModel(
-                                                                      id:
-                                                                          'call_${UniqueKey().hashCode.toString()}',
-                                                                      callerId:
-                                                                          user
-                                                                              .userId,
-                                                                      callerAvatar: user
-                                                                              .avatarUrl.isNotEmpty
-                                                                          ? user
-                                                                              .avatarUrl
-                                                                          : ANONYMOUS_AVATAR,
-                                                                      callerName: user
-                                                                          .name,
-                                                                      receiverId:
-                                                                          owner
-                                                                              .userId,
-                                                                      receiverAvatar: owner
-                                                                              .avatar!.isNotEmpty
-                                                                          ? owner
-                                                                              .avatar!
-                                                                          : ANONYMOUS_AVATAR,
-                                                                      receiverName:
-                                                                          owner
-                                                                              .name!,
-                                                                      status: CallStatus
+                                                        }
+                                                      },
+                                                      child: IconButton(
+                                                        onPressed: () {
+                                                          context.read<ChatDetailCubit>().fireVideoCall(
+                                                              callModel: CallModel(
+                                                                  id:
+                                                                      'call_${UniqueKey().hashCode.toString()}',
+                                                                  callerId: user
+                                                                      .userId,
+                                                                  callerAvatar: user
+                                                                          .avatarUrl
+                                                                          .isNotEmpty
+                                                                      ? user
+                                                                          .avatarUrl
+                                                                      : ANONYMOUS_AVATAR,
+                                                                  callerName:
+                                                                      user.name,
+                                                                  receiverId:
+                                                                      owner
+                                                                          .userId,
+                                                                  receiverAvatar: owner
+                                                                          .avatar!
+                                                                          .isNotEmpty
+                                                                      ? owner
+                                                                          .avatar!
+                                                                      : ANONYMOUS_AVATAR,
+                                                                  receiverName:
+                                                                      owner
+                                                                          .name!,
+                                                                  status:
+                                                                      CallStatus
                                                                           .ringing
                                                                           .name,
-                                                                      createAt:
-                                                                          DateTime.now()
-                                                                              .millisecondsSinceEpoch,
-                                                                      current:
-                                                                          true));
-                                                            },
-                                                            icon: Icon(
-                                                                Icons.call),
-                                                            color: AppTheme
-                                                                .colors.pink,
-                                                          ))),
+                                                                  createAt: DateTime
+                                                                          .now()
+                                                                      .millisecondsSinceEpoch,
+                                                                  current:
+                                                                      true));
+                                                        },
+                                                        icon: Icon(Icons.call),
+                                                        color: AppTheme
+                                                            .colors.pink,
+                                                      )),
                                                   IconButton(
                                                       onPressed: () async {
                                                         final conversationId =

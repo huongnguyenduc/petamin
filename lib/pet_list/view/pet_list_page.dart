@@ -160,6 +160,10 @@ class PetListPage extends StatelessWidget {
                                                                     .adoptList[
                                                                         index]
                                                                     .petId!,
+                                                                ownerId: state
+                                                                    .adoptList[
+                                                                        index]
+                                                                    .userId!,
                                                               )))
                                                       .then((_) {
                                                     onGoBack(1);

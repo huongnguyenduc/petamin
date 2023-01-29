@@ -212,6 +212,9 @@ class UserDetailView extends StatelessWidget {
                                                     PetAdoptPage(
                                                       id: user
                                                           .petList[index].id!,
+                                                      ownerId: user
+                                                          .petList[index]
+                                                          .userId!,
                                                     )))
                                       },
                                   child: PetCard(
@@ -254,6 +257,9 @@ class UserDetailView extends StatelessWidget {
                                                     PetAdoptPage(
                                                       id: user.adoptList[index]
                                                           .petId!,
+                                                      ownerId: user
+                                                          .adoptList[index]
+                                                          .userId!,
                                                     )))
                                       },
                                   child: PetCard(

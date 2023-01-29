@@ -241,6 +241,7 @@ class LandingView extends StatelessWidget {
                                               builder: (context) =>
                                                   PetAdoptPage(
                                                     id: pet.petId ?? '',
+                                                    ownerId: pet.userId!,
                                                   )))
                                     },
                                 child: PetCard(

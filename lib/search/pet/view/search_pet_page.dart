@@ -284,6 +284,7 @@ class SearchPetView extends StatelessWidget {
                                       .push(MaterialPageRoute(
                                           builder: (context) => PetAdoptPage(
                                                 id: pet.petId ?? '',
+                                                ownerId: pet.userId ?? '',
                                               )))
                                 },
                             child: PetCard(
