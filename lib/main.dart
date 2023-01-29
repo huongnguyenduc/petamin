@@ -39,9 +39,12 @@ Future<void> _backgroundHandler(RemoteMessage message) async {
   await CacheHelper.init();
   if (message.data['type'] == 'call') {
     Map<String, dynamic> bodyMap = jsonDecode(message.data['body']);
-    await CacheHelper.saveData(key: 'terminateIncomingCallData', value: jsonEncode(bodyMap));
+    await CacheHelper.saveData(
+        key: 'terminateIncomingCallData', value: jsonEncode(bodyMap));
   }
   debugPrint('gettttttttttttttt noooooooooooooooooo');
   FirebaseNotifications.showNotification(
-      title: message.data['title'], body: message.data['body'], type: message.data['type']);
+      title: message.data['title'],
+      body: message.data['body'],
+      type: message.data['type']);
 }

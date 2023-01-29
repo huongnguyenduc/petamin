@@ -53,7 +53,6 @@ class HomeRootCubit extends Cubit<HomeRootState> {
 
   CallStatus? currentCallStatus;
   void listenToInComingCalls({required String uId}) {
-    debugPrint('Imm losing');
     _callApi.listenToInComingCall(uId: uId).onData((data) {
       if (data.size != 0) {
         for (var element in data.docs) {
