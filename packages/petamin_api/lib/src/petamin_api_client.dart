@@ -1,10 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:petamin_api/petamin_api.dart';
-import 'package:petamin_api/src/models/adopt/adopt.dart';
 import 'package:petamin_api/src/models/adopt/adopt_search_pagination.dart';
 import 'package:petamin_api/src/networking/network_service.dart';
 import 'package:petamin_api/src/static/static_values.dart';
@@ -386,6 +386,36 @@ class PetaminApiClient {
     }
   }
 
+  Future<bool> addPhotos({required List<File> files, required String petId, required String accessToken}) async {
+    debugPrint("Add Photos API 1");
+    final photoUrls = await uploadMultipleFile(files: files);
+    debugPrint("Add Photos API 2 $photoUrls");
+    List<dynamic> photos = jsonDecode(photoUrls);
+    debugPrint("Add Photos API 3 $photos");
+    List<dynamic> photosData = photos
+        .map((e) => ({
+              'imgUrl': e['url'],
+              'description': '',
+              'title': '',
+            }))
+        .toList();
+    debugPrint("Add Photos API 4 $photosData");
+    debugPrint("Add Photos API 5 ${jsonEncode(photosData)}");
+    final response = await NetworkService.sendRequest(
+      requestType: RequestType.post,
+      baseUrl: _baseUrl,
+      encodedBody: jsonEncode(photosData),
+      endPoint: '/pets/$petId/photos',
+      accessToken: accessToken,
+    );
+    debugPrint('Response image  ${response?.body}');
+    if (response!.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   Future<bool> toggleAdoptStatus({required String adoptId, required String status, required String accessToken}) async {
     debugPrint("toggle adopt API");
     final response = await NetworkService.sendRequest(
@@ -441,10 +471,31 @@ class PetaminApiClient {
         });
   }
 
+  Future<String> uploadMultipleFile({
+    List<File>? files,
+  }) async {
+    debugPrint('Avatar UPload Multiple FIle $files');
+    final response = await NetworkService.sendRequest(
+      requestType: RequestType.post,
+      baseUrl: _baseUrl,
+      endPoint: '/files/multiple-upload',
+      multipleFiles: {'files': files},
+    );
+    debugPrint('Response ${response?.body}');
+    return await NetworkHelper.filterResponse(
+        response: response,
+        parameterName: CallBackParameterName.all,
+        callBack: (json) => jsonEncode(json),
+        onFailureCallBackWithMessage: (errorType, msg) {
+          debugPrint('Error type-$errorType - Message $msg');
+          return null;
+        });
+  }
+
   // Get [Conversation] list `/users/conversations`.
   Future<List<ChatConversation>> getConversations({required String accessToken}) async {
     final response = await NetworkService.sendRequest(
-        requestType: RequestType.get, baseUrl: _baseUrl, endPoint: '/users/conversations', accessToken: accessToken);
+        requestType: RequestType.get, baseUrl: _baseUrl, endPoint: '/conversations', accessToken: accessToken);
     debugPrint('Response ${response?.body}');
     return await NetworkHelper.filterResponse(
         response: response,
@@ -498,6 +549,7 @@ class PetaminApiClient {
         requestType: RequestType.get,
         baseUrl: _baseUrl,
         endPoint: '/messages/conversation/$conversationId',
+        queryParam: {'sortBy': 'createdAt:DESC'},
         accessToken: accessToken);
     debugPrint('Response ${response?.body}');
     return await NetworkHelper.filterResponse(

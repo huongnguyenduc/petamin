@@ -1,3 +1,4 @@
+import 'package:Petamin/app/cubit/socket_io/socket_io_cubit.dart';
 import 'package:Petamin/chat/chat.dart';
 import 'package:Petamin/shared/constants.dart';
 import 'package:Petamin/theme/theme.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:petamin_repository/petamin_repository.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 // _getConversation() {
 //   Dio()
@@ -42,9 +44,8 @@ class ChatListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ChatListCubit(
-        context.read<PetaminRepository>(),
-      )..getConversations(),
+      create: (context) => ChatListCubit(context.read<PetaminRepository>(), context.read<SocketIoCubit>()..initSocket())
+        ..getConversations(),
       child: const ChatListView(),
     );
   }
@@ -57,12 +58,10 @@ class ChatListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: [
-          IconButton(
-              onPressed: () {}, icon: SvgPicture.asset('assets/icons/bell.svg'))
-        ],
+        actions: [],
         backgroundColor: AppTheme.colors.white,
         elevation: 0,
+        toolbarHeight: 30,
       ),
       backgroundColor: AppTheme.colors.white,
       body: Column(
@@ -81,6 +80,7 @@ class ChatListView extends StatelessWidget {
                     itemBuilder: (context, index) {
                       return ChatCard(
                         chat: state.conversations[index],
+                        isOnline: state.onlineUsers.contains(state.conversations[index].partner.userId),
                       );
                     });
               },
@@ -102,20 +102,18 @@ class SearchBar extends StatelessWidget {
     return Padding(
         padding: const EdgeInsets.all(15.0),
         child: Ink(
-            decoration: BoxDecoration(
-                color: AppTheme.colors.superLightPurple,
-                borderRadius: BorderRadius.circular(5.0)),
+            decoration:
+                BoxDecoration(color: AppTheme.colors.superLightPurple, borderRadius: BorderRadius.circular(5.0)),
             child: InkWell(
               onTap: () => {
-                Navigator.of(context, rootNavigator: true).push(
-                    MaterialPageRoute(builder: (context) => ChatSearchPage()))
+                Navigator.of(context, rootNavigator: true)
+                    .push(MaterialPageRoute(builder: (context) => ChatSearchPage()))
               },
               borderRadius: BorderRadius.circular(10.0),
               splashColor: AppTheme.colors.lightPurple,
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 20.0),
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(25.0)),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(25.0)),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -128,9 +126,8 @@ class SearchBar extends StatelessWidget {
                       width: 12.0,
                     ),
                     Text(
-                      "Search",
-                      style: CustomTextTheme.label(context,
-                          textColor: AppTheme.colors.grey),
+                      'Search',
+                      style: CustomTextTheme.label(context, textColor: AppTheme.colors.grey),
                     ),
                   ],
                 ),
@@ -143,16 +140,17 @@ class ChatCard extends StatelessWidget {
   const ChatCard({
     Key? key,
     required this.chat,
+    this.isOnline = false,
   }) : super(key: key);
 
   final Conversation chat;
+  final bool isOnline;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(
-              builder: (context) => ChatPage(conversationId: chat.id))),
+      onTap: () => Navigator.of(context, rootNavigator: true)
+          .push(MaterialPageRoute(builder: (context) => ChatPage(conversationId: chat.id))),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 30.0),
         child: Row(
@@ -162,29 +160,29 @@ class ChatCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 30.0,
-                  backgroundImage: NetworkImage(chat.partner.avatar!.length > 0
-                      ? chat.partner.avatar!
-                      : ANONYMOUS_AVATAR),
+                  backgroundImage:
+                      NetworkImage(chat.partner.avatar!.length > 0 ? chat.partner.avatar! : ANONYMOUS_AVATAR),
+                  backgroundColor: Colors.transparent,
                 ),
-                Positioned(
-                  right: -4.0,
-                  top: -4.0,
-                  child: Container(
-                    width: 24.0,
-                    height: 24.0,
-                    decoration: BoxDecoration(
-                        color: AppTheme.colors.pink,
-                        borderRadius: BorderRadius.circular(12.0)),
-                    child: Center(
-                      child: Text(
-                        "1",
-                        style: CustomTextTheme.caption(context,
-                            textColor: AppTheme.colors.white,
-                            fontWeight: FontWeight.bold),
+
+                // if (state.onlineUsers.contains(chat.partner.userId)) {
+                if (isOnline)
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      width: 15.0,
+                      height: 15.0,
+                      decoration: BoxDecoration(
+                        color: Colors.green,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 2.0),
                       ),
                     ),
-                  ),
-                )
+                  )
+                // } else {
+                //   return Container();
+                // }
               ],
             ),
             Expanded(
@@ -194,28 +192,37 @@ class ChatCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      chat.partner.name ?? "",
-                      style: CustomTextTheme.heading4(
+                      chat.partner.name ?? '',
+                      style: CustomTextTheme.label(
                         context,
                         textColor: AppTheme.colors.black,
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                     SizedBox(
                       height: 5.0,
                     ),
                     Text(
-                      chat.lastMessage.message,
-                      style: CustomTextTheme.label(context,
-                          textColor: AppTheme.colors.solidGrey),
+                      chat?.lastMessage?.message != null && chat.lastMessage.message!.length > 0
+                          ? (chat?.lastMessage?.type.compareTo('IMAGE') == 0
+                              ? 'Has sent image'
+                              : chat.lastMessage.isMe
+                                  ? 'You: ${chat.lastMessage.message}'
+                                  : chat.lastMessage.message)
+                          : 'Say hello!',
+                      style: CustomTextTheme.body2(context, textColor: AppTheme.colors.solidGrey),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
               ),
             ),
             Text(
-              chat.lastMessage.isMe ? "You" : chat.partner.name ?? "",
-              style: CustomTextTheme.caption(context,
-                  textColor: AppTheme.colors.grey),
+              chat?.lastMessage?.message != null && chat.lastMessage.message!.length > 0
+                  ? timeago.format(chat.lastMessage.time) ?? ''
+                  : '',
+              // chat?.lastMessage?.time
+              style: CustomTextTheme.caption(context, textColor: AppTheme.colors.grey),
             ),
           ],
         ),

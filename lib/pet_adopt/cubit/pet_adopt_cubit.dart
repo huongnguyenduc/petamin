@@ -19,16 +19,15 @@ class PetAdoptCubit extends Cubit<PetAdoptState> {
     EasyLoading.show();
     emit(state.copyWith(status: PetDetailStatus.loading));
     try {
-      print('0');
       final pet = await _petaminRepository.getPetDetail(id: id);
-      print('1');
+
       final adopt = await _petaminRepository.getAdoptDetail(id);
-      print('2');
-      final profile = await _petaminRepository.getUserProfileWithId(userId);
-      print('3');
+
+      final profile = await _petaminRepository.getUserProfileWithId(pet.userId!);
+
       final view = pet.userId == userId ? PetAdoptView.owner : PetAdoptView.viewer;
       final availability = adopt.status == 'SHOW' ? PetAdoptAvailability.show : PetAdoptAvailability.hide;
-      print('4');
+
       emit(state.copyWith(
           pet: pet,
           adoptInfo: adopt,
@@ -73,6 +72,30 @@ class PetAdoptCubit extends Cubit<PetAdoptState> {
       emit(state.copyWith(status: PetDetailStatus.loading, availability: currentAvailability));
     }
     EasyLoading.dismiss();
+  }
+
+  void selectMultipleImages() async {
+    List<XFile>? pickedFiles = await ImagePicker().pickMultiImage();
+
+    if (pickedFiles != null) {
+      EasyLoading.show(status: 'Uploading...');
+      print('Picked files: $pickedFiles');
+      try {
+        emit(state.copyWith(status: PetDetailStatus.loading));
+        final List<File> files = pickedFiles.map((e) => File(e.path)).toList();
+        await _petaminRepository.addPhotos(files: files, petId: state.pet.id!);
+        final pet = await _petaminRepository.getPetDetail(id: state.pet.id!);
+        emit(state.copyWith(
+          pet: pet,
+          status: PetDetailStatus.success,
+        ));
+      } catch (e) {
+        print('Error upload image: $e');
+        emit(state.copyWith(status: PetDetailStatus.failure));
+      } finally {
+        EasyLoading.dismiss();
+      }
+    }
   }
 
   void selectPetImage(ImageSource imageSource) async {

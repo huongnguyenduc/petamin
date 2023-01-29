@@ -11,7 +11,6 @@ class ChatMessage {
   ChatMessage({
     this.id,
     this.createdAt,
-    this.status,
     this.message,
     this.type,
     this.userId,
@@ -20,7 +19,6 @@ class ChatMessage {
 
   String? id;
   DateTime? createdAt;
-  bool? status;
   String? message;
   String? type;
   String? userId;

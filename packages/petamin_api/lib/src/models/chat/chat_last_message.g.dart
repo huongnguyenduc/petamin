@@ -6,12 +6,12 @@ part of 'chat_last_message.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-ChatLastMessage _$ChatLastMessageFromJson(Map<String, dynamic> json) =>
-    ChatLastMessage(
+ChatLastMessage _$ChatLastMessageFromJson(Map<String, dynamic> json) => ChatLastMessage(
       id: json['id'] as String? ?? "",
-      status: json['status'] as bool? ?? false,
       message: json['message'] as String? ?? "",
       userId: json['userId'] as String? ?? "",
+      createdAt: json['createdAt'] == null ? null : DateTime.parse(json['createdAt'] as String),
+      type: json['type'] as String? ?? "",
     );
 
 Map<String, dynamic> _$ChatLastMessageToJson(ChatLastMessage instance) {
@@ -24,8 +24,10 @@ Map<String, dynamic> _$ChatLastMessageToJson(ChatLastMessage instance) {
   }
 
   writeNotNull('id', instance.id);
-  writeNotNull('status', instance.status);
   writeNotNull('message', instance.message);
+  writeNotNull('createdAt', instance.createdAt?.toIso8601String());
   writeNotNull('userId', instance.userId);
+  writeNotNull('createdAt', instance.createdAt);
+  writeNotNull('type', instance.createdAt);
   return val;
 }

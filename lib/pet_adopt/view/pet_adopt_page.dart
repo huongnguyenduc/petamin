@@ -33,7 +33,7 @@ class PetAdoptPage extends StatelessWidget {
                     builder: (context, state) {
                       final pet = state.pet;
                       final adopt = state.adoptInfo;
-                      final user = state.profile;
+                      final owner = state.profile;
                       if (state.status == PetDetailStatus.failure) {
                         showToast(msg: 'Can\'t load pet detail!');
                         return const Center();
@@ -84,6 +84,17 @@ class PetAdoptPage extends StatelessWidget {
                                                   .then((_) {
                                                 onGoBack();
                                               })),
+                                      SpeedDialChild(
+                                          child: SvgPicture.asset(
+                                            'assets/icons/add-photo.svg',
+                                            width: 24.0,
+                                            height: 24.0,
+                                            color: AppTheme.colors.white,
+                                          ),
+                                          backgroundColor: AppTheme.colors.green,
+                                          label: 'Add Photos',
+                                          labelStyle: TextStyle(fontSize: 18.0),
+                                          onTap: () => context.read<PetAdoptCubit>().selectMultipleImages()),
                                       SpeedDialChild(
                                           child: Icon(
                                             Icons.delete,
@@ -193,7 +204,7 @@ class PetAdoptPage extends StatelessWidget {
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
-                                            pet.name ?? 'Tyler',
+                                            pet.name ?? '',
                                             style: CustomTextTheme.heading3(
                                               context,
                                               textColor: AppTheme.colors.solidGrey,
@@ -229,7 +240,7 @@ class PetAdoptPage extends StatelessWidget {
                                         height: 8,
                                       ),
                                       Text(
-                                        pet.description ?? 'My lovely cat <3',
+                                        pet.description ?? '',
                                         style: CustomTextTheme.body2(context, textColor: AppTheme.colors.grey),
                                       ),
                                       SizedBox(
@@ -288,7 +299,7 @@ class PetAdoptPage extends StatelessWidget {
                                               CircleAvatar(
                                                 radius: 20.0,
                                                 backgroundImage: NetworkImage(
-                                                  user.avatar ?? 'https://i.pravatar.cc/300',
+                                                  owner.avatar ?? 'https://i.pravatar.cc/300',
                                                 ),
                                               ),
                                               SizedBox(
@@ -303,7 +314,7 @@ class PetAdoptPage extends StatelessWidget {
                                                         textColor: AppTheme.colors.grey),
                                                   ),
                                                   Text(
-                                                    user.name ?? 'Tyler',
+                                                    owner.name ?? '',
                                                     style: CustomTextTheme.body2(context,
                                                         textColor: AppTheme.colors.solidGrey),
                                                   ),
@@ -311,17 +322,19 @@ class PetAdoptPage extends StatelessWidget {
                                               )
                                             ],
                                           ),
-                                          Row(children: [
-                                            IconButton(
-                                              onPressed: () {},
-                                              icon: Icon(Icons.call),
-                                              color: AppTheme.colors.pink,
-                                            ),
-                                            IconButton(
-                                                onPressed: () {},
-                                                icon: Icon(Icons.messenger_outline),
-                                                color: AppTheme.colors.pink),
-                                          ])
+                                          userId == owner.userId
+                                              ? Container()
+                                              : Row(children: [
+                                                  IconButton(
+                                                    onPressed: () {},
+                                                    icon: Icon(Icons.call),
+                                                    color: AppTheme.colors.pink,
+                                                  ),
+                                                  IconButton(
+                                                      onPressed: () {},
+                                                      icon: Icon(Icons.messenger_outline),
+                                                      color: AppTheme.colors.pink),
+                                                ])
                                         ],
                                       ),
 
