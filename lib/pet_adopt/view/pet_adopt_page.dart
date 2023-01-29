@@ -1,4 +1,5 @@
 import 'package:Petamin/app/app.dart';
+import 'package:Petamin/app/cubit/socket_io/socket_io_cubit.dart';
 import 'package:Petamin/call/view/call_screen.dart';
 import 'package:Petamin/chat/detail/cubit/chat_detail_cubit.dart';
 import 'package:Petamin/chat/detail/view/chat_detail_page.dart';
@@ -15,7 +16,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:petamin_repository/petamin_repository.dart';
-
 import '../../data/models/call_model.dart';
 
 class PetAdoptPage extends StatelessWidget {
@@ -34,8 +34,10 @@ class PetAdoptPage extends StatelessWidget {
               create: (_) => UserDetailCubit(context.read<PetaminRepository>())
                 ..getMyUserprofile()),
           BlocProvider<ChatDetailCubit>(
-              create: (_) => ChatDetailCubit(conversationId,
-                  session.accessToken, context.read<PetaminRepository>())),
+              create: (_) => ChatDetailCubit(
+                  conversationId as String,
+                  context.read<PetaminRepository>(),
+                  context.read<SocketIoCubit>()..initSocket())),
         ],
         child: PetAdoptDetailPage(
           id: id,
