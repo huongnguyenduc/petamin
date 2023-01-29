@@ -15,7 +15,8 @@ class PetAdoptCubit extends Cubit<PetAdoptState> {
 
   final PetaminRepository _petaminRepository;
 
-  Future<void> getPetDetail({required String id, required String userId}) async {
+  Future<void> getPetDetail(
+      {required String id, required String userId}) async {
     EasyLoading.show();
     emit(state.copyWith(status: PetDetailStatus.loading));
     try {
@@ -23,10 +24,14 @@ class PetAdoptCubit extends Cubit<PetAdoptState> {
 
       final adopt = await _petaminRepository.getAdoptDetail(id);
 
-      final profile = await _petaminRepository.getUserProfileWithId(pet.userId!);
+      final profile =
+          await _petaminRepository.getUserProfileWithId(pet.userId!);
 
-      final view = pet.userId == userId ? PetAdoptView.owner : PetAdoptView.viewer;
-      final availability = adopt.status == 'SHOW' ? PetAdoptAvailability.show : PetAdoptAvailability.hide;
+      final view =
+          pet.userId == userId ? PetAdoptView.owner : PetAdoptView.viewer;
+      final availability = adopt.status == 'SHOW'
+          ? PetAdoptAvailability.SHOW
+          : PetAdoptAvailability.HIDE;
 
       emit(state.copyWith(
           pet: pet,
@@ -60,16 +65,24 @@ class PetAdoptCubit extends Cubit<PetAdoptState> {
   Future<void> toggleAdoptPet() async {
     debugPrint('Update Pet Cubit');
     EasyLoading.show(status: 'Loading...');
-    final currentAvailability =
-        state.availability == PetAdoptAvailability.show ? PetAdoptAvailability.show : PetAdoptAvailability.hide;
-    final newAvailability =
-        currentAvailability == PetAdoptAvailability.show ? PetAdoptAvailability.hide : PetAdoptAvailability.show;
-    final newAvailablityString = newAvailability == PetAdoptAvailability.show ? 'SHOW' : 'HIDE';
-    emit(state.copyWith(status: PetDetailStatus.loading, availability: newAvailability));
+    final currentAvailability = state.availability == PetAdoptAvailability.SHOW
+        ? PetAdoptAvailability.SHOW
+        : PetAdoptAvailability.HIDE;
+    final newAvailability = currentAvailability == PetAdoptAvailability.SHOW
+        ? PetAdoptAvailability.HIDE
+        : PetAdoptAvailability.SHOW;
+    final newAvailablityString =
+        newAvailability == PetAdoptAvailability.SHOW ? 'SHOW' : 'HIDE';
+    emit(state.copyWith(
+        status: PetDetailStatus.loading, availability: newAvailability));
     try {
-      await _petaminRepository.toggleAdoptPost(state.adoptInfo.id!, newAvailablityString);
+      await _petaminRepository.toggleAdoptPost(
+          state.adoptInfo.id!, newAvailablityString);
+      emit(state.copyWith(
+          status: PetDetailStatus.success, availability: newAvailability));
     } catch (e) {
-      emit(state.copyWith(status: PetDetailStatus.loading, availability: currentAvailability));
+      emit(state.copyWith(
+          status: PetDetailStatus.loading, availability: currentAvailability));
     }
     EasyLoading.dismiss();
   }
@@ -101,7 +114,8 @@ class PetAdoptCubit extends Cubit<PetAdoptState> {
   void selectPetImage(ImageSource imageSource) async {
     XFile? pickedFile = await ImagePicker().pickImage(source: imageSource);
     if (pickedFile != null) {
-      emit(state.copyWith(pet: state.pet.copyWith(avatar: File(pickedFile.path))));
+      emit(state.copyWith(
+          pet: state.pet.copyWith(avatar: File(pickedFile.path))));
     }
   }
 
@@ -110,7 +124,8 @@ class PetAdoptCubit extends Cubit<PetAdoptState> {
     EasyLoading.show(status: 'Deleting...');
     emit(state.copyWith(status: PetDetailStatus.loading));
     try {
-      final result = await _petaminRepository.deletePhotos(photoId: id, petId: state.pet.id!);
+      final result = await _petaminRepository.deletePhotos(
+          photoId: id, petId: state.pet.id!);
       if (result) {
         final pet = state.pet;
         pet.photos!.removeWhere((element) => element.id == id);
@@ -127,7 +142,8 @@ class PetAdoptCubit extends Cubit<PetAdoptState> {
     return false;
   }
 
-  Future<bool> deleteAdoptPost({required String id, required BuildContext context}) async {
+  Future<bool> deleteAdoptPost(
+      {required String id, required BuildContext context}) async {
     debugPrint('Delete Adopt Post');
     EasyLoading.show(status: 'Deleting...');
     emit(state.copyWith(status: PetDetailStatus.loading));
@@ -135,10 +151,8 @@ class PetAdoptCubit extends Cubit<PetAdoptState> {
       final result = await _petaminRepository.deleteAdoptPost(adoptId: id);
       if (result) {
         EasyLoading.showSuccess('Delete success');
-        Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
-            builder: (context) => PetDetailPage(
-                  id: state.pet.id!,
-                )));
+        Navigator.of(context).pop(); // pop dialog
+        Navigator.of(context).pop(); // pop adopt detail -> change to adopt list
       } else {
         EasyLoading.showError('Delete failed');
       }

@@ -20,7 +20,9 @@ import 'package:petamin_repository/petamin_repository.dart';
 part 'chat_detail_state.dart';
 
 class ChatDetailCubit extends Cubit<ChatDetailState> {
-  ChatDetailCubit(this.conversationId, this._petaminRepository, this._socketIoCubit) : super(ChatDetailState()) {
+  ChatDetailCubit(
+      this.conversationId, this._petaminRepository, this._socketIoCubit)
+      : super(ChatDetailState()) {
     initMessages();
   }
 
@@ -69,16 +71,20 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
 
   void sendMessage() {
     if (state.chatMessage.isNotEmpty) {
-      _socketIoCubit.sendMessage(message: state.chatMessage, conversationId: conversationId);
-      _socketIoCubit.sendTyping(conversationId: conversationId, isTyping: false);
+      _socketIoCubit.sendMessage(
+          message: state.chatMessage, conversationId: conversationId);
+      _socketIoCubit.sendTyping(
+          conversationId: conversationId, isTyping: false);
       emit(state.copyWith(isSendingTyping: false, chatMessage: ''));
     }
   }
 
   Future<void> getUserDetailConversation() async {
     try {
-      final info = await _petaminRepository.getUserDetailConversation(conversationId: conversationId);
-      emit(state.copyWith(status: ChatDetailStatus.loaded, partner: info.partner));
+      final info = await _petaminRepository.getUserDetailConversation(
+          conversationId: conversationId);
+      emit(state.copyWith(
+          status: ChatDetailStatus.loaded, partner: info.partner));
     } catch (e) {
       emit(state.copyWith(status: ChatDetailStatus.error));
     }
@@ -97,7 +103,8 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
   void listenToSocket() {
     print('listeningggg');
     // Receive typing
-    typingSubscription = _socketIoCubit.typingStream.stream.listen((typingMessage) {
+    typingSubscription =
+        _socketIoCubit.typingStream.stream.listen((typingMessage) {
       print('Listen socket typing from chat detail cubit');
       updateTyping(typingMessage);
       // typingSubscription.cancel();
@@ -113,7 +120,8 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
     });
 
     // Receive online
-    onlineSubscription = _socketIoCubit.onlineStream.stream.listen((onlineUsers) {
+    onlineSubscription =
+        _socketIoCubit.onlineStream.stream.listen((onlineUsers) {
       print('Update Socket Online users from chet detail: $onlineUsers');
       updateOnline(onlineUsers);
       // onlineSubscription.cancel();
@@ -132,8 +140,9 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
 
   void updateOnline(List<String> onlineUsers) {
     if (isClosed) return;
-    final partner =
-        onlineUsers.firstWhere((element) => element.compareTo(state.partner?.userId ?? '') == 0, orElse: () => '');
+    final partner = onlineUsers.firstWhere(
+        (element) => element.compareTo(state.partner?.userId ?? '') == 0,
+        orElse: () => '');
     if (partner.isNotEmpty && state.isPartnerOnline == false) {
       emit(state.copyWith(isPartnerOnline: true));
     } else if (state.isPartnerOnline) {
@@ -152,11 +161,17 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
       emit(state.copyWith(isTyping: isTyping));
 
       // Check if last message is typing message
-      bool hasTypingMessage =
-          state.messages.firstWhere((element) => element.type == 'TYPING', orElse: () => Message()).id != null;
+      bool hasTypingMessage = state.messages
+              .firstWhere((element) => element.type == 'TYPING',
+                  orElse: () => Message())
+              .id !=
+          null;
 
       if (isTyping && !hasTypingMessage) {
-        emit(state.copyWith(messages: [Message(type: 'TYPING', isMe: false, id: 'Meow'), ...state.messages]));
+        emit(state.copyWith(messages: [
+          Message(type: 'TYPING', isMe: false, id: 'Meow'),
+          ...state.messages
+        ]));
       } else if (!isTyping && hasTypingMessage) {
         // remove typing message if exist
         List<Message> messages = state.messages.map((e) => e).toList();
@@ -173,12 +188,14 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
   void typeMessage(String message) {
     if (!state.isSendingTyping) {
       emit(state.copyWith(isSendingTyping: true));
-      _socketIoCubit.sendTyping(conversationId: conversationId, isTyping: message.isNotEmpty);
+      _socketIoCubit.sendTyping(
+          conversationId: conversationId, isTyping: message.isNotEmpty);
       // add debounce to typing message to prevent spamming socket
       if (_debounce?.isActive ?? false) _debounce?.cancel();
       _debounce = Timer(const Duration(milliseconds: 2500), () {
         // cancel typing
-        _socketIoCubit.sendTyping(conversationId: conversationId, isTyping: false);
+        _socketIoCubit.sendTyping(
+            conversationId: conversationId, isTyping: false);
         emit(state.copyWith(isSendingTyping: false));
       });
     }
@@ -205,9 +222,13 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
       try {
         final List<File> files = pickedFiles.map((e) => File(e.path)).toList();
         print('Image files: $files');
-        final String encodeImagesJson = await _petaminRepository.uploadMultipleFiles(files: files);
+        final String encodeImagesJson =
+            await _petaminRepository.uploadMultipleFiles(files: files);
         print('encodeImagesJson: $encodeImagesJson');
-        _socketIoCubit.sendMessage(conversationId: conversationId, message: encodeImagesJson, type: 'IMAGE');
+        _socketIoCubit.sendMessage(
+            conversationId: conversationId,
+            message: encodeImagesJson,
+            type: 'IMAGE');
         emit(state.copyWith(status: ChatDetailStatus.loaded));
       } catch (e) {
         emit(state.copyWith(status: ChatDetailStatus.error));
@@ -238,7 +259,9 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
       //agoraTestToken;
       callModel.channelName = agoraTestChannelName;
       postCallToFirestore(callModel: callModel);
-      emit(state.copyWith(callVideoStatus: CallVideoStatus.ErrorFireVideoCallState, errorMessage: onError.toString()));
+      emit(state.copyWith(
+          callVideoStatus: CallVideoStatus.ErrorFireVideoCallState,
+          errorMessage: onError.toString()));
     });
   }
 
@@ -258,15 +281,25 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
     }).catchError((onError) {
       fireCallLoading = false;
       emit(state.copyWith(
-          callVideoStatus: CallVideoStatus.ErrorPostCallToFirestoreState, errorMessage: onError.toString()));
+          callVideoStatus: CallVideoStatus.ErrorPostCallToFirestoreState,
+          errorMessage: onError.toString()));
     });
   }
 
   void sendNotificationForIncomingCall({required CallModel callModel}) {
-    FirebaseFirestore.instance.collection(tokensCollection).doc(callModel.receiverId).get().then((value) {
+    FirebaseFirestore.instance
+        .collection(tokensCollection)
+        .doc(callModel.receiverId)
+        .get()
+        .then((value) {
       if (value.exists) {
-        Map<String, dynamic> bodyMap = {'type': 'call', 'title': 'New call', 'body': jsonEncode(callModel.toMap())};
-        FcmPayloadModel fcmSendData = FcmPayloadModel(to: value.data()!['token'], data: bodyMap);
+        Map<String, dynamic> bodyMap = {
+          'type': 'call',
+          'title': 'New call',
+          'body': jsonEncode(callModel.toMap())
+        };
+        FcmPayloadModel fcmSendData =
+            FcmPayloadModel(to: value.data()!['token'], data: bodyMap);
         debugPrint('SendNotify');
         DioHelper.postData(
           data: fcmSendData.toMap(),
@@ -274,18 +307,23 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
           endPoint: 'fcm/send',
         ).then((value) {
           debugPrint('SendNotifySuccess ${value.data.toString()}');
-          emit(state.copyWith(callVideoStatus: CallVideoStatus.SuccessFireVideoCallState, callModel: callModel));
+          emit(state.copyWith(
+              callVideoStatus: CallVideoStatus.SuccessFireVideoCallState,
+              callModel: callModel));
         }).catchError((onError) {
           debugPrint('Error when send Notify: $onError');
           fireCallLoading = false;
-          emit(
-              state.copyWith(callVideoStatus: CallVideoStatus.ErrorSendNotification, errorMessage: onError.toString()));
+          emit(state.copyWith(
+              callVideoStatus: CallVideoStatus.ErrorSendNotification,
+              errorMessage: onError.toString()));
         });
       }
     }).catchError((onError) {
       debugPrint('Error when get user token: $onError');
       fireCallLoading = false;
-      emit(state.copyWith(callVideoStatus: CallVideoStatus.ErrorSendNotification, errorMessage: onError.toString()));
+      emit(state.copyWith(
+          callVideoStatus: CallVideoStatus.ErrorSendNotification,
+          errorMessage: onError.toString()));
     });
   }
 }

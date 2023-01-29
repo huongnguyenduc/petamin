@@ -31,7 +31,8 @@ class PetDetailPage extends StatelessWidget {
                 color: AppTheme.colors.white,
                 child: BlocBuilder<PetDetailCubit, PetDetailState>(
                     buildWhen: (previous, current) =>
-                        previous.status != current.status || previous.pet.photos != current.pet.photos,
+                        previous.status != current.status ||
+                        previous.pet.photos != current.pet.photos,
                     builder: (context, state) {
                       final pet = state.pet;
                       // if (state.status == PetDetailStatus.loading) {
@@ -62,8 +63,11 @@ class PetDetailPage extends StatelessWidget {
                                     backgroundColor: AppTheme.colors.green,
                                     label: 'Transfer',
                                     labelStyle: TextStyle(fontSize: 18.0),
-                                    onTap: () => Navigator.of(context, rootNavigator: true)
-                                        .push(MaterialPageRoute(builder: (context) => const PetTransfer()))),
+                                    onTap: () => Navigator.of(context,
+                                            rootNavigator: true)
+                                        .push(MaterialPageRoute(
+                                            builder: (context) =>
+                                                const PetTransfer()))),
                                 SpeedDialChild(
                                     child: SvgPicture.asset(
                                       'assets/icons/home_heart.svg',
@@ -71,18 +75,26 @@ class PetDetailPage extends StatelessWidget {
                                       height: 24.0,
                                     ),
                                     backgroundColor: AppTheme.colors.green,
-                                    label: pet.isAdopting == false ? 'Post Adopt' : 'Edit Adopt',
+                                    label: pet.isAdopting == false
+                                        ? 'Post Adopt'
+                                        : 'Edit Adopt',
                                     labelStyle: TextStyle(fontSize: 18.0),
-                                    onTap: () => Navigator.of(context, rootNavigator: true)
+                                    onTap: () => Navigator.of(context,
+                                                rootNavigator: true)
                                             .push(MaterialPageRoute(
-                                                builder: (context) => pet.isAdopting == false
-                                                    ? PetCreatePost(
-                                                        petId: pet.id!, petImage: pet.avatarUrl!, petName: pet.name!)
-                                                    : PetEditPost(
-                                                        petId: pet.id!,
-                                                        petName: pet.name!,
-                                                        petImage: pet.avatarUrl!,
-                                                      )))
+                                                builder: (context) =>
+                                                    pet.isAdopting == false
+                                                        ? PetCreatePost(
+                                                            petId: pet.id!,
+                                                            petImage:
+                                                                pet.avatarUrl!,
+                                                            petName: pet.name!)
+                                                        : PetEditPost(
+                                                            petId: pet.id!,
+                                                            petName: pet.name!,
+                                                            petImage:
+                                                                pet.avatarUrl!,
+                                                          )))
                                             .then((_) {
                                           onGoBack();
                                         })),
@@ -105,7 +117,31 @@ class PetDetailPage extends StatelessWidget {
                                     backgroundColor: AppTheme.colors.green,
                                     label: 'Delete',
                                     labelStyle: TextStyle(fontSize: 18.0),
-                                    onTap: () => print('Delete')),
+                                    onTap: () => showDialog(
+                                        context: context,
+                                        builder: (_context) => AlertDialog(
+                                              title: const Text('Delete Pet '),
+                                              content: const Text(
+                                                  'Are you sure want to delete this pet?'),
+                                              actions: [
+                                                TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.of(_context)
+                                                            .pop(),
+                                                    child:
+                                                        const Text('Cancel')),
+                                                TextButton(
+                                                    onPressed: () {
+                                                      context
+                                                          .read<
+                                                              PetDetailCubit>()
+                                                          .deletePet(
+                                                              id: id,
+                                                              context: context);
+                                                    },
+                                                    child: const Text('Delete'))
+                                              ],
+                                            ))),
                               ],
                             ),
                             body: CustomScrollView(
@@ -115,7 +151,8 @@ class PetDetailPage extends StatelessWidget {
                                   automaticallyImplyLeading: false,
                                   title: Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: <Widget>[
                                       InkWell(
                                         onTap: () {
@@ -125,8 +162,10 @@ class PetDetailPage extends StatelessWidget {
                                             width: 35.0,
                                             height: 35.0,
                                             decoration: BoxDecoration(
-                                                color: AppTheme.colors.green.withOpacity(0.4),
-                                                borderRadius: BorderRadius.circular(8.0)),
+                                                color: AppTheme.colors.green
+                                                    .withOpacity(0.4),
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0)),
                                             child: Icon(
                                               Icons.arrow_back_outlined,
                                               color: AppTheme.colors.yellow,
@@ -142,7 +181,8 @@ class PetDetailPage extends StatelessWidget {
                                       padding: EdgeInsets.only(
                                         top: 25.0,
                                       ),
-                                      transform: Matrix4.translationValues(0.0, 1.0, 0.0),
+                                      transform: Matrix4.translationValues(
+                                          0.0, 1.0, 0.0),
                                       decoration: BoxDecoration(
                                         color: Colors.white,
                                         borderRadius: BorderRadius.only(
@@ -170,25 +210,31 @@ class PetDetailPage extends StatelessWidget {
                                 ),
                                 SliverToBoxAdapter(
                                     child: Container(
-                                  padding: EdgeInsets.only(left: 30.0, right: 30.0),
+                                  padding:
+                                      EdgeInsets.only(left: 30.0, right: 30.0),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
                                             pet.name ?? 'Tyler',
                                             style: CustomTextTheme.heading3(
                                               context,
-                                              textColor: AppTheme.colors.solidGrey,
+                                              textColor:
+                                                  AppTheme.colors.solidGrey,
                                             ),
                                           ),
                                           GestureDetector(
                                               onTap: () {
-                                                Navigator.of(context, rootNavigator: true)
+                                                Navigator.of(context,
+                                                        rootNavigator: true)
                                                     .push(MaterialPageRoute(
-                                                        builder: (context) => PetInfoPage(
+                                                        builder: (context) =>
+                                                            PetInfoPage(
                                                               pet: pet,
                                                             )))
                                                     .then((_) {
@@ -207,7 +253,8 @@ class PetDetailPage extends StatelessWidget {
                                       ),
                                       Text(
                                         pet.description ?? 'My lovely cat <3',
-                                        style: CustomTextTheme.body2(context, textColor: AppTheme.colors.grey),
+                                        style: CustomTextTheme.body2(context,
+                                            textColor: AppTheme.colors.grey),
                                       ),
                                       SizedBox(
                                         height: 24.0,
@@ -215,19 +262,24 @@ class PetDetailPage extends StatelessWidget {
                                       Container(
                                         height: 60.0,
                                         child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           // shrinkWrap: true,
                                           // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
                                             PetProperty(
-                                              value: ((pet.gender ?? '') == 'MALE') ? 'Male' : 'Female',
+                                              value:
+                                                  ((pet.gender ?? '') == 'MALE')
+                                                      ? 'Male'
+                                                      : 'Female',
                                               label: 'Sex',
                                             ),
                                             SizedBox(
                                               width: 8.0,
                                             ),
                                             PetProperty(
-                                              value: '${pet.year}y${pet.month}m',
+                                              value:
+                                                  '${pet.year}y${pet.month}m',
                                               label: 'Age',
                                             ),
                                             SizedBox(
@@ -241,7 +293,9 @@ class PetDetailPage extends StatelessWidget {
                                               width: 8.0,
                                             ),
                                             PetProperty(
-                                              value: (pet.isNeuter ?? false) ? 'Yes' : 'No',
+                                              value: (pet.isNeuter ?? false)
+                                                  ? 'Yes'
+                                                  : 'No',
                                               label: 'Neutered',
                                             ),
                                             SizedBox(
@@ -277,23 +331,20 @@ class PetDetailPage extends StatelessWidget {
                                       child: TabBar(
                                         indicatorColor: AppTheme.colors.green,
                                         indicator: UnderlineTabIndicator(
-                                          borderSide: BorderSide(color: AppTheme.colors.green, width: 2.0),
+                                          borderSide: BorderSide(
+                                              color: AppTheme.colors.green,
+                                              width: 2.0),
                                           // insets: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 50.0)
                                         ),
                                         labelColor: Colors.black,
-                                        unselectedLabelColor: AppTheme.colors.grey,
+                                        unselectedLabelColor:
+                                            AppTheme.colors.grey,
                                         tabs: [
                                           Tab(
                                               icon: Icon(
                                             Icons.grid_3x3_outlined,
                                             // color: Colors.black,
                                           )),
-                                          Tab(
-                                            icon: Icon(
-                                              Icons.pets,
-                                              // color: Colors.black,
-                                            ),
-                                          )
                                         ],
                                       ),
                                     ),
@@ -303,7 +354,8 @@ class PetDetailPage extends StatelessWidget {
                                     child: TabBarView(children: [
                                   GridView.builder(
                                     physics: NeverScrollableScrollPhysics(),
-                                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
                                       crossAxisSpacing: 4.0,
                                       mainAxisSpacing: 4.0,
                                       crossAxisCount: 3,
@@ -319,23 +371,21 @@ class PetDetailPage extends StatelessWidget {
                                                   cubit: cubit,
                                                   petAvatar: pet.avatarUrl!,
                                                   name: pet.name!,
-                                                  image: pet.photos![index].imgUrl));
+                                                  image: pet
+                                                      .photos![index].imgUrl));
                                         },
                                         child: Container(
                                           decoration: BoxDecoration(
                                             image: DecorationImage(
                                               fit: BoxFit.cover,
-                                              image: NetworkImage(pet.photos![index].imgUrl),
+                                              image: NetworkImage(
+                                                  pet.photos![index].imgUrl),
                                             ),
                                           ),
                                         ),
                                       );
                                     },
                                   ),
-                                  Icon(
-                                    Icons.pets,
-                                    color: Colors.red,
-                                  )
                                 ]))
                               ],
                             ));
@@ -370,14 +420,17 @@ class PetProperty extends StatelessWidget {
               value,
               overflow: TextOverflow.ellipsis,
               style: CustomTextTheme.caption(context,
-                  textColor: AppTheme.colors.green, fontWeight: FontWeight.w500, fontSize: 16.0),
+                  textColor: AppTheme.colors.green,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 16.0),
             ),
             SizedBox(
               height: 8.0,
             ),
             Text(
               label,
-              style: CustomTextTheme.caption(context, textColor: AppTheme.colors.grey, fontSize: 12.0),
+              style: CustomTextTheme.caption(context,
+                  textColor: AppTheme.colors.grey, fontSize: 12.0),
             )
           ],
         ),
@@ -410,7 +463,9 @@ class ImageDialog extends StatelessWidget {
             width: double.infinity,
             padding: EdgeInsets.all(8.0),
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(8.0), topRight: Radius.circular(8.0)),
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(8.0),
+                    topRight: Radius.circular(8.0)),
                 color: AppTheme.colors.black),
             child: Row(
               children: [
@@ -424,7 +479,8 @@ class ImageDialog extends StatelessWidget {
                 ),
                 Text(
                   name ?? '',
-                  style: CustomTextTheme.caption(context, textColor: AppTheme.colors.white),
+                  style: CustomTextTheme.caption(context,
+                      textColor: AppTheme.colors.white),
                 )
               ],
             ),
@@ -432,13 +488,17 @@ class ImageDialog extends StatelessWidget {
           Container(
             width: double.infinity,
             height: 400,
-            decoration: BoxDecoration(image: DecorationImage(image: NetworkImage(image), fit: BoxFit.cover)),
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: NetworkImage(image), fit: BoxFit.cover)),
           ),
           Container(
             width: double.infinity,
             padding: EdgeInsets.all(8.0),
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(8.0), bottomRight: Radius.circular(8.0)),
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(8.0),
+                    bottomRight: Radius.circular(8.0)),
                 color: AppTheme.colors.black),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -450,7 +510,9 @@ class ImageDialog extends StatelessWidget {
                   },
                   child: Container(
                     padding: EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(color: AppTheme.colors.black, borderRadius: BorderRadius.circular(8.0)),
+                    decoration: BoxDecoration(
+                        color: AppTheme.colors.black,
+                        borderRadius: BorderRadius.circular(8.0)),
                     child: Icon(
                       Icons.delete_outline_rounded,
                       color: AppTheme.colors.white,

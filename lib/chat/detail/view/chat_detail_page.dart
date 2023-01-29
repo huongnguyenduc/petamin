@@ -23,9 +23,20 @@ class ChatPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => ChatDetailCubit(
-          conversationId, context.read<PetaminRepository>(), context.read<SocketIoCubit>()..initSocket()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<ChatDetailCubit>(
+            create: (_) => ChatDetailCubit(
+                conversationId,
+                context.read<PetaminRepository>(),
+                context.read<SocketIoCubit>()..initSocket())),
+        BlocProvider<ProfileInfoCubit>(
+          create: (context) =>
+              ProfileInfoCubit(context.read<PetaminRepository>())
+                ..checkSession()
+                ..getProfile(),
+        ),
+      ],
       child: ChatDetailPage(),
     );
   }
@@ -44,13 +55,17 @@ class ChatDetailPage extends StatelessWidget {
     return BlocListener<ChatDetailCubit, ChatDetailState>(
         listener: (context, state) {
           //FireCall States
-          if (state.callVideoStatus == CallVideoStatus.ErrorFireVideoCallState) {
+          if (state.callVideoStatus ==
+              CallVideoStatus.ErrorFireVideoCallState) {
             showToast(msg: 'ErrorFireVideoCallState: ${state.errorMessage}');
           }
-          if (state.callVideoStatus == CallVideoStatus.ErrorPostCallToFirestoreState) {
-            showToast(msg: 'ErrorPostCallToFirestoreState: ${state.errorMessage}');
+          if (state.callVideoStatus ==
+              CallVideoStatus.ErrorPostCallToFirestoreState) {
+            showToast(
+                msg: 'ErrorPostCallToFirestoreState: ${state.errorMessage}');
           }
-          if (state.callVideoStatus == CallVideoStatus.SuccessFireVideoCallState) {
+          if (state.callVideoStatus ==
+              CallVideoStatus.SuccessFireVideoCallState) {
             Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
                 builder: (context) => CallScreen(
                       isReceiver: false,
@@ -63,7 +78,8 @@ class ChatDetailPage extends StatelessWidget {
           appBar: PreferredSize(
             preferredSize: Size.fromHeight(72),
             child: BlocBuilder<ChatDetailCubit, ChatDetailState>(
-                buildWhen: (previous, current) => previous.partner != current.partner,
+                buildWhen: (previous, current) =>
+                    previous.partner != current.partner,
                 builder: (context, state) {
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -79,23 +95,30 @@ class ChatDetailPage extends StatelessWidget {
                               // debugPrint('call video: ${user.avatarUrl}');
                               context.read<ChatDetailCubit>().fireVideoCall(
                                   callModel: CallModel(
-                                      id: 'call_${UniqueKey().hashCode.toString()}',
+                                      id:
+                                          'call_${UniqueKey().hashCode.toString()}',
                                       callerId: user.userId,
-                                      callerAvatar: user.avatarUrl.isNotEmpty ? user.avatarUrl : ANONYMOUS_AVATAR,
+                                      callerAvatar: user.avatarUrl.isNotEmpty
+                                          ? user.avatarUrl
+                                          : ANONYMOUS_AVATAR,
                                       callerName: user.name,
                                       receiverId: state.partner!.userId!,
                                       receiverAvatar:
-                                          state.partner!.avatar!.isNotEmpty ? state.partner!.avatar! : ANONYMOUS_AVATAR,
+                                          state.partner!.avatar!.isNotEmpty
+                                              ? state.partner!.avatar!
+                                              : ANONYMOUS_AVATAR,
                                       receiverName: state.partner!.name!,
                                       status: CallStatus.ringing.name,
-                                      createAt: DateTime.now().millisecondsSinceEpoch,
+                                      createAt:
+                                          DateTime.now().millisecondsSinceEpoch,
                                       current: true));
                             },
                             icon: Icon(Icons.call))
                       ],
                       title: Text(
                         state.partner?.name ?? '',
-                        style: CustomTextTheme.heading4(context, textColor: AppTheme.colors.white),
+                        style: CustomTextTheme.heading4(context,
+                            textColor: AppTheme.colors.white),
                       ),
                     ),
                   );
@@ -105,18 +128,22 @@ class ChatDetailPage extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 20.0),
             decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(18.0), topRight: Radius.circular(18.0))),
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(18.0),
+                    topRight: Radius.circular(18.0))),
             child: Column(
               children: [
                 Expanded(
                   child: BlocBuilder<ChatDetailCubit, ChatDetailState>(
-                    buildWhen: (previous, current) => previous.messages != current.messages,
+                    buildWhen: (previous, current) =>
+                        previous.messages != current.messages,
                     builder: (context, state) {
                       return ListView.builder(
                           itemCount: state.messages.length,
                           shrinkWrap: true,
                           reverse: true,
-                          controller: context.read<ChatDetailCubit>().scrollController,
+                          controller:
+                              context.read<ChatDetailCubit>().scrollController,
                           itemBuilder: (context, index) {
                             switch (state.messages[index].type) {
                               case 'TEXT':
@@ -128,7 +155,9 @@ class ChatDetailPage extends StatelessWidget {
                                     : Container();
                               case 'IMAGE':
                                 return state.messages.length > 0
-                                    ? ImageMessage(chatMessage: state.messages[index], avatar: state?.partner?.avatar)
+                                    ? ImageMessage(
+                                        chatMessage: state.messages[index],
+                                        avatar: state?.partner?.avatar)
                                     : Container();
                               case 'TYPING':
                                 return state.messages.length > 0
@@ -162,7 +191,8 @@ class ChatDetailPage extends StatelessWidget {
                         height: 44.0,
                         width: 44.0,
                         decoration: BoxDecoration(
-                            color: AppTheme.colors.superLightPurple, borderRadius: BorderRadius.circular(10.0)),
+                            color: AppTheme.colors.superLightPurple,
+                            borderRadius: BorderRadius.circular(10.0)),
                         child: Icon(
                           Icons.add,
                           color: AppTheme.colors.pink,
@@ -199,10 +229,14 @@ class ImageMessage extends StatelessWidget {
     print('image: ${jsonImages[0]['url']}');
 
     return Padding(
-      padding: EdgeInsets.only(top: 12.0, right: chatMessage.isMe! ? 0.0 : 60.0, left: chatMessage.isMe! ? 60.0 : 0.0),
+      padding: EdgeInsets.only(
+          top: 12.0,
+          right: chatMessage.isMe! ? 0.0 : 60.0,
+          left: chatMessage.isMe! ? 60.0 : 0.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: chatMessage.isMe! ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment:
+            chatMessage.isMe! ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           if (!chatMessage.isMe!) ...[
             CircleAvatar(
@@ -214,19 +248,24 @@ class ImageMessage extends StatelessWidget {
           ],
           Flexible(
             child: Directionality(
-              textDirection: chatMessage.isMe! ? TextDirection.rtl : TextDirection.ltr,
+              textDirection:
+                  chatMessage.isMe! ? TextDirection.rtl : TextDirection.ltr,
               child: GridView.builder(
                   shrinkWrap: true,
                   // reverse: true,
                   physics: NeverScrollableScrollPhysics(),
                   itemCount: jsonImages.length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3, crossAxisSpacing: 4.0, mainAxisSpacing: 4.0),
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 4.0,
+                      mainAxisSpacing: 4.0),
                   itemBuilder: (context, index) {
                     return Container(
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8.0),
-                          image: DecorationImage(image: NetworkImage(jsonImages[index]['url']), fit: BoxFit.cover)),
+                          image: DecorationImage(
+                              image: NetworkImage(jsonImages[index]['url']),
+                              fit: BoxFit.cover)),
                     );
                   }),
             ),
@@ -273,7 +312,8 @@ class TextMessage extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: chatMessage.isMe! ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment:
+            chatMessage.isMe! ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           if (!chatMessage.isMe!) ...[
             Stack(
@@ -284,7 +324,8 @@ class TextMessage extends StatelessWidget {
                   backgroundColor: Colors.transparent,
                 ),
                 BlocBuilder<ChatDetailCubit, ChatDetailState>(
-                  buildWhen: (previous, current) => previous.isPartnerOnline != current.isPartnerOnline,
+                  buildWhen: (previous, current) =>
+                      previous.isPartnerOnline != current.isPartnerOnline,
                   builder: (context, state) {
                     return Positioned(
                       bottom: 0,
@@ -293,9 +334,12 @@ class TextMessage extends StatelessWidget {
                         height: 12.0,
                         width: 12.0,
                         decoration: BoxDecoration(
-                            color: state.isPartnerOnline ? Colors.green : Colors.grey,
+                            color: state.isPartnerOnline
+                                ? Colors.green
+                                : Colors.grey,
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 2.0)),
+                            border:
+                                Border.all(color: Colors.white, width: 2.0)),
                       ),
                     );
                   },
@@ -308,10 +352,13 @@ class TextMessage extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
               decoration: BoxDecoration(
-                  color: chatMessage.isMe! ? AppTheme.colors.pink : AppTheme.colors.lightPurple,
+                  color: chatMessage.isMe!
+                      ? AppTheme.colors.pink
+                      : AppTheme.colors.lightPurple,
                   borderRadius: BorderRadius.circular(20.0)),
               child: isTyping
-                  ? Lottie.asset('assets/lottie/typing.json', width: 24, height: 24)
+                  ? Lottie.asset('assets/lottie/typing.json',
+                      width: 24, height: 24)
                   : Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -322,7 +369,9 @@ class TextMessage extends StatelessWidget {
                             chatMessage.message!,
                             maxLines: 8,
                             style: CustomTextTheme.body2(context,
-                                textColor: chatMessage.isMe! ? AppTheme.colors.white : AppTheme.colors.green),
+                                textColor: chatMessage.isMe!
+                                    ? AppTheme.colors.white
+                                    : AppTheme.colors.green),
                           ),
                         ),
                         SizedBox(
@@ -331,7 +380,9 @@ class TextMessage extends StatelessWidget {
                         Text(
                           timeFormat.format(chatMessage.time!.toLocal()),
                           style: CustomTextTheme.caption(context,
-                              textColor: chatMessage.isMe! ? AppTheme.colors.white : AppTheme.colors.grey),
+                              textColor: chatMessage.isMe!
+                                  ? AppTheme.colors.white
+                                  : AppTheme.colors.grey),
                         )
                       ],
                     ),

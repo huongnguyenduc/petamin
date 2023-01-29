@@ -53,12 +53,16 @@ class App extends StatelessWidget {
             ..initFcm(context),
         ),
         BlocProvider(
-            create: (_) => SocketIoCubit(appSessionBloc: context.read<AppSessionBloc>())
-              ..initSocket()
-              ..listenToAppSession()), // BlocProvider(
+            create: (_) =>
+                SocketIoCubit(appSessionBloc: context.read<AppSessionBloc>())
+                  ..initSocket()
+                  ..listenToAppSession()), // BlocProvider(
         //   create: (_) => HomeCubit(),
         // ),
-        BlocProvider(create: (context) => ProfileInfoCubit(context.read<PetaminRepository>())..getProfile()),
+        BlocProvider(
+            create: (context) =>
+                ProfileInfoCubit(context.read<PetaminRepository>())
+                  ..getProfile()),
         BlocProvider(create: (_) => CallCubit()),
       ],
       child: const AppView(),
@@ -74,7 +78,8 @@ class AppView extends StatelessWidget {
     return MaterialApp(
       theme: AppTheme.define(),
       home: FlowBuilder<SessionStatus>(
-        state: context.select((AppSessionBloc bloc) => bloc.state.sessionStatus),
+        state:
+            context.select((AppSessionBloc bloc) => bloc.state.sessionStatus),
         onGeneratePages: onGenerateAppViewPages,
       ),
       debugShowCheckedModeBanner: false,

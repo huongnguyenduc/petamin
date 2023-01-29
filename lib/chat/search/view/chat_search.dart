@@ -132,8 +132,7 @@ class ChatSearchPage extends StatelessWidget {
                                 backgroundImage: NetworkImage(chat.avatar!),
                               ),
                               title: Text(chat.name ?? ''),
-                              subtitle: Text(chat.address ?? ''),
-                              trailing: Text('12:00'),
+                              trailing: Text(''),
                             ),
                           );
                         },
