@@ -121,7 +121,6 @@ class _CallScreenState extends State<CallScreen> {
         }
       },
       builder: (BuildContext context, state) {
-        var homeCubit = HomeCubit.get(context);
         var cubit = CallCubit.get(context);
         return ModalProgressHUD(
           inAsyncCall: false,

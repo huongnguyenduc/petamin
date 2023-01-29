@@ -18,16 +18,28 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:petamin_repository/petamin_repository.dart';
 import '../../data/models/call_model.dart';
 
-class PetAdoptPage extends StatelessWidget {
+class PetAdoptPage extends StatefulWidget {
   const PetAdoptPage({Key? key, required this.id, required this.ownerId})
       : super(key: key);
   final String id;
   final String ownerId;
+
+  @override
+  State<PetAdoptPage> createState() => _PetAdoptPageState();
+}
+
+class _PetAdoptPageState extends State<PetAdoptPage> {
+  String conversationId = '';
+  @override
+  void initState() {
+    // TODO: implement initState
+    // conversationId = ChatSearchCubit(context.read<PetaminRepository>())
+    //     .createConversations(widget.ownerId);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final session = context.read<AppSessionBloc>().state.session;
-    final conversationId = ChatSearchCubit(context.read<PetaminRepository>())
-        .createConversations(ownerId);
     return MultiBlocProvider(
         providers: [
           BlocProvider<UserDetailCubit>(
@@ -35,13 +47,13 @@ class PetAdoptPage extends StatelessWidget {
                 ..getMyUserprofile()),
           BlocProvider<ChatDetailCubit>(
               create: (_) => ChatDetailCubit(
-                  conversationId as String,
+                  conversationId,
                   context.read<PetaminRepository>(),
                   context.read<SocketIoCubit>()..initSocket())),
         ],
         child: PetAdoptDetailPage(
-          id: id,
-          ownerId: ownerId,
+          id: widget.id,
+          ownerId: widget.ownerId,
         ));
   }
 }
