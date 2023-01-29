@@ -16,7 +16,6 @@ class HomePage extends StatelessWidget {
         BlocProvider(
           create: (_) => HomeCubit(),
         ),
-
       ],
       child: const HomeView(),
     );

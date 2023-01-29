@@ -40,12 +40,16 @@ class _HomeRootScreenState extends State<HomeRootScreen> {
                 callModel: CallModel.clone(),
               )));
     }
-    debugPrint('checkInComingTerminadCall');
+    debugPrint('checkInComingTerminedCall');
   }
 
   @override
   Widget build(BuildContext context) {
     final user = context.select((AppSessionBloc bloc) => bloc.state.session);
+    context.read<HomeRootCubit>()
+      ..checkSession()
+      ..updateFcmToken(uId: user.userId)
+      ..listenToInComingCalls(uId: user.userId);
     debugPrint('UserIdIs: ${user.userId}');
     return MultiBlocProvider(
       providers: [
@@ -55,25 +59,25 @@ class _HomeRootScreenState extends State<HomeRootScreen> {
                 ..checkSession()
                 ..getProfile(),
         ),
-        BlocProvider<HomeRootCubit>(
-          create: (context) => HomeRootCubit(context.read<PetaminRepository>())
-            ..checkSession()
-            ..updateFcmToken(uId: user.userId)
-            ..listenToInComingCalls(uId: user.userId),
-        )
+        // BlocProvider<HomeRootCubit>(
+        //   create: (context) => HomeRootCubit(context.read<PetaminRepository>())
+        //     ..checkSession()
+        //     ..updateFcmToken(uId: user.userId)
+        //     ..listenToInComingCalls(uId: user.userId),
+        // )
       ],
       child: Scaffold(
           resizeToAvoidBottomInset: false,
           body: BlocConsumer<HomeRootCubit, HomeRootState>(
               listener: (context, state) {
             //Receiver Call States
-            if (state is SuccessInComingCallState) {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => CallScreen(
-                        isReceiver: true,
-                        callModel: state.callModel,
-                      )));
-            }
+            // if (state is SuccessInComingCallState) {
+            //   Navigator.of(context).push(MaterialPageRoute(
+            //       builder: (context) => CallScreen(
+            //             isReceiver: true,
+            //             callModel: state.callModel,
+            //           )));
+            // }
           }, builder: (context, state) {
             //var homeRootCubit = HomeRootCubit.get(context);
             return ModalProgressHUD(

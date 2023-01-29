@@ -283,6 +283,10 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
     });
   }
 
+  void updateCallStatus({required CallVideoStatus status}) {
+    emit(state.copyWith(callVideoStatus: status));
+  }
+
   void sendNotificationForIncomingCall({required CallModel callModel}) {
     FirebaseFirestore.instance
         .collection(tokensCollection)

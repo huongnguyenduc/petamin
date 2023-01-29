@@ -2,7 +2,9 @@ import 'package:Petamin/app/app.dart';
 import 'package:Petamin/app/bloc/app_bloc.dart';
 import 'package:Petamin/app/cubit/socket_io/socket_io_cubit.dart';
 import 'package:Petamin/call/cubit/call_cubit.dart';
+import 'package:Petamin/call/view/call_screen.dart';
 import 'package:Petamin/homeRoot/cubit/home_root_cubit.dart';
+import 'package:Petamin/homeRoot/cubit/home_root_state.dart';
 import 'package:Petamin/profile-info/cubit/profile_info_cubit.dart';
 import 'package:Petamin/routes/routes.dart';
 import 'package:Petamin/theme/app_theme.dart';
@@ -30,7 +32,8 @@ class AppRoot extends StatelessWidget {
           BlocProvider(
               create: (_) => AppSessionBloc(
                     petaminRepository: petaminRepository,
-                  ))
+                  )),
+          BlocProvider(create: (_) => CallCubit()),
         ],
         child: const App(),
       ),
@@ -45,28 +48,24 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) => HomeRootCubit(context.read<PetaminRepository>())
-            ..checkSession()
-            ..initFcm(context),
-        ),
-        BlocProvider(
-            create: (_) =>
-                SocketIoCubit(appSessionBloc: context.read<AppSessionBloc>())
-                  ..initSocket()
-                  ..listenToAppSession()), // BlocProvider(
-        //   create: (_) => HomeCubit(),
-        // ),
-        BlocProvider(
-            create: (context) =>
-                ProfileInfoCubit(context.read<PetaminRepository>())
-                  ..getProfile()),
-        BlocProvider(create: (_) => CallCubit()),
-      ],
-      child: const AppView(),
-    );
+    return MultiBlocProvider(providers: [
+      BlocProvider(
+        create: (context) => HomeRootCubit(context.read<PetaminRepository>())
+          ..checkSession()
+          ..initFcm(context),
+      ),
+      BlocProvider(
+          create: (_) =>
+              SocketIoCubit(appSessionBloc: context.read<AppSessionBloc>())
+                ..initSocket()
+                ..listenToAppSession()), // BlocProvider(
+      //   create: (_) => HomeCubit(),
+      // ),
+      BlocProvider(
+          create: (context) =>
+              ProfileInfoCubit(context.read<PetaminRepository>())
+                ..getProfile()),
+    ], child: const AppView());
   }
 }
 
@@ -77,11 +76,23 @@ class AppView extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: AppTheme.define(),
-      home: FlowBuilder<SessionStatus>(
-        state:
-            context.select((AppSessionBloc bloc) => bloc.state.sessionStatus),
-        onGeneratePages: onGenerateAppViewPages,
-      ),
+      home: BlocConsumer<HomeRootCubit, HomeRootState>(
+          listener: (context, state) {
+        //Receiver Call States
+        if (state is SuccessInComingCallState) {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => CallScreen(
+                    isReceiver: true,
+                    callModel: state.callModel,
+                  )));
+        }
+      }, builder: (context, state) {
+        return FlowBuilder<SessionStatus>(
+          state:
+              context.select((AppSessionBloc bloc) => bloc.state.sessionStatus),
+          onGeneratePages: onGenerateAppViewPages,
+        );
+      }),
       debugShowCheckedModeBanner: false,
       builder: EasyLoading.init(),
     );

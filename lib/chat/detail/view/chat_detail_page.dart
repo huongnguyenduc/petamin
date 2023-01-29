@@ -66,6 +66,9 @@ class ChatDetailPage extends StatelessWidget {
           }
           if (state.callVideoStatus ==
               CallVideoStatus.SuccessFireVideoCallState) {
+            context
+                .read<ChatDetailCubit>()
+                .updateCallStatus(status: CallVideoStatus.Initial);
             Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
                 builder: (context) => CallScreen(
                       isReceiver: false,
