@@ -1,5 +1,7 @@
 import 'dart:math' as math;
 
+import 'package:Petamin/app/app.dart';
+import 'package:Petamin/app/cubit/socket_io/socket_io_cubit.dart';
 import 'package:Petamin/home/home.dart';
 import 'package:Petamin/landing/landing.dart';
 import 'package:Petamin/pet_adopt/view/pet_adopt_page.dart';
@@ -8,7 +10,6 @@ import 'package:Petamin/search/pet/search_pet.dart';
 import 'package:Petamin/shared/constants.dart';
 import 'package:Petamin/theme/app_theme.dart';
 import 'package:Petamin/theme/text_styles.dart';
-import 'package:Petamin/user_detail/user_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -25,8 +26,10 @@ class LandingPage extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<LandingCubit>(
-          create: (_) => LandingCubit(),
-        ),
+            create: (_) => LandingCubit(
+                socketIoCubit: context.read<SocketIoCubit>()..initSocket(),
+                appSessionBloc: context.read<AppSessionBloc>())
+              ..initSocket()),
         BlocProvider<SearchPetCubit>(
           create: (_) => SearchPetCubit(context.read<PetaminRepository>())
             ..searchAdoption('i', true),
@@ -53,19 +56,44 @@ class LandingView extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    BlocBuilder<ProfileInfoCubit, ProfileInfoState>(
-                        buildWhen: (previous, current) =>
-                            previous.name != current.name,
-                        builder: (context, state) {
-                          return GestureDetector(
-                            child: Avatar(
-                              size: 28,
-                              photo: state.avatarUrl.length > 0
-                                  ? state.avatarUrl
-                                  : ANONYMOUS_AVATAR,
-                            ),
-                          );
-                        }),
+                    Stack(
+                      children: [
+                        BlocBuilder<ProfileInfoCubit, ProfileInfoState>(
+                            buildWhen: (previous, current) =>
+                                previous.name != current.name,
+                            builder: (context, state) {
+                              return GestureDetector(
+                                child: Avatar(
+                                  size: 28,
+                                  photo: state.avatarUrl.length > 0
+                                      ? state.avatarUrl
+                                      : ANONYMOUS_AVATAR,
+                                ),
+                              );
+                            }),
+                        BlocBuilder<LandingCubit, LandingState>(
+                            buildWhen: (previous, current) =>
+                                previous.isOnline != current.isOnline,
+                            builder: (context, state) {
+                              return Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: Container(
+                                  width: 16,
+                                  height: 16,
+                                  decoration: BoxDecoration(
+                                    color: state.isOnline
+                                        ? Colors.green
+                                        : Colors.grey,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                        color: Colors.white, width: 2),
+                                  ),
+                                ),
+                              );
+                            }),
+                      ],
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Column(
@@ -108,7 +136,7 @@ class LandingView extends StatelessWidget {
                                     )));
                           },
                           icon: SvgPicture.asset(
-                              "assets/icons/action=search-small.svg",
+                              'assets/icons/action=search-small.svg',
                               width: 24)),
                     )
                   ],
@@ -119,7 +147,7 @@ class LandingView extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Categories",
+                    Text('Categories',
                         style: CustomTextTheme.heading4(context)),
                     Container(
                       decoration: BoxDecoration(
@@ -135,7 +163,7 @@ class LandingView extends StatelessWidget {
                                     )));
                           },
                           icon: SvgPicture.asset(
-                              "assets/icons/action=filter.svg",
+                              'assets/icons/action=filter.svg',
                               width: 24)),
                     )
                   ],
@@ -199,7 +227,7 @@ class LandingView extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Adopt me", style: CustomTextTheme.heading4(context)),
+                    Text('Adopt me', style: CustomTextTheme.heading4(context)),
                     TextButton(
                       onPressed: () {
                         // Navigate to SearchPetPage
@@ -207,7 +235,7 @@ class LandingView extends StatelessWidget {
                             builder: (context) => SearchPetPage()));
                       },
                       child: Text(
-                        "See all",
+                        'See all',
                         style: CustomTextTheme.body2(context,
                             textColor: AppTheme.colors.purple,
                             fontWeight: FontWeight.w600),
@@ -331,7 +359,7 @@ class LandingBanner extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Join our community\nof animal lovers",
+              Text('Join our community\nof animal lovers',
                   style: CustomTextTheme.heading4(context)),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -340,14 +368,14 @@ class LandingBanner extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16.0),
                   ),
                 ),
-                child: Text("Join Now"),
+                child: Text('Join Now'),
                 onPressed: () {},
               )
             ],
           ),
         ),
         Positioned(
-          child: Lottie.asset("assets/lottie/adopt_box.json",
+          child: Lottie.asset('assets/lottie/adopt_box.json',
               width: 140, height: 140),
           top: 0,
           right: 12,

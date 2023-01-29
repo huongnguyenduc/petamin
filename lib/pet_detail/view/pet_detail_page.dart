@@ -99,6 +99,17 @@ class PetDetailPage extends StatelessWidget {
                                           onGoBack();
                                         })),
                                 SpeedDialChild(
+                                    child: SvgPicture.asset(
+                                      'assets/icons/add-photo.svg',
+                                      width: 24.0,
+                                      height: 24.0,
+                                      color: AppTheme.colors.white,
+                                    ),
+                                    backgroundColor: AppTheme.colors.green,
+                                    label: 'Add Photos',
+                                    labelStyle: TextStyle(fontSize: 18.0),
+                                    onTap: () => context.read<PetDetailCubit>().selectMultipleImages()),
+                                SpeedDialChild(
                                     child: Icon(
                                       Icons.delete,
                                       color: AppTheme.colors.white,

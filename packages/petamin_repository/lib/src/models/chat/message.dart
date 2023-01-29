@@ -1,23 +1,25 @@
 import 'package:equatable/equatable.dart';
 
 class Message extends Equatable {
-  Message({
+  const Message({
     this.time,
-    this.status,
     this.message,
     this.type,
     this.isMe,
+    this.id,
+    this.conversationId,
   });
 
-  DateTime? time;
-  bool? status;
-  String? message;
-  String? type;
-  bool? isMe;
+  final DateTime? time;
+  final String? message;
+  final String? type;
+  final bool? isMe;
+  final String? id;
+  final String? conversationId;
 
   // Empty Message
-  Message.empty() : this(message: '', isMe: false);
+  Message.empty() : this(message: '', isMe: false, id: '', type: '', conversationId: '');
 
   @override
-  List<Object?> get props => [time, status, message, type, isMe];
+  List<Object?> get props => [time, message, type, isMe, id, conversationId];
 }

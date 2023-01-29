@@ -1,4 +1,5 @@
 import 'package:Petamin/app/bloc/app_bloc.dart';
+import 'package:Petamin/profile-info/cubit/profile_info_cubit.dart';
 import 'package:Petamin/profile-info/view/profile-info-page.dart';
 import 'package:Petamin/profile/follow/view/follow_view.dart';
 import 'package:Petamin/profile/widgets/widgets.dart';
@@ -7,7 +8,6 @@ import 'package:Petamin/theme/app_theme.dart';
 import 'package:Petamin/theme/text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:Petamin/profile-info/cubit/profile_info_cubit.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -107,9 +107,7 @@ class ProfileView extends StatelessWidget {
                     context
                         .read<AppSessionBloc>()
                         .add(AppLogoutSessionRequested());
-                    context
-                        .read<AppSessionBloc>()
-                        .add(AppLogoutSessionRequested());
+                    // context.read<SocketIoCubit>().closeSocket();
                   },
                 )
               ],
@@ -124,6 +122,7 @@ class ProfileItem extends StatelessWidget {
       : super(key: key);
   final String title;
   final onTap;
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -172,7 +171,7 @@ class UserFollow extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 8.0),
       decoration: BoxDecoration(
           border: Border.symmetric(
-              horizontal: BorderSide(color: AppTheme.colors.grey, width: 0.3))),
+              horizontal: BorderSide(color: AppTheme.colors.grey, width: 0.2))),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -208,6 +207,7 @@ class FollowItem extends StatelessWidget {
   const FollowItem({Key? key, this.count, this.title}) : super(key: key);
   final count;
   final title;
+
   @override
   Widget build(BuildContext context) {
     return Column(

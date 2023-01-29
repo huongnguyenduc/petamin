@@ -404,19 +404,27 @@ class PetaminRepository {
       final session = await currentSession;
       final conversations = await _petaminApiClient.getConversations(
           accessToken: session.accessToken);
+      debugPrint(
+          'conversationsssssssss: ${conversations[0].lastMessage.toString()}');
+      debugPrint('userId ne ${session.userId}');
       return conversations.map((conversation) {
         ChatUser partner =
             conversation.users!.firstWhere((user) => user.id != session.userId);
+        debugPrint('conversationsssssssss: ${partner.profile!.avatar}');
         return Conversation(
           id: conversation.id ?? '',
           partner: Profile(
             name: partner.profile!.name,
             avatar: partner.profile!.avatar ?? "",
+            userId: partner.id,
           ),
           lastMessage: conversation.lastMessage != null
               ? LastMessage(
                   isMe: partner.id != conversation.lastMessage!.userId,
                   message: conversation.lastMessage!.message ?? "",
+                  time: conversation.lastMessage!.createdAt ?? DateTime.now(),
+                  id: conversation.lastMessage!.id ?? "",
+                  type: conversation.lastMessage!.type ?? "",
                 )
               : LastMessage.empty(),
         );
@@ -626,8 +634,8 @@ class PetaminRepository {
           isMe: message.userId == session.userId,
           message: message.message ?? '',
           time: message.createdAt ?? DateTime.now(),
-          status: message.status ?? false,
           type: message.type ?? 'TEXT',
+          id: message.id ?? '',
         );
       }).toList();
     } catch (_) {
@@ -770,6 +778,17 @@ class PetaminRepository {
     }
   }
 
+  Future<bool> addPhotos(
+      {required List<File> files, required String petId}) async {
+    try {
+      final session = await currentSession;
+      return await _petaminApiClient.addPhotos(
+          files: files, petId: petId, accessToken: session.accessToken);
+    } catch (_) {
+      throw const CallApiFailure();
+    }
+  }
+
   Future<bool> deleteAdoptPost({required String adoptId}) async {
     try {
       final session = await currentSession;
@@ -842,6 +861,17 @@ class PetaminRepository {
         ),
         accessToken: session.accessToken,
         avatar: pet.avatar,
+      );
+    } catch (_) {
+      throw const CallApiFailure();
+    }
+  }
+
+  Future<String> uploadMultipleFiles({required List<File> files}) async {
+    try {
+      debugPrint("Upload files");
+      return await _petaminApiClient.uploadMultipleFile(
+        files: files,
       );
     } catch (_) {
       throw const CallApiFailure();

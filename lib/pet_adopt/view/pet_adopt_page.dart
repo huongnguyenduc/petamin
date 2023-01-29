@@ -72,7 +72,6 @@ class PetAdoptDetailPage extends StatelessWidget {
                       final pet = state.pet;
                       final adopt = state.adoptInfo;
                       final owner = state.profile;
-
                       if (state.status == PetDetailStatus.failure) {
                         showToast(msg: 'Can\'t load adopt detail!');
                         return const Center();
@@ -139,6 +138,20 @@ class PetAdoptDetailPage extends StatelessWidget {
                                                   .then((_) {
                                                 onGoBack();
                                               })),
+                                      SpeedDialChild(
+                                          child: SvgPicture.asset(
+                                            'assets/icons/add-photo.svg',
+                                            width: 24.0,
+                                            height: 24.0,
+                                            color: AppTheme.colors.white,
+                                          ),
+                                          backgroundColor:
+                                              AppTheme.colors.green,
+                                          label: 'Add Photos',
+                                          labelStyle: TextStyle(fontSize: 18.0),
+                                          onTap: () => context
+                                              .read<PetAdoptCubit>()
+                                              .selectMultipleImages()),
                                       SpeedDialChild(
                                           child: Icon(
                                             Icons.delete,
