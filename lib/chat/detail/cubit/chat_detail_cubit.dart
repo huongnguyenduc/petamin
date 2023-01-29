@@ -20,8 +20,7 @@ import 'package:petamin_repository/petamin_repository.dart';
 part 'chat_detail_state.dart';
 
 class ChatDetailCubit extends Cubit<ChatDetailState> {
-  ChatDetailCubit(
-      this.conversationId, this._petaminRepository, this._socketIoCubit)
+  ChatDetailCubit(this.conversationId, this._petaminRepository, this._socketIoCubit)
       : super(ChatDetailState()) {
     initMessages();
   }
@@ -105,10 +104,10 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
     // Receive typing
     typingSubscription =
         _socketIoCubit.typingStream.stream.listen((typingMessage) {
-      print('Listen socket typing from chat detail cubit');
-      updateTyping(typingMessage);
-      // typingSubscription.cancel();
-    });
+          print('Listen socket typing from chat detail cubit');
+          updateTyping(typingMessage);
+          // typingSubscription.cancel();
+        });
     // Receive message
     messageSubscription = _socketIoCubit.messageStream.stream.listen((message) {
       if (message.conversationId?.compareTo(conversationId) == 0) {
@@ -122,10 +121,10 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
     // Receive online
     onlineSubscription =
         _socketIoCubit.onlineStream.stream.listen((onlineUsers) {
-      print('Update Socket Online users from chet detail: $onlineUsers');
-      updateOnline(onlineUsers);
-      // onlineSubscription.cancel();
-    });
+          print('Update Socket Online users from chet detail: $onlineUsers');
+          updateOnline(onlineUsers);
+          // onlineSubscription.cancel();
+        });
 
     print('listeneddd');
   }
@@ -140,12 +139,10 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
 
   void updateOnline(List<String> onlineUsers) {
     if (isClosed) return;
-    final partner = onlineUsers.firstWhere(
-        (element) => element.compareTo(state.partner?.userId ?? '') == 0,
-        orElse: () => '');
-    if (partner.isNotEmpty && state.isPartnerOnline == false) {
+    final isOnline = onlineUsers.contains(state.partner?.userId ?? '');
+    if (isOnline && state.isPartnerOnline == false) {
       emit(state.copyWith(isPartnerOnline: true));
-    } else if (state.isPartnerOnline) {
+    } else if (state.isPartnerOnline == true && !isOnline) {
       emit(state.copyWith(isPartnerOnline: false));
     }
   }
@@ -162,9 +159,9 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
 
       // Check if last message is typing message
       bool hasTypingMessage = state.messages
-              .firstWhere((element) => element.type == 'TYPING',
-                  orElse: () => Message())
-              .id !=
+          .firstWhere((element) => element.type == 'TYPING',
+          orElse: () => Message())
+          .id !=
           null;
 
       if (isTyping && !hasTypingMessage) {
@@ -223,7 +220,7 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
         final List<File> files = pickedFiles.map((e) => File(e.path)).toList();
         print('Image files: $files');
         final String encodeImagesJson =
-            await _petaminRepository.uploadMultipleFiles(files: files);
+        await _petaminRepository.uploadMultipleFiles(files: files);
         print('encodeImagesJson: $encodeImagesJson');
         _socketIoCubit.sendMessage(
             conversationId: conversationId,
@@ -255,7 +252,7 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
       fireCallLoading = false;
       //For test
       callModel.token =
-          '006192a26c66db7459284748c71ad2d3570IAATc2TswWAZULeSR0o/HiCOcWuel+WCD2BI6UOJMg0acto7UjcAAAAAIgAC6/OUNut6YwQAAQDGp3ljAgDGp3ljAwDGp3ljBADGp3lj';
+      '006192a26c66db7459284748c71ad2d3570IAATc2TswWAZULeSR0o/HiCOcWuel+WCD2BI6UOJMg0acto7UjcAAAAAIgAC6/OUNut6YwQAAQDGp3ljAgDGp3ljAwDGp3ljBADGp3lj';
       //agoraTestToken;
       callModel.channelName = agoraTestChannelName;
       postCallToFirestore(callModel: callModel);
@@ -303,7 +300,7 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
           'body': jsonEncode(callModel.toMap())
         };
         FcmPayloadModel fcmSendData =
-            FcmPayloadModel(to: value.data()!['token'], data: bodyMap);
+        FcmPayloadModel(to: value.data()!['token'], data: bodyMap);
         debugPrint('SendNotify');
         DioHelper.postData(
           data: fcmSendData.toMap(),

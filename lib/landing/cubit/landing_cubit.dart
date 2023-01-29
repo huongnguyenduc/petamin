@@ -39,11 +39,10 @@ class LandingCubit extends Cubit<LandingState> {
 
   void updateOnline(List<String> onlineUsers) {
     if (isClosed) return;
-    final me = onlineUsers.firstWhere((element) => element.compareTo(appSessionBloc.state.session.userId ?? '') == 0,
-        orElse: () => '');
-    if (me.isNotEmpty && state.isOnline == false) {
+    final isOnline = onlineUsers.contains(appSessionBloc.state.session.userId ?? '');
+    if (isOnline && state.isOnline == false) {
       emit(state.copyWith(isOnline: true));
-    } else if (state.isOnline) {
+    } else if (state.isOnline == true && isOnline == false) {
       emit(state.copyWith(isOnline: false));
     }
   }

@@ -31,8 +31,7 @@ class LandingPage extends StatelessWidget {
                 appSessionBloc: context.read<AppSessionBloc>())
               ..initSocket()),
         BlocProvider<SearchPetCubit>(
-          create: (_) => SearchPetCubit(context.read<PetaminRepository>())
-            ..searchAdoption('i', true),
+          create: (_) => SearchPetCubit(context.read<PetaminRepository>())..searchAdoption('i', true),
         ),
       ],
       child: const LandingView(),
@@ -59,21 +58,17 @@ class LandingView extends StatelessWidget {
                     Stack(
                       children: [
                         BlocBuilder<ProfileInfoCubit, ProfileInfoState>(
-                            buildWhen: (previous, current) =>
-                                previous.name != current.name,
+                            buildWhen: (previous, current) => previous.name != current.name,
                             builder: (context, state) {
                               return GestureDetector(
                                 child: Avatar(
                                   size: 28,
-                                  photo: state.avatarUrl.length > 0
-                                      ? state.avatarUrl
-                                      : ANONYMOUS_AVATAR,
+                                  photo: state.avatarUrl.length > 0 ? state.avatarUrl : ANONYMOUS_AVATAR,
                                 ),
                               );
                             }),
                         BlocBuilder<LandingCubit, LandingState>(
-                            buildWhen: (previous, current) =>
-                                previous.isOnline != current.isOnline,
+                            buildWhen: (previous, current) => previous.isOnline != current.isOnline,
                             builder: (context, state) {
                               return Positioned(
                                 bottom: 0,
@@ -82,12 +77,9 @@ class LandingView extends StatelessWidget {
                                   width: 16,
                                   height: 16,
                                   decoration: BoxDecoration(
-                                    color: state.isOnline
-                                        ? Colors.green
-                                        : Colors.grey,
+                                    color: state.isOnline ? Colors.green : Colors.grey,
                                     shape: BoxShape.circle,
-                                    border: Border.all(
-                                        color: Colors.white, width: 2),
+                                    border: Border.all(color: Colors.white, width: 2),
                                   ),
                                 ),
                               );
@@ -124,9 +116,7 @@ class LandingView extends StatelessWidget {
                     ),
                     Container(
                       decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                              color: AppTheme.colors.lightBorder, width: 1.5)),
+                          shape: BoxShape.circle, border: Border.all(color: AppTheme.colors.lightBorder, width: 1.5)),
                       child: IconButton(
                           onPressed: () {
                             // Navigate to SearchPetPage
@@ -135,9 +125,7 @@ class LandingView extends StatelessWidget {
                                       isFocusSearchBar: true,
                                     )));
                           },
-                          icon: SvgPicture.asset(
-                              'assets/icons/action=search-small.svg',
-                              width: 24)),
+                          icon: SvgPicture.asset('assets/icons/action=search-small.svg', width: 24)),
                     )
                   ],
                 ),
@@ -147,13 +135,10 @@ class LandingView extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Categories',
-                        style: CustomTextTheme.heading4(context)),
+                    Text('Categories', style: CustomTextTheme.heading4(context)),
                     Container(
                       decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                              color: AppTheme.colors.lightBorder, width: 1.5)),
+                          shape: BoxShape.circle, border: Border.all(color: AppTheme.colors.lightBorder, width: 1.5)),
                       child: IconButton(
                           onPressed: () {
                             // Navigate to SearchPetPage
@@ -162,9 +147,7 @@ class LandingView extends StatelessWidget {
                                       isShowFilter: true,
                                     )));
                           },
-                          icon: SvgPicture.asset(
-                              'assets/icons/action=filter.svg',
-                              width: 24)),
+                          icon: SvgPicture.asset('assets/icons/action=filter.svg', width: 24)),
                     )
                   ],
                 ),
@@ -173,8 +156,7 @@ class LandingView extends StatelessWidget {
                 GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       childAspectRatio: 3.5,
                       mainAxisSpacing: 12.0,
@@ -210,12 +192,10 @@ class LandingView extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  SvgPicture.asset(data.value.iconAsset,
-                                      width: 24),
+                                  SvgPicture.asset(data.value.iconAsset, width: 24),
                                   SizedBox(width: 8.0),
                                   Text(data.value.name,
-                                      style: CustomTextTheme.body2(context,
-                                          fontWeight: FontWeight.w500)),
+                                      style: CustomTextTheme.body2(context, fontWeight: FontWeight.w500)),
                                 ],
                               ),
                             ),
@@ -231,14 +211,12 @@ class LandingView extends StatelessWidget {
                     TextButton(
                       onPressed: () {
                         // Navigate to SearchPetPage
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => SearchPetPage()));
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => SearchPetPage()));
                       },
                       child: Text(
                         'See all',
                         style: CustomTextTheme.body2(context,
-                            textColor: AppTheme.colors.purple,
-                            fontWeight: FontWeight.w600),
+                            textColor: AppTheme.colors.purple, fontWeight: FontWeight.w600),
                       ),
                       clipBehavior: Clip.hardEdge,
                     )
@@ -247,30 +225,24 @@ class LandingView extends StatelessWidget {
                 SizedBox(height: 8.0),
                 BlocBuilder<SearchPetCubit, SearchPetState>(
                     buildWhen: (previous, current) =>
-                        previous.status != current.status ||
-                        previous.selectedSpecies != current.selectedSpecies,
+                        previous.status != current.status || previous.selectedSpecies != current.selectedSpecies,
                     builder: (context, state) {
                       return SizedBox(
                         height: 230,
                         child: ListView.separated(
                           // Scroll horizontally
-                          padding: EdgeInsets.symmetric(horizontal: 18),
+                          // padding: EdgeInsets.symmetric(horizontal: 18),
 
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (context, index) {
-                            final pet = context
-                                .read<SearchPetCubit>()
-                                .state
-                                .searchResults[index];
+                            final pet = context.read<SearchPetCubit>().state.searchResults[index];
                             return InkWell(
                                 onTap: () => {
-                                      Navigator.of(context, rootNavigator: true)
-                                          .push(MaterialPageRoute(
-                                              builder: (context) =>
-                                                  PetAdoptPage(
-                                                    id: pet.petId ?? '',
-                                                    ownerId: pet.userId!,
-                                                  )))
+                                      Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
+                                          builder: (context) => PetAdoptPage(
+                                                id: pet.petId ?? '',
+                                                ownerId: pet.userId!,
+                                              )))
                                     },
                                 child: PetCard(
                                     data: PetCardData(
@@ -290,18 +262,9 @@ class LandingView extends StatelessWidget {
                               width: 20.0,
                             );
                           },
-                          itemCount: context
-                                      .read<SearchPetCubit>()
-                                      .state
-                                      .searchResults
-                                      .length >
-                                  5
+                          itemCount: context.read<SearchPetCubit>().state.searchResults.length > 5
                               ? 5
-                              : context
-                                  .read<SearchPetCubit>()
-                                  .state
-                                  .searchResults
-                                  .length,
+                              : context.read<SearchPetCubit>().state.searchResults.length,
                         ),
                       );
                     })
@@ -325,25 +288,19 @@ class LandingBanner extends StatelessWidget {
       children: [
         Positioned(
           child: Transform.rotate(
-              angle: -math.pi / 6,
-              child: Icon(Icons.pets_rounded,
-                  size: 64, color: AppTheme.colors.grey)),
+              angle: -math.pi / 6, child: Icon(Icons.pets_rounded, size: 64, color: AppTheme.colors.grey)),
           top: 8,
           right: 98,
         ),
         Positioned(
           child: Transform.rotate(
-              angle: math.pi / 3,
-              child: Icon(Icons.pets_rounded,
-                  size: 24, color: AppTheme.colors.grey)),
+              angle: math.pi / 3, child: Icon(Icons.pets_rounded, size: 24, color: AppTheme.colors.grey)),
           top: 10,
           right: 14,
         ),
         Positioned(
           child: Transform.rotate(
-              angle: math.pi / 3,
-              child: Icon(Icons.pets_rounded,
-                  size: 30, color: AppTheme.colors.grey)),
+              angle: math.pi / 3, child: Icon(Icons.pets_rounded, size: 30, color: AppTheme.colors.grey)),
           top: 40,
           right: 8,
         ),
@@ -359,8 +316,7 @@ class LandingBanner extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Join our community\nof animal lovers',
-                  style: CustomTextTheme.heading4(context)),
+              Text('Join our community\nof animal lovers', style: CustomTextTheme.heading4(context)),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.colors.green,
@@ -375,8 +331,7 @@ class LandingBanner extends StatelessWidget {
           ),
         ),
         Positioned(
-          child: Lottie.asset('assets/lottie/adopt_box.json',
-              width: 140, height: 140),
+          child: Lottie.asset('assets/lottie/adopt_box.json', width: 140, height: 140),
           top: 0,
           right: 12,
         )
