@@ -6,23 +6,41 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:petamin_repository/petamin_repository.dart';
 
 class PetTransfer extends StatelessWidget {
-  const PetTransfer({Key? key}) : super(key: key);
-
+  const PetTransfer(
+      {Key? key,
+      required this.petId,
+      required this.petName,
+      required this.petAvatar})
+      : super(key: key);
+  final String petId;
+  final String petName;
+  final String petAvatar;
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      // TODO: GET Pet data and suggested user
-      create: (_) => TransferPetCubit(),
-      child: const PetTransferView(),
+      create: (_) => TransferPetCubit(context.read<PetaminRepository>()),
+      child: PetTransferView(
+        petId: petId,
+        petAvatar: petAvatar,
+        petName: petName,
+      ),
     );
   }
 }
 
 class PetTransferView extends StatelessWidget {
-  const PetTransferView({Key? key}) : super(key: key);
-
+  const PetTransferView(
+      {Key? key,
+      required this.petId,
+      required this.petName,
+      required this.petAvatar})
+      : super(key: key);
+  final String petId;
+  final String petName;
+  final String petAvatar;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,12 +51,17 @@ class PetTransferView extends StatelessWidget {
             builder: (context, state) {
               return IconButton(
                 onPressed: () {
-                  context.read<TransferPetCubit>().transferPet();
+                  if (state.reciverId != '')
+                    context
+                        .read<TransferPetCubit>()
+                        .transferPet(petId, context);
                 },
                 icon: SvgPicture.asset(
                   'assets/icons/send.svg',
                   // TODO: check if form is valid
-                  color: AppTheme.colors.yellow,
+                  color: state.reciverId == ''
+                      ? AppTheme.colors.grey
+                      : AppTheme.colors.yellow,
                   width: 20.0,
                 ),
               );
@@ -54,11 +77,9 @@ class PetTransferView extends StatelessWidget {
               Row(
                 children: [
                   CircleAvatar(
-                    radius: 30.0,
-                    backgroundImage: AssetImage('assets/images/cat-1.jpg'),
-                  ),
+                      radius: 30.0, backgroundImage: NetworkImage(petAvatar)),
                   SizedBox(width: 16.0),
-                  Text("Tyler", style: CustomTextTheme.subtitle(context)),
+                  Text(petName, style: CustomTextTheme.subtitle(context)),
                 ],
               ),
               SizedBox(
@@ -68,7 +89,7 @@ class PetTransferView extends StatelessWidget {
               SizedBox(
                 height: 12.0,
               ),
-              DropdownSearch<UserModel>(
+              DropdownSearch<Profile>(
                 popupProps: PopupProps.menu(
                   showSearchBox: true,
                   searchFieldProps: TextFieldProps(
@@ -87,15 +108,21 @@ class PetTransferView extends StatelessWidget {
                   ),
                 ),
                 asyncItems: (String filter) async {
-                  var response = await Dio().get(
-                    "http://5d85ccfb1e61af001471bf60.mockapi.io/user",
-                    queryParameters: {"filter": filter},
-                  );
-                  var models = UserModel.fromJsonList(response.data);
-                  return models;
+                  // var response = await Dio().get(
+                  //   "http://5d85ccfb1e61af001471bf60.mockapi.io/user",
+                  //   queryParameters: {"filter": filter},
+                  // );
+                  var response = await context
+                      .read<PetaminRepository>()
+                      .getUserPagination(query: filter, limit: 1000, page: 1);
+                  return response.users;
                 },
-                onChanged: (UserModel? data) {
+                itemAsString: (item) => item.name!,
+                onChanged: (Profile? data) {
                   print(data);
+                  context
+                      .read<TransferPetCubit>()
+                      .updateReciverId(data!.userId!);
                 },
               )
             ],

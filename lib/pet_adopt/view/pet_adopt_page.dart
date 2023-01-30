@@ -117,7 +117,12 @@ class PetAdoptDetailPage extends StatelessWidget {
                                                   rootNavigator: true)
                                               .push(MaterialPageRoute(
                                                   builder: (context) =>
-                                                      const PetTransfer()))),
+                                                      PetTransfer(
+                                                        petId: pet.id!,
+                                                        petAvatar:
+                                                            pet.avatarUrl!,
+                                                        petName: pet.name!,
+                                                      )))),
                                       SpeedDialChild(
                                           child: SvgPicture.asset(
                                             'assets/icons/home_heart.svg',

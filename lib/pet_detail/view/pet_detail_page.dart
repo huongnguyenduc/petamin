@@ -26,7 +26,7 @@ class PetDetailPage extends StatelessWidget {
     return BlocProvider(
         create: (_) => cubit..getPetDetail(id: id, userId: userId),
         child: DefaultTabController(
-            length: 2,
+            length: 1,
             child: Container(
                 color: AppTheme.colors.white,
                 child: BlocBuilder<PetDetailCubit, PetDetailState>(
@@ -66,8 +66,11 @@ class PetDetailPage extends StatelessWidget {
                                     onTap: () => Navigator.of(context,
                                             rootNavigator: true)
                                         .push(MaterialPageRoute(
-                                            builder: (context) =>
-                                                const PetTransfer()))),
+                                            builder: (context) => PetTransfer(
+                                                  petId: pet.id!,
+                                                  petAvatar: pet.avatarUrl!,
+                                                  petName: pet.name!,
+                                                )))),
                                 SpeedDialChild(
                                     child: SvgPicture.asset(
                                       'assets/icons/home_heart.svg',
@@ -108,7 +111,9 @@ class PetDetailPage extends StatelessWidget {
                                     backgroundColor: AppTheme.colors.green,
                                     label: 'Add Photos',
                                     labelStyle: TextStyle(fontSize: 18.0),
-                                    onTap: () => context.read<PetDetailCubit>().selectMultipleImages()),
+                                    onTap: () => context
+                                        .read<PetDetailCubit>()
+                                        .selectMultipleImages()),
                                 SpeedDialChild(
                                     child: Icon(
                                       Icons.delete,
