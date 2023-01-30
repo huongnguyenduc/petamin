@@ -58,9 +58,7 @@ class App extends StatelessWidget {
           create: (_) =>
               SocketIoCubit(appSessionBloc: context.read<AppSessionBloc>())
                 ..initSocket()
-                ..listenToAppSession()), // BlocProvider(
-      //   create: (_) => HomeCubit(),
-      // ),
+                ..listenToAppSession()),
       BlocProvider(
           create: (context) =>
               ProfileInfoCubit(context.read<PetaminRepository>())
