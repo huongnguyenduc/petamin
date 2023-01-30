@@ -176,6 +176,16 @@ class PetaminRepository {
     }
   }
 
+  Future<bool> changePassword({required String oldPassword, required String newPassword}) async {
+    try {
+      final session = await currentSession;
+      return await _petaminApiClient.changePassword(
+          accessToken: session.accessToken, oldPassword: oldPassword, newPassword: newPassword);
+    } catch (_) {
+      throw const CallApiFailure();
+    }
+  }
+
   Future<String> getAgoraToken(String channelName) async {
     try {
       final session = await currentSession;

@@ -1,4 +1,5 @@
 import 'package:Petamin/app/bloc/app_bloc.dart';
+import 'package:Petamin/change-password/change_password.dart';
 import 'package:Petamin/profile-info/cubit/profile_info_cubit.dart';
 import 'package:Petamin/profile-info/view/profile-info-page.dart';
 import 'package:Petamin/profile/follow/view/follow_view.dart';
@@ -79,23 +80,12 @@ class ProfileView extends StatelessWidget {
                 SizedBox(
                   height: 8,
                 ),
-                ProfileItem(title: 'Favorite List'),
-                SizedBox(
-                  height: 8,
-                ),
-                ProfileItem(title: 'Order details'),
-                SizedBox(
-                  height: 8,
-                ),
-                ProfileItem(title: 'Order tracking'),
-                SizedBox(
-                  height: 8,
-                ),
-                ProfileItem(title: 'Shipping Address'),
-                SizedBox(
-                  height: 8,
-                ),
-                ProfileItem(title: 'Setting'),
+                ProfileItem(
+                    title: 'Change Password',
+                    onTap: () {
+                      Navigator.of(context, rootNavigator: true)
+                          .push(MaterialPageRoute(builder: (context) => new ChangePasswordPage()));
+                    }),
                 SizedBox(
                   height: 8,
                 ),

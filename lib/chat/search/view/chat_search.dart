@@ -96,7 +96,7 @@ class ChatSearchPage extends StatelessWidget {
                     return Column(children: [
                       Container(
                           padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
-                          child: Text(state.status == ChatSearchStatus.initial ? 'Suggestions' : 'Suggestions',
+                          child: Text(state.status == ChatSearchStatus.initial ? 'Suggestions' : 'Search results',
                               textAlign: TextAlign.left, style: CustomTextTheme.heading4(context))),
                       Expanded(
                           child: SizedBox(
